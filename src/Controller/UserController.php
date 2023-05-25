@@ -77,7 +77,7 @@ class UserController extends AbstractController
     }
 
     #[Route('/user/{id}', name: 'get_user_by_id', methods:['GET'])]
-    public function getUserWithIdentifiant($id, EntityManagerInterface $entityManager): JsonResponse
+    public function getUserById($id, EntityManagerInterface $entityManager): JsonResponse
     {
         if(ctype_digit($id)){
             $player = $entityManager->getRepository(User::class)->findBy(['id'=>$id]);

@@ -84,22 +84,22 @@ class UserControllerTest extends WebTestCase
         $this->assertEquals(201, $client->getResponse()->getStatusCode());
     }
 
-    public function test_getUserWithIdentifiant_checkWithInvalidMethod(){
+    public function test_getUserById_checkWithInvalidMethod(){
         $client = static::createClient();
         $client->request('POST', '/user/1');
         $this->assertEquals(405, $client->getResponse()->getStatusCode());
     }
 
     /**
-     * @dataProvider dataprovider_getUserWithIdentifiant_checkWithInvalidId
+     * @dataProvider dataprovider_getUserById_checkWithInvalidId
      */
-    public function test_getUserWithIdentifiant_checkWithInvalidId($id){
+    public function test_getUserById_checkWithInvalidId($id){
         $client = static::createClient();
         $client->request('GET', '/user/'.$id);
         $this->assertEquals(404, $client->getResponse()->getStatusCode());
     }
 
-    private static function dataprovider_getUserWithIdentifiant_checkWithInvalidId(): array
+    private static function dataprovider_getUserById_checkWithInvalidId(): array
     {
         return [
             [0],
@@ -109,13 +109,13 @@ class UserControllerTest extends WebTestCase
         ];
     }
 
-    public function test_getUserWithIdentifiant_checkStatusWithValidId(){
+    public function test_getUserById_checkStatusWithValidId(){
         $client = static::createClient();
         $client->request('GET', '/user/1');
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
     }
 
-    public function test_getUserWithIdentifiant_checkValuesWithValidId(){
+    public function test_getUserById_checkValuesWithValidId(){
         $client = static::createClient();
         $client->request('GET', '/user/1');
 
