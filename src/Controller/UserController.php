@@ -15,7 +15,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 class UserController extends AbstractController
 {
-    #[Route('/users', name: 'users-lists', methods:['GET'])]
+    #[Route('/users', name: 'users_lists', methods:['GET'])]
     public function getListUsers(EntityManagerInterface $entityManager): JsonResponse
     {
         $data = $entityManager->getRepository(User::class)->findAll();
