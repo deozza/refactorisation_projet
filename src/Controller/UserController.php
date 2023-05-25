@@ -15,7 +15,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 class UserController extends AbstractController
 {
-    #[Route('/users', name: 'liste_des_users', methods:['GET'])]
+    #[Route('/users', name: 'users-lists', methods:['GET'])]
     public function getListUsers(EntityManagerInterface $entityManager): JsonResponse
     {
         $data = $entityManager->getRepository(User::class)->findAll();
@@ -76,11 +76,11 @@ class UserController extends AbstractController
         }
     }
 
-    #[Route('/user/{identifiant}', name: 'get_user_by_id', methods:['GET'])]
-    public function getUserWithIdentifiant($identifiant, EntityManagerInterface $entityManager): JsonResponse
+    #[Route('/user/{id}', name: 'get_user_by_id', methods:['GET'])]
+    public function getUserWithId($id, EntityManagerInterface $entityManager): JsonResponse
     {
-        if(ctype_digit($identifiant)){
-            $player = $entityManager->getRepository(User::class)->findBy(['id'=>$identifiant]);
+        if(ctype_digit($id)){
+            $player = $entityManager->getRepository(User::class)->findBy(['id'=>$id]);
             if(count($player) == 1){
                 return new JsonResponse(array('name'=>$player[0]->getName(), "age"=>$player[0]->getAge(), 'id'=>$player[0]->getId()), 200);
             }else{
@@ -90,10 +90,10 @@ class UserController extends AbstractController
         return new JsonResponse('Wrong id', 404);
     }
 
-    #[Route('/user/{identifiant}', name: 'udpate_user', methods:['PATCH'])]
-    public function updateUser(EntityManagerInterface $entityManager, $identifiant, Request $request): JsonResponse
+    #[Route('/user/{id}', name: 'udpate_user', methods:['PATCH'])]
+    public function updateUser(EntityManagerInterface $entityManager, $id, Request $request): JsonResponse
     {
-        $player = $entityManager->getRepository(User::class)->findBy(['id'=>$identifiant]);
+        $player = $entityManager->getRepository(User::class)->findBy(['id'=>$id]);
 
 
         if(count($player) == 1){
@@ -147,7 +147,7 @@ class UserController extends AbstractController
         }    
     }
 
-    #[Route('/user/{id}', name: 'delete_user_by_identifiant', methods:['DELETE'])]
+    #[Route('/user/{id}', name: 'delete_user_by_id', methods:['DELETE'])]
     public function suprUser($id, EntityManagerInterface $entityManager): JsonResponse | null
     {
         $player = $entityManager->getRepository(User::class)->findBy(['id'=>$id]);
