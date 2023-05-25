@@ -195,7 +195,6 @@ class GameController extends AbstractController
 
             $data = $form->getData();
 
-            // on joue avec les règles de base de pierre feuille ciseaux
             if($data['choice'] !== 'rock' && $data['choice'] !== 'paper' && $data['choice'] !== 'scissors'){
                 return new JsonResponse('Invalid choice', 400);
             }
