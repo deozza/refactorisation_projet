@@ -67,13 +67,13 @@ class GameController extends AbstractController
     }
 
     # Récupérer une partie
-    #[Route('/game/{identifiant}', name: 'fetch_game', methods: ['GET'])]
-    public function getGameInfo(EntityManagerInterface $entityManager, $identifiant): JsonResponse
+    #[Route('/game/{id}', name: 'fetch_game', methods: ['GET'])]
+    public function getGameInfo(EntityManagerInterface $entityManager, $id): JsonResponse
     {
-        # Si l'identifiant est un nombre/chiffre
-        if (ctype_digit($identifiant)) {
+        # Si l'id est un nombre/chiffre
+        if (ctype_digit($id)) {
             # Retrouve une partie en BDD
-            $game = $entityManager->getRepository(Game::class)->findOneBy(['id' => $identifiant]);
+            $game = $entityManager->getRepository(Game::class)->findOneBy(['id' => $id]);
 
             # Si une partie exite
             if ($game) {
@@ -86,17 +86,20 @@ class GameController extends AbstractController
             } else {
                 return new JsonResponse('Game not found', 404);
             }
-            # Si l'identifiant n'est pas un nombre/chiffre
+            # Si l'id n'est pas un nombre/chiffre
         } else {
             return new JsonResponse('Game not found', 404);
         }
     }
 
+    # Ajoute un joueur à une partie
     #[Route('/game/{id}/add/{playerRightId}', name: 'add_user_right', methods: ['PATCH'])]
     public function inviteToGame(Request $request, EntityManagerInterface $entityManager, $id, $playerRightId): JsonResponse
     {
+        # Récupère un ID
         $currentUserId = $request->headers->get('X-User-Id');
 
+        # Si il n'y a pas de ID
         if (empty($currentUserId)) {
             return new JsonResponse('User not found', 401);
         }
