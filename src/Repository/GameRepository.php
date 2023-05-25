@@ -21,7 +21,7 @@ class GameRepository extends ServiceEntityRepository
         parent::__construct($registry, Game::class);
     }
 
-    public function save(Game $entityGame, bool $flush = false): void
+    public function saveGame(Game $entityGame, bool $flush = false): void
     {
         $this->getEntityManager()->persist($entityGame);
 
@@ -30,7 +30,7 @@ class GameRepository extends ServiceEntityRepository
         }
     }
 
-    public function remove(Game $entityGame, bool $flush = false): void
+    public function removeGame(Game $entityGame, bool $flush = false): void
     {
         $this->getEntityManager()->remove($entityGame);
 
