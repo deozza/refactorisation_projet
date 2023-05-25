@@ -175,15 +175,15 @@ class UserControllerTest extends WebTestCase
     }
 
     /**
-     * @dataProvider dataprovider_suprUser_withInvalidId
+     * @dataProvider dataprovider_deleteUser_withInvalidId
      */
-    public function test_suprUser_withInvalidId($id){
+    public function test_deleteUser_withInvalidId($id){
         $client = static::createClient();
         $client->request('DELETE', '/user/'.$id);
         $this->assertEquals(404, $client->getResponse()->getStatusCode());
     }
 
-    private static function dataprovider_suprUser_withInvalidId(): array
+    private static function dataprovider_deleteUser_withInvalidId(): array
     {
         return [
             [0],
@@ -193,13 +193,13 @@ class UserControllerTest extends WebTestCase
         ];
     }
 
-    public function test_suprUser_checkValidStatus(){
+    public function test_deleteUser_checkValidStatus(){
         $client = static::createClient();
         $client->request('DELETE', '/user/1');
         $this->assertEquals(204, $client->getResponse()->getStatusCode());
     }
 
-    public function test_suprUser_checkUserIsDeleted(){
+    public function test_deleteUser_checkUserIsDeleted(){
         $client = static::createClient();
         $client->request('DELETE', '/user/1');
         $client->request('GET', '/user/1');
