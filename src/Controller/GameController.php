@@ -296,10 +296,6 @@ class GameController extends AbstractController
                     );
     
                 }
-                return $this->json(
-                    $game,
-                    headers: ['Content-Type' => 'application/json;charset=UTF-8']
-                );
 
             }
 
