@@ -174,7 +174,7 @@ class GameController extends AbstractController
             return new JsonResponse('You are not a player of this game', 403);
         }
 
-        // we must check the game is ongoing and the user is a player of this game
+        // nous devons vérifier que le jeu est en cours et que l'utilisateur est un joueur de ce jeu
         if($game->getState() === 'finished' || $game->getState() === 'pending'){
             return new JsonResponse('Game not started', 409);
         }
