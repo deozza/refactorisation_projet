@@ -222,7 +222,7 @@ class UserController extends AbstractController
         $joueur = $entityManager->getRepository(User::class)->findBy(['id'=>$id]);
         if(count($joueur) == 1){
             try{
-                $entityManager->remove($joueur[0]);
+                $entityManager->removeUser($joueur[0]);
                 $entityManager->flush();
 
                 $existeEncore = $entityManager->getRepository(User::class)->findBy(['id'=>$id]);
