@@ -51,14 +51,14 @@ class UserController extends AbstractController
                 if($data['age'] > 21){
                     $user = $entityManager->getRepository(User::class)->findBy(['name'=>$data['nom']]);
                     if(count($user) === 0){
-                        $joueur = new User();
-                        $joueur->setName($data['nom']);
-                        $joueur->setAge($data['age']);
-                        $entityManager->persist($joueur);
+                        $player = new User();
+                        $player->setName($data['nom']);
+                        $player->setAge($data['age']);
+                        $entityManager->persist($player);
                         $entityManager->flush();
 
                         return $this->json(
-                                    $joueur,
+                                    $player,
                                     201,
                                     ['Content-Type' => 'application/json;charset=UTF-8']
                                 );                    
