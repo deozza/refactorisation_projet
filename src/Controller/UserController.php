@@ -90,7 +90,7 @@ class UserController extends AbstractController
         return new JsonResponse('Wrong id', 404);
     }
 
-    #[Route('/user/{id}', name: 'udpate_user', methods:['PATCH'])]
+    #[Route('/user/{id}', name: 'udpate_user_by_id', methods:['PATCH'])]
     public function updateUser(EntityManagerInterface $entityManager, $id, Request $request): JsonResponse
     {
         $player = $entityManager->getRepository(User::class)->findBy(['id'=>$id]);
