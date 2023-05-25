@@ -60,25 +60,33 @@ class GameController extends AbstractController
                 201,
                 headers: ['Content-Type' => 'application/json;charset=UTF-8']
             );
+            # Si il n'y a rien dans la requête header
         } else {
             return new JsonResponse('User not found', 401);
         }
     }
 
+    # Récupérer une partie
     #[Route('/game/{identifiant}', name: 'fetch_game', methods: ['GET'])]
     public function getGameInfo(EntityManagerInterface $entityManager, $identifiant): JsonResponse
     {
+        # Si l'identifiant est un nombre/chiffre
         if (ctype_digit($identifiant)) {
-            $party = $entityManager->getRepository(Game::class)->findOneBy(['id' => $identifiant]);
+            # Retrouve une partie en BDD
+            $game = $entityManager->getRepository(Game::class)->findOneBy(['id' => $identifiant]);
 
-            if ($party !== null) {
+            # Si une partie exite
+            if ($game) {
+                # Retourne la partie
                 return $this->json(
-                    $party,
+                    $game,
                     headers: ['Content-Type' => 'application/json;charset=UTF-8']
                 );
+                # Si une partie n'existe pas
             } else {
                 return new JsonResponse('Game not found', 404);
             }
+            # Si l'identifiant n'est pas un nombre/chiffre
         } else {
             return new JsonResponse('Game not found', 404);
         }
