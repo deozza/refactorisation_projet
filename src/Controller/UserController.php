@@ -147,27 +147,27 @@ class UserController extends AbstractController
         }    
     }
 
-    #[Route('/user/{id}', name: 'delete_user_by_identifiant', methods:['DELETE'])]
-    public function suprUser($id, EntityManagerInterface $entityManager): JsonResponse | null
+    #[Route('/user/{id}', name: 'delete_user_by_id', methods:['DELETE'])]
+    public function deleteUser($id, EntityManagerInterface $entityManager): JsonResponse | null
     {
         $player = $entityManager->getRepository(User::class)->findBy(['id'=>$id]);
-        if(count($player) == 1){
+        if(count($player) == 1) {
             try{
                 $entityManager->remove($player[0]);
                 $entityManager->flush();
 
-                $existeEncore = $entityManager->getRepository(User::class)->findBy(['id'=>$id]);
+                $stillExists = $entityManager->getRepository(User::class)->findBy(['id'=>$id]);
     
-                if(!empty($existeEncore)){
-                    throw new \Exception("Le user n'a pas éte délété");
+                if(!empty($stillExists)){
+                    throw new \Exception("User has not been deleted");
                     return null;
                 }else{
                     return new JsonResponse('', 204);
                 }
-            }catch(\Exception $e){
+            } catch(\Exception $e) {
                 return new JsonResponse($e->getMessage(), 500);
             }
-        }else{
+        } else {
             return new JsonResponse('Wrong id', 404);
         }    
     }
