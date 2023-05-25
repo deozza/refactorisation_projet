@@ -10,16 +10,16 @@ class UserControllerTest extends WebTestCase
     use RecreateDatabaseTrait;
 
     /**
-     * @dataProvider dataprovider_getListUsers_checkAuthorizedMethods
+     * @dataProvider dataprovider_getListeDesUsers_checkAuthorizedMethods
      */
-    public function test_getListUsers_checkAuthorizedMethods(string $method)
+    public function test_getListeDesUsers_checkAuthorizedMethods(string $method)
     {
         $client = static::createClient();
         $client->request($method, '/users');
         $this->assertEquals(405, $client->getResponse()->getStatusCode());
     }
 
-    private static function dataprovider_getListUsers_checkAuthorizedMethods(): array
+    private static function dataprovider_getListeDesUsers_checkAuthorizedMethods(): array
     {
         return [
             ['PUT'],
@@ -28,13 +28,13 @@ class UserControllerTest extends WebTestCase
         ];
     }
 
-    public function test_getListUsers_checkReturnStatus(){
+    public function test_getListeDesUsers_checkReturnStatus(){
         $client = static::createClient();
         $client->request('GET', '/users');
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
     }
 
-    public function test_getListUsers_checkValues(){
+    public function test_getListeDesUsers_checkValues(){
         $client = static::createClient();
         $client->request('GET', '/users');
 
