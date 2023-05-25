@@ -159,7 +159,7 @@ class UserController extends AbstractController
                 $stillExists = $entityManager->getRepository(User::class)->findBy(['id'=>$id]);
     
                 if(!empty($stillExists)){
-                    throw new \Exception("User has not been deleted");
+                    throw new \Exception("Le user n'a pas éte délété");
                     return null;
                 }else{
                     return new JsonResponse('', 204);
