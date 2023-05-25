@@ -335,7 +335,7 @@ class GameController extends AbstractController
                     return new JsonResponse('Game not found', 403);
                 }
 
-                $entityManager->removeGame($game);
+                $entityManager->remove($game);
                 $entityManager->flush();
 
                 return new JsonResponse(null, 204);
