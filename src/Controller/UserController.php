@@ -155,7 +155,7 @@ class UserController extends AbstractController
         $player = $entityManager->getRepository(User::class)->findBy(['id'=>$id]);
         if(count($player) == 1){
             try{
-                $entityManager->removeUser($player[0]);
+                $entityManager->remove($player[0]);
                 $entityManager->flush();
 
                 $isUserDeleted = $entityManager->getRepository(User::class)->findBy(['id'=>$id]);
