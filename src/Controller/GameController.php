@@ -46,17 +46,17 @@ class GameController extends AbstractController
             }
 
             # Créer une nouvelle partie
-            $nouvelle_partie = new Game();
-            $nouvelle_partie->setState('pending');
-            $nouvelle_partie->setPlayerLeft($currentUser);
+            $newGame = new Game();
+            $newGame->setState('pending');
+            $newGame->setPlayerLeft($currentUser);
 
-            $entityManager->persist($nouvelle_partie);
+            $entityManager->persist($newGame);
 
             $entityManager->flush();
 
             # Retourne une nouvelle partie au format json
             return $this->json(
-                $nouvelle_partie,
+                $newGame,
                 201,
                 headers: ['Content-Type' => 'application/json;charset=UTF-8']
             );
