@@ -8,6 +8,8 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 class User
 {
+    const MINIMAL_AGE = 21;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
