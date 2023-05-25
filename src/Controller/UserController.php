@@ -10,15 +10,6 @@ use App\Entity\User;
 
 class UserController extends AbstractController
 {
-    #[Route('/users', name: 'users_lists', methods:['GET'])]
-    public function getListUsers(EntityManagerInterface $entityManager): JsonResponse
-    {
-        $data = $entityManager->getRepository(User::class)->findAll();
-        return $this->json(
-            $data,
-            headers: ['Content-Type' => 'application/json;charset=UTF-8']
-        );
-    }
 
 
     #[Route('/user/{id}', name: 'get_user_by_id', methods:['GET'])]
