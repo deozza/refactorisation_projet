@@ -14,8 +14,8 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Validator\Constraints as Assert;
 class GameController extends AbstractController
 {
-    #[Route('/games', name: 'get_list_of_games', methods:['GET'])]
-    public function getPartieList(EntityManagerInterface $entityManager): JsonResponse
+    #[Route('/games', name: 'get_list_games', methods:['GET'])]
+    public function getListGame(EntityManagerInterface $entityManager): JsonResponse
     {
         $data = $entityManager->getRepository(Game::class)->findAll();
         return $this->json(
