@@ -42,16 +42,16 @@ class GameController extends AbstractController
                 return new JsonResponse('User not found', 401);
             }
 
-            $game = new Game();
-            $game->setState('pending');
-            $game->setPlayerLeft($currentUser);
+            $newGame = new Game();
+            $newGame->setState('pending');
+            $newGame->setPlayerLeft($currentUser);
 
-            $entityManager->persist($game);
+            $entityManager->persist($newGame);
 
             $entityManager->flush();
 
             return $this->json(
-                $game,
+                $newGame,
                 201,
                 headers: ['Content-Type' => 'application/json;charset=UTF-8']
             );
