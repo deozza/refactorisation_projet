@@ -15,7 +15,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 class GameController extends AbstractController
 {
-
+    # Liste les parties
     #[Route('/games', name: 'get_list_of_games', methods: ['GET'])]
     public function getPartieList(EntityManagerInterface $entityManager): JsonResponse
     {
@@ -26,20 +26,26 @@ class GameController extends AbstractController
         );
     }
 
+    # Créer une partie
     #[Route('/games', name: 'create_game', methods: ['POST'])]
     public function launchGame(Request $request, EntityManagerInterface $entityManager): JsonResponse
     {
+        # Cherche un id
         $currentUserId = $request->headers->get('X-User-Id');
 
-        if ($currentUserId !== null) {
+        # Si il y a un ID et que c'est un nombre/chiffre
+        if ($currentUserId !== null && ctype_digit($currentUserId)) {
 
+            # Cherche un utilisateur
             $currentUser = $entityManager->getRepository(User::class)->find($currentUserId);
 
+            # Retourne une erreur si l'utilisateur n'existe pas ou que l'id est null
             // Si l'utilisateur n'existe pas -> stop creation de partie
-            if (ctype_digit($currentUserId) === false && $currentUser === null) {
+            if ($currentUser === null) {
                 return new JsonResponse('User not found', 401);
             }
 
+            # Créer une nouvelle partie
             $nouvelle_partie = new Game();
             $nouvelle_partie->setState('pending');
             $nouvelle_partie->setPlayerLeft($currentUser);
@@ -48,6 +54,7 @@ class GameController extends AbstractController
 
             $entityManager->flush();
 
+            # Retourne une nouvelle partie au format json
             return $this->json(
                 $nouvelle_partie,
                 201,
