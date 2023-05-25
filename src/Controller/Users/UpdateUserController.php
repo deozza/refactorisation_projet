@@ -14,17 +14,18 @@ use Symfony\Component\Routing\Annotation\Route;
 class UpdateUserController extends AbstractController
 {
     public function __construct(
+        private readonly EntityManagerInterface $entityManager,
         private readonly UserRepository $userRepository
     ) {}
 
     #[Route(
-        path: '/user/{identifiant}',
-        name: 'udpate_user',
+        path: '/user/{id}',
+        name: 'update_user',
         methods: ['PATCH']
     )]
-    public function updateUser(EntityManagerInterface $entityManager, $identifiant, Request $request): JsonResponse
+    public function updateUser($id, Request $request): JsonResponse
     {
-        $player = $this->userRepository->findOneBy(['id' => $identifiant]);
+        $player = $this->userRepository->findOneBy(['id' => $id]);
         if (!$player) {
             return new JsonResponse('Wrong id', 404);
         }
@@ -46,7 +47,7 @@ class UpdateUserController extends AbstractController
                     }
 
                     $player->setName($data['nom']);
-                    $entityManager->flush();
+                    $this->entityManager->flush();
                     break;
                 case 'age':
                     if ($data['age'] < User::MINIMAL_AGE) {
@@ -54,7 +55,7 @@ class UpdateUserController extends AbstractController
                     }
 
                     $player->setAge($data['age']);
-                    $entityManager->flush();
+                    $this->entityManager->flush();
                     break;
             }
         }
