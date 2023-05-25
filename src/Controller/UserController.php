@@ -21,7 +21,7 @@ class UserController extends AbstractController
         $data = $entityManager->getRepository(User::class)->findAll();
         return $this->json(
             $data,
-            headers: ['Content-Type' => 'application/json;charset=UTF-8']
+            headers: ['Content-Type' => 'application/json;charset=UTF-8'];
         );
     }
 
