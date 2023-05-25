@@ -15,6 +15,9 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 class UserController extends AbstractController
 {
+
+    const AGE_MAJORITY = 21;
+
     #[Route('/users', name: 'get_users', methods:['GET'])]
     public function getUsers(EntityManagerInterface $entityManager): JsonResponse
     {
@@ -48,7 +51,7 @@ class UserController extends AbstractController
 
             if($form->isValid())
             {
-                if($data['age'] > 21){
+                if($data['age'] > self::AGE_MAJORITY){
                     $user = $entityManager->getRepository(User::class)->findBy(['name'=>$data['nom']]);
                     if(count($user) === 0){
                         $player = new User();
@@ -123,7 +126,7 @@ class UserController extends AbstractController
                                 }
                                 break;
                             case 'age':
-                                if($data['age'] > 21){
+                                if($data['age'] > self::AGE_MAJORITY){
                                     $player[0]->setAge($data['age']);
                                     $entityManager->flush();
                                 }else{
