@@ -36,7 +36,7 @@ class UserController extends AbstractController
     }
 
     #[Route('/user/{id}', name: 'delete_user_by_id', methods:['DELETE'])]
-    public function suprUser($id, EntityManagerInterface $entityManager): JsonResponse | null
+    public function deleteUser($id, EntityManagerInterface $entityManager): JsonResponse | null
     {
         $player = $entityManager->getRepository(User::class)->findBy(['id'=>$id]);
         if(count($player) == 1) {
