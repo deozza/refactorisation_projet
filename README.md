@@ -57,4 +57,7 @@ composer reset-db
 
 # Lance tous les tests disponibles. Le script s'arrête lorsqu'une erreur est rencontrée. Ne pas prendre en compte les warnings
 bin/phpunit
+
+# Lance le serveur symfony. Cela permet de mettre en "action" l'API de notre appli en local et en dehors du contexte de test pour pouvoir voir les erreurs de test customs qui ne sont pas dans les fichiers de test
+symfony serve
 ```
