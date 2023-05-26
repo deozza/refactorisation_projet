@@ -11,21 +11,6 @@ use App\Entity\User;
 class UserController extends AbstractController
 {
 
-
-    #[Route('/user/{id}', name: 'get_user_by_id', methods:['GET'])]
-    public function getUserWithId($id, EntityManagerInterface $entityManager): JsonResponse
-    {
-        if(ctype_digit($id)){
-            $player = $entityManager->getRepository(User::class)->findBy(['id'=>$id]);
-            if(count($player) == 1){
-                return new JsonResponse(array('name'=>$player[0]->getName(), "age"=>$player[0]->getAge(), 'id'=>$player[0]->getId()), 200);
-            }else{
-                return new JsonResponse('Wrong id', 404);
-            }
-        }
-        return new JsonResponse('Wrong id', 404);
-    }
-
     #[Route('/user/{id}', name: 'delete_user_by_id', methods:['DELETE'])]
     public function deleteUser($id, EntityManagerInterface $entityManager): JsonResponse | null
     {
