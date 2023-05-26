@@ -10,15 +10,6 @@ use App\Entity\User;
 
 class UserController extends AbstractController
 {
-    #[Route('/users', name: 'users_lists', methods:['GET'])]
-    public function getListUsers(EntityManagerInterface $entityManager): JsonResponse
-    {
-        $data = $entityManager->getRepository(User::class)->findAll();
-        return $this->json(
-            $data,
-            headers: ['Content-Type' => 'application/json;charset=UTF-8']
-        );
-    }
 
 
     #[Route('/user/{id}', name: 'get_user_by_id', methods:['GET'])]
@@ -36,26 +27,26 @@ class UserController extends AbstractController
     }
 
     #[Route('/user/{id}', name: 'delete_user_by_id', methods:['DELETE'])]
-    public function suprUser($id, EntityManagerInterface $entityManager): JsonResponse | null
+    public function deleteUser($id, EntityManagerInterface $entityManager): JsonResponse | null
     {
         $player = $entityManager->getRepository(User::class)->findBy(['id'=>$id]);
-        if(count($player) == 1){
+        if(count($player) == 1) {
             try{
                 $entityManager->remove($player[0]);
                 $entityManager->flush();
 
-                $existeEncore = $entityManager->getRepository(User::class)->findBy(['id'=>$id]);
+                $stillExists = $entityManager->getRepository(User::class)->findBy(['id'=>$id]);
     
-                if(!empty($existeEncore)){
+                if(!empty($stillExists)){
                     throw new \Exception("Le user n'a pas éte délété");
                     return null;
                 }else{
                     return new JsonResponse('', 204);
                 }
-            }catch(\Exception $e){
+            } catch(\Exception $e) {
                 return new JsonResponse($e->getMessage(), 500);
             }
-        }else{
+        } else {
             return new JsonResponse('Wrong id', 404);
         }    
     }
