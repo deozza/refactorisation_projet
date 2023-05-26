@@ -14,51 +14,6 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Validator\Constraints as Assert;
 class GameController extends AbstractController
 {
-    #[Route('/games', name: 'get_list_of_games', methods:['GET'])]
-    public function getPartieList(EntityManagerInterface $entityManager): JsonResponse
-    {
-        $data = $entityManager->getRepository(Game::class)->findAll();
-        return $this->json(
-            $data,
-            headers: ['Content-Type' => 'application/json;charset=UTF-8']
-        );
-    }
-
-    #[Route('/games', name: 'create_game', methods:['POST'])]
-    public function launchGame(Request $request, EntityManagerInterface $entityManager): JsonResponse
-    {
-        $currentUserId = $request->headers->get('X-User-Id');
-
-        if($currentUserId !== null){
-
-            if(ctype_digit($currentUserId) === false){
-                return new JsonResponse('User not found', 401);
-            }
-
-            $currentUser = $entityManager->getRepository(User::class)->find($currentUserId);
-
-            if($currentUser === null){
-                return new JsonResponse('User not found', 401);
-            }
-
-            $newGame = new Game();
-            $newGame->setState('pending');
-            $newGame->setPlayerLeft($currentUser);
-
-            $entityManager->persist($newGame);
-
-            $entityManager->flush();
-
-            return $this->json(
-                $newGame,
-                201,
-                headers: ['Content-Type' => 'application/json;charset=UTF-8']
-            );
-        }else{
-            return new JsonResponse('User not found', 401);
-        }
-    }
-
     #[Route('/game/{identifiant}', name: 'fetch_game', methods:['GET'])]
     public function getGameInfo(EntityManagerInterface $entityManager, $identifiant): JsonResponse
     {
