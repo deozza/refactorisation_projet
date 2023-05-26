@@ -20,6 +20,5 @@
 ###< phpunit/phpunit ###
 
 ###> PHPStorm ###
-.idea
+.idea/
 ###< PHPStorm ###
-
