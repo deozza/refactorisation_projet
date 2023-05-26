@@ -30,7 +30,7 @@ class UpdateUserController extends AbstractController
             return new JsonResponse('Wrong id', 404);
         }
 
-        $form = UserForm::buildUserForm($this->createFormBuilder())->getForm();
+        $form = UserForm::buildUserForm(builder: $this->createFormBuilder())->getForm();
         $data = json_decode($request->getContent(), true);
         $form->submit($data);
 
@@ -42,7 +42,7 @@ class UpdateUserController extends AbstractController
             switch ($key) {
                 case 'nom':
                     $user = $this->userRepository->findOneBy(['name' => $data['nom']]);
-                    if (!$user) {
+                    if ($user) {
                         return new JsonResponse('Name already exists', 400);
                     }
 
@@ -61,9 +61,9 @@ class UpdateUserController extends AbstractController
         }
 
         return new JsonResponse([
-                'name' => $player->getName(),
-                'age' => $player->getAge(),
-                'id' => $player->getId()
-            ], 200);
+            'name' => $player->getName(),
+            'age' => $player->getAge(),
+            'id' => $player->getId()
+        ], 200);
     }
 }
