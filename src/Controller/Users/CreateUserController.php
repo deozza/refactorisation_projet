@@ -5,7 +5,6 @@ namespace App\Controller\Users;
 use App\Entity\User;
 use App\Forms\UserForm;
 use App\Repository\UserRepository;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,7 +14,6 @@ final class CreateUserController extends AbstractController
 {
 
     public function __construct(
-        private readonly EntityManagerInterface $entityManager,
         private readonly UserRepository $userRepository
     ) {}
 
@@ -48,8 +46,7 @@ final class CreateUserController extends AbstractController
         $player->setName($data['nom']);
         $player->setAge($data['age']);
 
-        $this->entityManager->persist($player);
-        $this->entityManager->flush();
+        $this->userRepository->save($player, flush: true);
 
         return $this->json(
             $player,
