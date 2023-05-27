@@ -74,6 +74,7 @@ class AssignRightPlayerToGameController extends AbstractController
 
         $game->setPlayerRight($playerRight);
         $game->setState('ongoing');
+        $this->gameRepository->save($game, flush: true);
 
         return $this->json(
             $game,
