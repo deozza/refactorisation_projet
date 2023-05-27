@@ -14,24 +14,6 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Validator\Constraints as Assert;
 class GameController extends AbstractController
 {
-    #[Route('/game/{identifiant}', name: 'fetch_game', methods:['GET'])]
-    public function getGameInfo(EntityManagerInterface $entityManager, $identifiant): JsonResponse
-    {
-        if(ctype_digit($identifiant)){
-            $party = $entityManager->getRepository(Game::class)->findOneBy(['id' => $identifiant]);
-
-            if($party !== null){
-                return $this->json(
-                    $party,
-                    headers: ['Content-Type' => 'application/json;charset=UTF-8']
-                );
-            }else{
-                return new JsonResponse('Game not found', 404);
-            }
-        }else{
-            return new JsonResponse('Game not found', 404);
-        }
-    }
 
     #[Route('/game/{id}/add/{playerRightId}', name: 'add_user_right', methods:['PATCH'])]
     public function inviteToGame(Request $request, EntityManagerInterface $entityManager, $id, $playerRightId): JsonResponse
