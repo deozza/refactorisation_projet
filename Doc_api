@@ -1,0 +1,142 @@
+openapi: 3.0.0
+info:
+  title: Rock Paper Scissors
+  version: "1.0"
+servers:
+  - url: http://localhost:8888
+    description: Local Dev Server
+tags:
+  - name: games
+    description: Let's play a game! (APIs)
+  - name: users
+    description: Operations on Users
+paths:
+  /games:
+    post:
+      summary: Create a new game
+      tags:
+        - games
+      responses:
+        '201':
+          description: Game successfully created
+    get:
+      summary: List all games
+      tags:
+        - games
+      responses:
+        '200':
+          description: Successful operation
+  /game/{id}/add/{playerRightId}:
+    patch:
+      summary: Add user right to a game
+      tags:
+        - games
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: playerRightId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful operation
+  /game/{id}:
+    patch:
+      summary: Send choice for a game
+      tags:
+        - games
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful operation
+    delete:
+      summary: Cancel a game
+      tags:
+        - games
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful operation
+    get:
+      summary: Fetch a game by ID
+      tags:
+        - games
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful operation
+  /users:
+    post:
+      summary: Create a new user
+      tags:
+        - users
+      responses:
+        '201':
+          description: User successfully created
+    get:
+      summary: List all users
+      tags:
+        - users
+      responses:
+        '200':
+          description: Successful operation
+  /user/{id}:
+    delete:
+      summary: Delete a user by ID
+      tags:
+        - users
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful operation
+    get:
+      summary: Get a user by ID
+      tags:
+        - users
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful operation
+    patch:
+      summary: Update a user
+      tags:
+        - users
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful operation
