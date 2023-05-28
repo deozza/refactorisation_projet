@@ -296,6 +296,7 @@ class GameController extends AbstractController
     
                 }
 
+
             }
 
         }else{
@@ -339,5 +340,5 @@ class GameController extends AbstractController
         }else{
             return new JsonResponse('User not found', 401);
         }
-    }
+    } 
 }
