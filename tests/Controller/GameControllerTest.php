@@ -12,7 +12,8 @@ class GameControllerTest extends WebTestCase
     /**
      * @dataProvider dataprovider_getListGame_checkAuthorizedMethods
      */
-    public function test_getListGame_checkAuthorizedMethods($method){
+    public function test_getListGame_checkAuthorizedMethods($method)
+    {
         $client = static::createClient();
         $client->request($method, '/games');
         $this->assertEquals(405, $client->getResponse()->getStatusCode());
@@ -27,13 +28,15 @@ class GameControllerTest extends WebTestCase
         ];
     }
 
-     public function test_getListGame_checkReturnStatus(){
+     public function test_getListGame_checkReturnStatus()
+     {
         $client = static::createClient();
         $client->request('GET', '/games');
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
     }
 
-    public function test_getListGame_checkValues(){
+    public function test_getListGame_checkValues()
+    {
         $client = static::createClient();
         $client->request('GET', '/games');
 
@@ -46,7 +49,8 @@ class GameControllerTest extends WebTestCase
     /**
      * @dataProvider dataprovider_getGameInfo_checkAuthorizedMethods
      */
-    public function test_getGameInfo_checkAuthorizedMethods(string $method){
+    public function test_getGameInfo_checkAuthorizedMethods(string $method)
+    {
         $client = static::createClient();
         $client->request($method, '/game/1');
         $this->assertEquals(405, $client->getResponse()->getStatusCode());
@@ -63,7 +67,8 @@ class GameControllerTest extends WebTestCase
     /**
      * @dataProvider dataprovider_getGameInfo_checkWithInvalidId
      */
-    public function test_getGameInfo_checkWithInvalidId($id){
+    public function test_getGameInfo_checkWithInvalidId($id)
+    {
         $client = static::createClient();
         $client->request('GET', '/game/'.$id);
         $this->assertEquals(404, $client->getResponse()->getStatusCode());
@@ -78,13 +83,15 @@ class GameControllerTest extends WebTestCase
         ];
     }
 
-    public function test_getGameInfo_checkReturnStatus(){
+    public function test_getGameInfo_checkReturnStatus()
+    {
         $client = static::createClient();
         $client->request('GET', '/game/1');
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
     }
 
-    public function test_getGameInfo_checkValues(){
+    public function test_getGameInfo_checkValues()
+    {
         $client = static::createClient();
         $client->request('GET', '/game/4');
 
@@ -92,7 +99,8 @@ class GameControllerTest extends WebTestCase
         $this->assertJsonStringEqualsJsonString('{"id":4,"state":"finished","playLeft":"paper","playRight":"scissors","result":"winLeft","playerLeft":{"id":1,"name":"John","age":25},"playerRight":{"id":2,"name":"Jane","age":22}}', $content);
     }
 
-    public function test_launchGame_checkStatusWithoutUserParam(){
+    public function test_launchGame_checkStatusWithoutUserParam()
+    {
         $client = static::createClient();
         $client->request('POST', '/games');
         $this->assertEquals(401, $client->getResponse()->getStatusCode());
@@ -101,7 +109,8 @@ class GameControllerTest extends WebTestCase
     /**
      * @dataProvider dataprovider_launchGame_checkStatusWithInvalidUserParam
      */
-    public function test_launchGame_checkStatusWithInvalidUserParam($userParam){
+    public function test_launchGame_checkStatusWithInvalidUserParam($userParam)
+    {
         $client = static::createClient([], ['HTTP_X_USER_ID' => $userParam]);
         $client->request('POST', '/games');
         $this->assertEquals(401, $client->getResponse()->getStatusCode());
@@ -117,13 +126,15 @@ class GameControllerTest extends WebTestCase
         ];
     }
 
-    public function test_launchGame_checkStatusWhenValid(){
+    public function test_launchGame_checkStatusWhenValid()
+    {
         $client = static::createClient([], ['HTTP_X_USER_ID' => 1]);
         $client->request('POST', '/games');
         $this->assertEquals(201, $client->getResponse()->getStatusCode());
     }
 
-    public function test_launchGame_checkValuesWhenValid(){
+    public function test_launchGame_checkValuesWhenValid()
+    {
         $client = static::createClient([], ['HTTP_X_USER_ID' => 1]);
         $client->request('POST', '/games');
 
@@ -140,7 +151,8 @@ class GameControllerTest extends WebTestCase
     /**
      * @dataProvider dataprovider_inviteToGane_checkAuthorizedMethods
      */
-    public function test_inviteToGame_checkAuthorizedMethods($method){
+    public function test_inviteToGame_checkAuthorizedMethods($method)
+    {
         $client = static::createClient();
         $client->request($method, '/game/1/add/2');
         $this->assertEquals(405, $client->getResponse()->getStatusCode());
@@ -159,7 +171,8 @@ class GameControllerTest extends WebTestCase
     /**
      * @dataProvider dataprovider_inviteToGame_checkWithInvalidAuth
      */
-    public function test_inviteToGame_checkWithInvalidAuth($id){
+    public function test_inviteToGame_checkWithInvalidAuth($id)
+    {
         $client = static::createClient([], ['HTTP_X_USER_ID' => $id]);
         $client->request('PATCH', '/game/1/add/2');
         $this->assertEquals(401, $client->getResponse()->getStatusCode());
@@ -178,7 +191,8 @@ class GameControllerTest extends WebTestCase
     /**
      * @dataProvider dataprovider_inviteToGame_checkWithInvalidGameId
      */
-    public function test_inviteToGame_checkWithInvalidGameId($id){
+    public function test_inviteToGame_checkWithInvalidGameId($id)
+    {
         $client = static::createClient([], ['HTTP_X_USER_ID' => 1]);
         $client->request('PATCH', '/game/'.$id.'/add/2');
         $this->assertEquals(404, $client->getResponse()->getStatusCode());
@@ -197,7 +211,8 @@ class GameControllerTest extends WebTestCase
     /**
      * @dataProvider dataprovider_inviteToGame_checkWithInvalidGameStatus
      */
-    public function test_inviteToGame_checkWithInvalidGameStatus($id){
+    public function test_inviteToGame_checkWithInvalidGameStatus($id)
+    {
         $client = static::createClient([], ['HTTP_X_USER_ID' => 1]);
         $client->request('PATCH', '/game/'.$id.'/add/2');
         $this->assertEquals(409, $client->getResponse()->getStatusCode());
@@ -214,7 +229,8 @@ class GameControllerTest extends WebTestCase
     /**
      * @dataProvider dataprovider_inviteToGame_checkWithInvalidPlayerRight
      */
-    public function test_inviteToGame_checkWithInvalidPlayerRight($id){
+    public function test_inviteToGame_checkWithInvalidPlayerRight($id)
+    {
         $client = static::createClient([], ['HTTP_X_USER_ID' => 1]);
         $client->request('PATCH', '/game/1/add/'.$id);
         $this->assertEquals(404, $client->getResponse()->getStatusCode());
@@ -230,19 +246,22 @@ class GameControllerTest extends WebTestCase
         ];
     }
 
-    public function test_inviteToGame_checkWithDuplicatePlayer(){
+    public function test_inviteToGame_checkWithDuplicatePlayer()
+    {
         $client = static::createClient([], ['HTTP_X_USER_ID' => 1]);
         $client->request('PATCH', '/game/1/add/1');
         $this->assertEquals(409, $client->getResponse()->getStatusCode());
     }
 
-    public function test_inviteToGame_checkValidStatusCode(){
+    public function test_inviteToGame_checkValidStatusCode()
+    {
         $client = static::createClient([], ['HTTP_X_USER_ID' => 1]);
         $client->request('PATCH', '/game/1/add/2');
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
     }
 
-    public function test_inviteToGame_checkValidValues(){
+    public function test_inviteToGame_checkValidValues()
+    {
         $client = static::createClient([], ['HTTP_X_USER_ID' => 1]);
         $client->request('PATCH', '/game/1/add/2');
 
@@ -259,7 +278,8 @@ class GameControllerTest extends WebTestCase
     /**
      * @dataProvider dataprovider_play_checkWithInvalidAuth
      */
-    public function test_play_checkWithInvalidAuth($id){
+    public function test_play_checkWithInvalidAuth($id)
+    {
         $client = static::createClient([], ['HTTP_X_USER_ID' => $id]);
         $client->request('PATCH', '/game/2');
         $this->assertEquals(401, $client->getResponse()->getStatusCode());
@@ -279,7 +299,8 @@ class GameControllerTest extends WebTestCase
     /**
      * @dataProvider dataprovider_play_checkWithGameNotFound
      */
-    public function test_play_checkWithGameNotFound($id){
+    public function test_play_checkWithGameNotFound($id)
+    {
         $client = static::createClient([], ['HTTP_X_USER_ID' => 1]);
         $client->request('PATCH', '/game/'.$id);
         $this->assertEquals(404, $client->getResponse()->getStatusCode());
@@ -298,7 +319,8 @@ class GameControllerTest extends WebTestCase
     /**
      * @dataProvider dataprovider_play_checkWithForbiddenGame
      */
-    public function test_play_checkWithForbiddenGame($id){
+    public function test_play_checkWithForbiddenGame($id)
+    {
         $client = static::createClient([], ['HTTP_X_USER_ID' => 3]);
         $client->request('PATCH', '/game/2');
         $this->assertEquals(403, $client->getResponse()->getStatusCode());
@@ -312,25 +334,29 @@ class GameControllerTest extends WebTestCase
         ];
     }
 
-    public function test_play_checkWithGameNotStarted(){
+    public function test_play_checkWithGameNotStarted()
+    {
         $client = static::createClient([], ['HTTP_X_USER_ID' => 1]);
         $client->request('PATCH', '/game/1');
         $this->assertEquals(409, $client->getResponse()->getStatusCode());
     }
 
-    public function test_play_checkWithInvalidChoice(){
+    public function test_play_checkWithInvalidChoice()
+    {
         $client = static::createClient([], ['HTTP_X_USER_ID' => 1]);
         $client->request('PATCH', '/game/2', [], [], ['CONTENT_TYPE' => 'application/json'], '{"choice":"invalid"}');
         $this->assertEquals(400, $client->getResponse()->getStatusCode());
     }
 
-    public function test_play_checkValidStatusCode(){
+    public function test_play_checkValidStatusCode()
+    {
         $client = static::createClient([], ['HTTP_X_USER_ID' => 1]);
         $client->request('PATCH', '/game/2', [], [], ['CONTENT_TYPE' => 'application/json'], '{"choice":"rock"}');
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
     }
 
-    public function test_play_checkValidValuesForFirstTurn(){
+    public function test_play_checkValidValuesForFirstTurn()
+    {
         $client = static::createClient([], ['HTTP_X_USER_ID' => 1]);
         $client->request('PATCH', '/game/2', [], [], ['CONTENT_TYPE' => 'application/json'], '{"choice":"rock"}');
 
@@ -352,7 +378,8 @@ class GameControllerTest extends WebTestCase
     /**
      * @dataProvider dataprovider_play_checkValidValuesWithGameResult
      */
-    public function test_play_checkValidValuesWithGameResult($choice, $expectedResult){
+    public function test_play_checkValidValuesWithGameResult($choice, $expectedResult)
+    {
         $client = static::createClient([], ['HTTP_X_USER_ID' => 2]);
         $client->request('PATCH', '/game/3', [], [], ['CONTENT_TYPE' => 'application/json'], '{"choice":"'.$choice.'"}');
 
@@ -382,7 +409,8 @@ class GameControllerTest extends WebTestCase
     /**
      * @dataProvider dataprovider_deleteGame_checkWithInvalidAuth
      */
-    public function test_deleteGame_checkWithInvalidAuth($id){
+    public function test_deleteGame_checkWithInvalidAuth($id)
+    {
         $client = static::createClient([], ['HTTP_X_USER_ID' => $id]);
         $client->request('DELETE', '/game/1');
         $this->assertEquals(401, $client->getResponse()->getStatusCode());
@@ -402,7 +430,8 @@ class GameControllerTest extends WebTestCase
     /**
      * @dataProvider dataprovider_deleteGame_checkWithGameNotFound
      */
-    public function test_deleteGame_checkWithGameNotFound($id){
+    public function test_deleteGame_checkWithGameNotFound($id)
+    {
         $client = static::createClient([], ['HTTP_X_USER_ID' => 1]);
         $client->request('DELETE', '/game/'.$id);
         $this->assertEquals(404, $client->getResponse()->getStatusCode());
@@ -416,7 +445,8 @@ class GameControllerTest extends WebTestCase
         ];
     }
 
-    public function test_deleteGame_checkWithForbiddenGame(){
+    public function test_deleteGame_checkWithForbiddenGame()
+    {
         $client = static::createClient([], ['HTTP_X_USER_ID' => 3]);
         $client->request('DELETE', '/game/1');
         $this->assertEquals(403, $client->getResponse()->getStatusCode());
@@ -425,7 +455,8 @@ class GameControllerTest extends WebTestCase
     /**
      * @dataProvider dataprovider_deleteGame_checkValid
      */
-    public function test_deleteGame_checkValidStatusCode($id){
+    public function test_deleteGame_checkValidStatusCode($id)
+    {
         $client = static::createClient([], ['HTTP_X_USER_ID' => $id]);
         $client->request('DELETE', '/game/2');
         $this->assertEquals(204, $client->getResponse()->getStatusCode());
@@ -434,7 +465,8 @@ class GameControllerTest extends WebTestCase
     /**
      * @dataProvider dataprovider_deleteGame_checkValid
      */
-    public function test_deleteGame_checkGameIsDeleted($id){
+    public function test_deleteGame_checkGameIsDeleted($id)
+    {
         $client = static::createClient([], ['HTTP_X_USER_ID' => $id]);
         $client->request('DELETE', '/game/2');
         $this->assertEquals(204, $client->getResponse()->getStatusCode());
