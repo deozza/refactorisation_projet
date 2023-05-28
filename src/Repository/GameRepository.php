@@ -21,18 +21,18 @@ class GameRepository extends ServiceEntityRepository
         parent::__construct($registry, Game::class);
     }
 
-    public function save(Game $entity, bool $flush = false): void
+    public function saveGame(Game $entityGame, bool $flush = false): void
     {
-        $this->getEntityManager()->persist($entity);
+        $this->getEntityManager()->persist($entityGame);
 
         if ($flush) {
             $this->getEntityManager()->flush();
         }
     }
 
-    public function remove(Game $entity, bool $flush = false): void
+    public function removeGame(Game $entityGame, bool $flush = false): void
     {
-        $this->getEntityManager()->remove($entity);
+        $this->getEntityManager()->remove($entityGame);
 
         if ($flush) {
             $this->getEntityManager()->flush();
