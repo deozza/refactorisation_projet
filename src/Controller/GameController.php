@@ -174,7 +174,7 @@ class GameController extends AbstractController
             return new JsonResponse('You are not a player of this game', 403);
         }
 
-        // we must check the game is ongoing and the user is a player of this game
+        // nous devons vérifier que le jeu est en cours et que l'utilisateur est un joueur de ce jeu
         if($game->getState() === 'finished' || $game->getState() === 'pending'){
             return new JsonResponse('Game not started', 409);
         }
@@ -195,7 +195,6 @@ class GameController extends AbstractController
 
             $data = $form->getData();
 
-            // on joue avec les règles de base de pierre feuille ciseaux
             if($data['choice'] !== 'rock' && $data['choice'] !== 'paper' && $data['choice'] !== 'scissors'){
                 return new JsonResponse('Invalid choice', 400);
             }
@@ -296,18 +295,13 @@ class GameController extends AbstractController
                     );
     
                 }
-                return $this->json(
-                    $game,
-                    headers: ['Content-Type' => 'application/json;charset=UTF-8']
-                );
+
 
             }
 
         }else{
             return new JsonResponse('Invalid choice', 400);
         }
-
-        return new JsonResponse('coucou');
     }
 
     #[Route('/game/{id}', name: 'delete_game', methods:['DELETE'])]
@@ -346,5 +340,5 @@ class GameController extends AbstractController
         }else{
             return new JsonResponse('User not found', 401);
         }
-    }
+    } 
 }
