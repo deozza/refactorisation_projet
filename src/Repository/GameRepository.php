@@ -3,8 +3,11 @@
 namespace App\Repository;
 
 use App\Entity\Game;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\Persistence\ManagerRegistry;
+use LogicException;
 
 /**
  * @extends ServiceEntityRepository<Game>
@@ -39,28 +42,28 @@ class GameRepository extends ServiceEntityRepository
         }
     }
 
-//    /**
-//     * @return Game[] Returns an array of Game objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('g')
-//            ->andWhere('g.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('g.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
-
-//    public function findOneBySomeField($value): ?Game
-//    {
-//        return $this->createQueryBuilder('g')
-//            ->andWhere('g.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+    /**
+     * @param int $id
+     * @param User $player
+     * @return Game|null
+     */
+    public function findGameByIdAndPlayer(int $id, User $player): Game | null
+    {
+        $qb = $this->createQueryBuilder('g');
+        $qb->where('g.id = :id')
+            ->andWhere(
+                $qb->expr()->orX(
+                    $qb->expr()->eq('g.playerLeft', ':player'),
+                    $qb->expr()->eq('g.playerRight', ':player')
+                )
+            )
+            ->setParameter('id', $id)
+            ->setParameter('player', $player);
+        try {
+            return $qb->getQuery()->getOneOrNullResult();
+        } catch (NonUniqueResultException) {
+            // Should never happen
+            throw new LogicException("Non unique result for game id $id and player id {$player->getId()}");
+        }
+    }
 }
