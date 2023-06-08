@@ -5,6 +5,7 @@ namespace App\UseCase;
 use App\Entity\Game;
 use App\Service\GameService;
 use App\Service\UserService;
+use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
@@ -65,5 +66,40 @@ class GameUseCase
         }
 
         return $game;
+    }
+
+    public function addPlayerRightToGame(int $currentUserId, int $gameId, int $playerRightId): Game
+    {
+        $playerLeft = $this->userService->getUserById($currentUserId);
+
+        if(empty($playerLeft)){
+            throw new UnauthorizedHttpException('User not found');
+        }
+
+        $game = $this->gameService->getGameById($gameId);
+
+        if(empty($game)){
+            throw new NotFoundHttpException('User not found');
+        }
+
+        if($game->getState() !== Game::STATE_PENDING){
+            throw new ConflictHttpException('Game already started');
+        }
+        
+        $playerRight = $this->userService->getUserById($playerRightId);
+
+        if(empty($playerLeft)){
+            throw new NotFoundHttpException('User not found');
+        }
+
+        if($currentUserId === $playerRightId){
+            throw new ConflictHttpException("You can't play against yourself");   
+        }
+
+        $updatedGame = $this->gameService->addPlayerRight($game, $playerRight);
+
+        $this->gameService->save();
+
+        return $updatedGame;
     }
 }

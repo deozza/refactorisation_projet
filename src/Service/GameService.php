@@ -48,6 +48,14 @@ class GameService
         return $this->gameRepository->find($id);
     }
 
+    public function addPlayerRight(Game $game, User $playerRight): Game
+    {
+        $game->setPlayerRight($playerRight);
+        $game->setState(GAME::STATE_ONGOING);
+
+        return $game;
+    }
+
     /**
      * @param Game|null $game
      * 
