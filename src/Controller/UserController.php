@@ -7,6 +7,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\User;
+use App\Repository\UserRepository;
 use PDO;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -15,12 +16,20 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 class UserController extends AbstractController
 {
-    #[Route('/users', name: 'liste_des_users', methods:['GET'])]
-    public function getListeDesUsers(EntityManagerInterface $entityManager): JsonResponse
+
+    private UserRepository $userRepository;
+
+    public function __construct(UserRepository $userRepository)
     {
-        $data = $entityManager->getRepository(User::class)->findAll();
+        $this->userRepository = $userRepository;
+    }
+
+    #[Route('/users', name: 'get_user_list', methods:['GET'])]
+    public function getUserList(): JsonResponse
+    {
+        $users = $this->userRepository->findAll();
         return $this->json(
-            $data,
+            $users,
             headers: ['Content-Type' => 'application/json;charset=UTF-8']
         );
     }
