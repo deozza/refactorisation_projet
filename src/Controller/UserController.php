@@ -11,6 +11,7 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 use App\UseCase\UserUseCase;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class UserController extends AbstractController
 {
@@ -50,7 +51,7 @@ class UserController extends AbstractController
         }catch(BadRequestHttpException $e){
             return $this->json(
                 $e->getMessage(),
-                $e->getCode(),
+                $e->getStatusCode(),
                 ['Content-Type' => 'application/json;charset=UTF-8']
             );
         }
@@ -70,7 +71,7 @@ class UserController extends AbstractController
         }catch(NotFoundHttpException $e){
             return $this->json(
                 $e->getMessage(),
-                $e->getCode(),
+                $e->getStatusCode(),
                 ['Content-Type' => 'application/json;charset=UTF-8']
             );
         }
@@ -90,10 +91,10 @@ class UserController extends AbstractController
                 ['Content-Type' => 'application/json;charset=UTF-8']
             );
 
-        }catch(\Exception $e){
+        }catch(HttpException $e){
             return $this->json(
                 $e->getMessage(),
-                $e->getCode(),
+                $e->getStatusCode(),
                 ['Content-Type' => 'application/json;charset=UTF-8']
             );
 
@@ -114,7 +115,7 @@ class UserController extends AbstractController
         }catch(NotFoundHttpException $e){
             return $this->json(
                 $e->getMessage(),
-                $e->getCode(),
+                $e->getStatusCode(),
                 ['Content-Type' => 'application/json;charset=UTF-8']
             );
         }
