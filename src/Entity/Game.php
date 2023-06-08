@@ -8,6 +8,10 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: GameRepository::class)]
 class Game
 {
+    const STATE_PENDING = 'pending';
+    const STATE_ONGOINg = 'ongoing';
+    const STATE_FINISHED = 'finished';
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
