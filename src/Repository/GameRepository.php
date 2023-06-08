@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Game;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -21,46 +22,25 @@ class GameRepository extends ServiceEntityRepository
         parent::__construct($registry, Game::class);
     }
 
-    public function save(Game $entity, bool $flush = false): void
+    /**
+     * @param User $player
+     * @param int $gameId
+     * 
+     * @return Game|null
+     */
+    public function getGameByEitherPlayer(User $player, int $gameId): Game | null
     {
-        $this->getEntityManager()->persist($entity);
+        $qb = $this->createQueryBuilder('g')
+            ->andWhere('p.id = :gameId')
+            ->andWhere('p.playerLeft = :player OR p.playerRight = :player');
+            
+        $qb->setParameters([
+            'gameId' => $gameId,
+            'player' => $player
+        ]);
 
-        if ($flush) {
-            $this->getEntityManager()->flush();
-        }
-    }
+        $query = $qb->getQuery();
 
-    public function remove(Game $entity, bool $flush = false): void
-    {
-        $this->getEntityManager()->remove($entity);
-
-        if ($flush) {
-            $this->getEntityManager()->flush();
-        }
-    }
-
-//    /**
-//     * @return Game[] Returns an array of Game objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('g')
-//            ->andWhere('g.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('g.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
-
-//    public function findOneBySomeField($value): ?Game
-//    {
-//        return $this->createQueryBuilder('g')
-//            ->andWhere('g.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+        return $query->setMaxResults(1)->getOneOrNullResult();
+   }
 }

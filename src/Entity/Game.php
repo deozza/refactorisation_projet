@@ -12,6 +12,10 @@ class Game
     const STATE_ONGOING = 'ongoing';
     const STATE_FINISHED = 'finished';
 
+    const RESULT_DRAW = 'draw';
+    const RESULT_WIN_LEFT = 'winLeft';
+    const RESULT_WIN_RIGHT = 'winRight';
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]

@@ -5,6 +5,9 @@ namespace App\UseCase;
 use App\Entity\Game;
 use App\Service\GameService;
 use App\Service\UserService;
+use Symfony\Component\Form\FormErrorIterator;
+use Symfony\Component\HttpFoundation\Exception\BadRequestException;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
@@ -112,5 +115,62 @@ class GameUseCase
         $this->gameService->save();
 
         return $updatedGame;
+    }
+
+    public function addChoiceToGame(int $playerId, int $gameId, array $input): Game
+    {
+        $player = $this->userService->getUserById($playerId);
+        if(empty($player)){
+            throw new UnauthorizedHttpException('User not found');
+        }
+
+        $game = $this->gameService->getGameById($gameId);
+        if(empty($game)){
+            throw new NotFoundHttpException('Game not found');
+        }
+
+        $isAPlayer = $this->gameService->checkIfUserIsAGamePlayer($player, $game);
+        if($isAPlayer === false){
+            throw new AccessDeniedHttpException('You are not a player of this game');
+        }
+
+        $playersCanPlayOnGame = $this->gameService->checkIfPlayersCanPlayOnGame($game);
+        if($playersCanPlayOnGame === false){
+            throw new ConflictHttpException('Game not started');
+        }
+
+        $playerChoice = $this->gameService->validatePlayerChoice($input);
+        if($playerChoice instanceof FormErrorIterator){
+            throw new BadRequestException('Invalid choice');
+        }
+
+        $updatedGame = $this->gameService->addPlayerChoice($game, $player, $playerChoice);
+
+        $updatedGame = $this->gameService->computeGameResult($game);
+
+        $this->gameService->save();
+        
+        return $updatedGame;
+    }
+
+    /**
+     * @param int $playerId
+     * @param int $gameId
+     */
+    public function deleteGame(int $playerId, int $gameId): void
+    {
+        $player = $this->userService->getUserById($playerId);
+
+        if(empty($player)){
+            throw new UnauthorizedHttpException('User not found');
+        }
+
+        $game = $this->gameService->getGameByEitherPlayer($player, $gameId);
+
+        if(empty($game)){
+            throw new AccessDeniedHttpException('Game not found');
+        }
+
+        $this->gameService->delete($game);
     }
 }
