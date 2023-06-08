@@ -9,7 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 class Game
 {
     const STATE_PENDING = 'pending';
-    const STATE_ONGOINg = 'ongoing';
+    const STATE_ONGOING = 'ongoing';
     const STATE_FINISHED = 'finished';
 
     #[ORM\Id]
