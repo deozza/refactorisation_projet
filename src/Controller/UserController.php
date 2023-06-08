@@ -10,9 +10,10 @@ use App\Entity\User;
 use App\UseCase\UserUseCase;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class UserController extends AbstractController
 {
@@ -49,7 +50,7 @@ class UserController extends AbstractController
                 ['Content-Type' => 'application/json;charset=UTF-8']
             );
 
-        }catch(BadRequestException $e){
+        }catch(BadRequestHttpException $e){
             return $this->json(
                 $e->getMessage(),
                 $e->getCode(),
@@ -58,18 +59,24 @@ class UserController extends AbstractController
         }
     }
 
-    #[Route('/user/{identifiant}', name: 'get_user_by_id', methods:['GET'])]
-    public function getUserWithIdentifiant($identifiant, EntityManagerInterface $entityManager): JsonResponse
+    #[Route('/user/{userId}', name: 'get_user_by_id', methods:['GET'])]
+    public function getUserByIdt(int $userId): JsonResponse
     {
-        if(ctype_digit($identifiant)){
-            $joueur = $entityManager->getRepository(User::class)->findBy(['id'=>$identifiant]);
-            if(count($joueur) == 1){
-                return new JsonResponse(array('name'=>$joueur[0]->getName(), "age"=>$joueur[0]->getAge(), 'id'=>$joueur[0]->getId()), 200);
-            }else{
-                return new JsonResponse('Wrong id', 404);
-            }
+        try{
+            $user = $this->userUseCase->getUserById($userId);
+            return $this->json(
+                $user,
+                Response::HTTP_OK,
+                ['Content-Type' => 'application/json;charset=UTF-8']
+            );
+
+        }catch(NotFoundHttpException $e){
+            return $this->json(
+                $e->getMessage(),
+                $e->getCode(),
+                ['Content-Type' => 'application/json;charset=UTF-8']
+            );
         }
-        return new JsonResponse('Wrong id', 404);
     }
 
     #[Route('/user/{identifiant}', name: 'udpate_user', methods:['PATCH'])]

@@ -48,6 +48,15 @@ class UserService
     }
 
     /**
+     * @param int $id
+     * @return User|null
+     */
+    public function getUserById(int $id): User | null 
+    {
+        return $this->userRepository->find($id);
+    }
+
+    /**
      * @param User|null $user
      */
     public function save(?User $user)

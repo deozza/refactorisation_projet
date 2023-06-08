@@ -4,12 +4,9 @@ namespace App\UseCase;
 
 use App\Service\UserService;
 use App\Entity\User;
-use App\Form\CreateUserType;
 use Symfony\Component\Form\FormErrorIterator;
-use Symfony\Component\Form\FormFactory;
-use Symfony\Component\HttpFoundation\Exception\BadRequestException;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class UserUseCase
 {
@@ -29,15 +26,36 @@ class UserUseCase
         return $this->userService->getUserList();
     }
 
+    /**
+     * @param array $input
+     * @return User
+     * @throw BadRequestHttpException 
+     */
     public function createUser(array $input): User
     {
         $result = $this->userService->validateUserCreation($input);
 
         if($result instanceof FormErrorIterator){
-            throw new BadRequestException(json_encode($result), Response::HTTP_BAD_REQUEST);
+            throw new BadRequestHttpException(json_encode($result));
         }
 
         $this->userService->save($result);
+
+        return $result;
+    }
+
+    /**
+     * @param int $id
+     * @return User
+     * @throw NotFoundHttpException 
+     */
+    public function getUserById(int $id): User
+    {
+        $result = $this->userService->getUserById($id);
+
+        if(empty($result)){
+            throw new NotFoundHttpException('Wrong id');
+        }
 
         return $result;
     }
