@@ -12,6 +12,7 @@ use App\UseCase\UserUseCase;
 use PDO;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -30,59 +31,31 @@ class UserController extends AbstractController
     {
         $users = $this->userUseCase->getUserList();
         return $this->json(
-            $users,
+            data: $users,
             headers: ['Content-Type' => 'application/json;charset=UTF-8']
         );
     }
 
-    #[Route('/users', name: 'user_post', methods:['POST'])]
-    public function createUser(Request $request,EntityManagerInterface $entityManager): JsonResponse
+    #[Route('/users', name: 'post_user', methods:['POST'])]
+    public function postUser(Request $request): JsonResponse
     {
-        if($request->getMethod() === 'POST'){
-            $data = json_decode($request->getContent(), true);
-            $form = $this->createFormBuilder()
-                ->add('nom', TextType::class, [
-                    'constraints'=>[
-                        new Assert\NotBlank(),
-                        new Assert\Length(['min'=>1, 'max'=>255])
-                    ]
-                ])
-                ->add('age', NumberType::class, [
-                    'constraints'=>[
-                        new Assert\NotBlank()
-                    ]
-                ])
-                ->getForm();
+        $dataAsArray = json_decode(json: $request->getContent(), associative: true);
 
-            $form->submit($data);
+        try{
+            $createdUser = $this->userUseCase->createUser($dataAsArray);
 
-            if($form->isValid())
-            {
-                if($data['age'] > 21){
-                    $user = $entityManager->getRepository(User::class)->findBy(['name'=>$data['nom']]);
-                    if(count($user) === 0){
-                        $joueur = new User();
-                        $joueur->setName($data['nom']);
-                        $joueur->setAge($data['age']);
-                        $entityManager->persist($joueur);
-                        $entityManager->flush();
+            return $this->json(
+                data: $createdUser,
+                status: 201,
+                headers: ['Content-Type' => 'application/json;charset=UTF-8']
+            );
 
-                        return $this->json(
-                                    $joueur,
-                                    201,
-                                    ['Content-Type' => 'application/json;charset=UTF-8']
-                                );                    
-                    }else{
-                        return new JsonResponse('Name already exists', 400);
-                    }
-                }else{
-                    return new JsonResponse('Wrong age', 400);
-                }
-            }else{
-                return new JsonResponse('Invalid form', 400);
-            }
-        }else{
-            return new JsonResponse('Wrong method', 405);
+        }catch(BadRequestException $e){
+            return $this->json(
+                data: $e->getMessage(),
+                status: $e->getCode(),
+                headers: ['Content-Type' => 'application/json;charset=UTF-8']
+            );
         }
     }
 
