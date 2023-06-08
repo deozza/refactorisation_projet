@@ -48,6 +48,12 @@ class GameService
         return $this->gameRepository->find($id);
     }
 
+    /**
+     * @param Game $game
+     * @param User $playerRight
+     * 
+     * @return Game
+     */
     public function addPlayerRight(Game $game, User $playerRight): Game
     {
         $game->setPlayerRight($playerRight);

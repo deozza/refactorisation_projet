@@ -68,6 +68,17 @@ class GameUseCase
         return $game;
     }
 
+    /**
+     * @param int $currentUserId
+     * @param int $gameId
+     * @param int $playerRight
+     * 
+     * @return Game
+     * 
+     * @throw UnauthorizedHttpException
+     * @throw NotFoundHttpException
+     * @throw ConflictHttpException
+     */
     public function addPlayerRightToGame(int $currentUserId, int $gameId, int $playerRightId): Game
     {
         $playerLeft = $this->userService->getUserById($currentUserId);
