@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\Entity\Game;
+use App\Entity\User;
 use App\Repository\GameRepository;
 
 class GameService
@@ -23,6 +24,19 @@ class GameService
         return $this->gameRepository->findAll();
     }
 
+    /**
+     * @param User $playerLeft
+     * 
+     * @return Game
+     */
+    public function initGame(User $playerLeft): Game
+    {
+        $game = new Game();
+        $game->setPlayerLeft($playerLeft);
+        $game->setState(Game::STATE_PENDING);
+
+        return $game;
+    }
 
     /**
      * @param Game|null $game

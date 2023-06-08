@@ -12,6 +12,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use Symfony\Component\Validator\Constraints as Assert;
 
 class GameController extends AbstractController
@@ -35,39 +36,25 @@ class GameController extends AbstractController
         );
     }
 
-    #[Route('/games', name: 'create_game', methods:['POST'])]
-    public function launchGame(Request $request, EntityManagerInterface $entityManager): JsonResponse
+    #[Route('/games', name: 'post_game', methods:['POST'])]
+    public function postGame(Request $request): JsonResponse
     {
         $currentUserId = $request->headers->get('X-User-Id');
 
-        if($currentUserId !== null){
-
-            if(ctype_digit($currentUserId) === false){
-                return new JsonResponse('User not found', 401);
-            }
-
-            $currentUser = $entityManager->getRepository(User::class)->find($currentUserId);
-
-            // Si l'utilisateur n'existe pas -> stop creation de partie
-            if($currentUser === null){
-                return new JsonResponse('User not found', 401);
-            }
-
-            $nouvelle_partie = new Game();
-            $nouvelle_partie->setState('pending');
-            $nouvelle_partie->setPlayerLeft($currentUser);
-
-            $entityManager->persist($nouvelle_partie);
-
-            $entityManager->flush();
+        try{
+            $createdGame = $this->gameUseCase->createGame($currentUserId);
 
             return $this->json(
-                $nouvelle_partie,
-                201,
-                headers: ['Content-Type' => 'application/json;charset=UTF-8']
+                $createdGame,
+                Response::HTTP_CREATED,
+                ['Content-Type' => 'application/json;charset=UTF-8']
             );
-        }else{
-            return new JsonResponse('User not found', 401);
+        }catch(UnauthorizedHttpException $e){
+            return $this->json(
+                $e->getMessage(),
+                $e->getStatusCode(),
+                ['Content-Type' => 'application/json;charset=UTF-8']
+            );
         }
     }
 
