@@ -28,7 +28,9 @@ class UserUseCase
 
     /**
      * @param array $input
+     * 
      * @return User
+     * 
      * @throw BadRequestHttpException 
      */
     public function createUser(array $input): User
@@ -46,7 +48,9 @@ class UserUseCase
 
     /**
      * @param int $id
+     * 
      * @return User
+     * 
      * @throw NotFoundHttpException 
      */
     public function getUserById(int $id): User
@@ -58,5 +62,52 @@ class UserUseCase
         }
 
         return $result;
+    }
+
+    /**
+     * @param int $id
+     * @param array $input
+     * 
+     * @return User|FormErrorIterator|null
+     * 
+     * @throw NotFoundHttpException
+     * @throw BadRequestHttpException
+     * 
+     */
+    public function patchUserById(int $id, array $input): User | FormErrorIterator | null 
+    {
+        $userToPatch = $this->userService->getUserById($id);
+
+        if(empty($userToPatch)){
+            throw new NotFoundHttpException('Wrong id');
+        }
+
+        $result = $this->userService->validateUserPatch($userToPatch, $input);
+
+        if($result instanceof FormErrorIterator){
+            throw new BadRequestHttpException(json_encode($result));
+        }
+
+        $this->userService->save();
+
+        return $result;
+    }
+
+    /**
+     * @param int $id
+     * 
+     * @return void
+     * 
+     * @throw NotFoundHttpException
+     */
+    public function deleteUserById(int $id): void
+    {
+        $userToDelete = $this->userService->getUserById($id);
+
+        if(empty($userToDelete)){
+            throw new NotFoundHttpException('Wrong id');
+        }
+
+        $this->userService->delete($userToDelete);
     }
 }

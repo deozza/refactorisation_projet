@@ -5,15 +5,15 @@ namespace App\Service;
 use App\Repository\UserRepository;
 use App\Entity\User;
 use Symfony\Component\Form\FormErrorIterator;
-use Symfony\Component\Form\FormFactory;
+use Symfony\Component\Form\FormFactoryInterface;
 
 class UserService
 {
 
     private UserRepository $userRepository;
-    private FormFactory $formFactory;
+    private FormFactoryInterface $formFactory;
 
-    public function __construct(UserRepository $userRepository, FormFactory $formFactory)
+    public function __construct(UserRepository $userRepository, FormFactoryInterface $formFactory)
     {
         $this->userRepository = $userRepository;
         $this->formFactory = $formFactory;
@@ -29,7 +29,6 @@ class UserService
 
     /**
      * @param array $input
-     * @param User $user
      * 
      * @return User|FormErrorIterator
      */
@@ -49,6 +48,7 @@ class UserService
 
     /**
      * @param int $id
+     * 
      * @return User|null
      */
     public function getUserById(int $id): User | null 
@@ -57,14 +57,46 @@ class UserService
     }
 
     /**
-     * @param User|null $user
+     * @param array $input
+     * 
+     * @param User $user
+     * 
+     * @return User|FormErrorIterator
      */
-    public function save(?User $user)
+    public function validateUserPatch(User $user, array $input): User | FormErrorIterator
+    {
+        $patchUserForm = $this->formFactory->create(PatchUserType::class, $user);
+        $patchUserForm->submit($input, false);
+
+        if($patchUserForm->isValid() === false){
+            return $patchUserForm->getErrors();
+        }
+
+        return $user;
+    }
+
+    /**
+     * @param User|null $user
+     * 
+     * @return void
+     */
+    public function save(?User $user = null): void
     {
         if(empty($user) === false){
             $this->userRepository->persist($user);
         }
 
         $this->userRepository->flush();
+    }
+
+    /**
+     * @param User $user
+     * 
+     * @return void
+     */
+    public function delete(User $user): void
+    {
+        $this->userRepository->remove($user);
+        $this->save();
     }
 }
