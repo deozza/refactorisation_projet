@@ -8,6 +8,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\User;
 use App\Repository\UserRepository;
+use App\UseCase\UserUseCase;
 use PDO;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -17,17 +18,17 @@ use Symfony\Component\Validator\Constraints as Assert;
 class UserController extends AbstractController
 {
 
-    private UserRepository $userRepository;
+    private UserUseCase $userUseCase;
 
-    public function __construct(UserRepository $userRepository)
+    public function __construct(UserUseCase $userUseCase)
     {
-        $this->userRepository = $userRepository;
+        $this->userUseCase = $userUseCase;
     }
 
     #[Route('/users', name: 'get_user_list', methods:['GET'])]
     public function getUserList(): JsonResponse
     {
-        $users = $this->userRepository->findAll();
+        $users = $this->userUseCase->getUserList();
         return $this->json(
             $users,
             headers: ['Content-Type' => 'application/json;charset=UTF-8']
