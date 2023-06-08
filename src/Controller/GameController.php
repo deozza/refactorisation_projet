@@ -4,23 +4,34 @@ namespace App\Controller;
 
 use App\Entity\Game;
 use App\Entity\User;
+use App\UseCase\GameUseCase;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
-
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\Constraints as Assert;
+
 class GameController extends AbstractController
 {
-    #[Route('/games', name: 'get_list_of_games', methods:['GET'])]
-    public function getPartieList(EntityManagerInterface $entityManager): JsonResponse
+
+    private GameUseCase $gameUseCase;
+
+    public function __construct(GameUseCase $gameUseCase)
     {
-        $data = $entityManager->getRepository(Game::class)->findAll();
+        $this->gameUseCase = $gameUseCase;
+    }
+
+    #[Route('/games', name: 'get_game_list', methods:['GET'])]
+    public function getGameList(): JsonResponse
+    {
+        $games = $this->gameUseCase->getGameList();
         return $this->json(
-            $data,
-            headers: ['Content-Type' => 'application/json;charset=UTF-8']
+            $games,
+            Response::HTTP_OK,
+            ['Content-Type' => 'application/json;charset=UTF-8']
         );
     }
 
