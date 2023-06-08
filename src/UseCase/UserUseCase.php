@@ -8,6 +8,7 @@ use App\Form\CreateUserType;
 use Symfony\Component\Form\FormErrorIterator;
 use Symfony\Component\Form\FormFactory;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class UserUseCase
@@ -33,7 +34,7 @@ class UserUseCase
         $result = $this->userService->validateUserCreation($input);
 
         if($result instanceof FormErrorIterator){
-            throw new BadRequestException(json_encode($result), 400);
+            throw new BadRequestException(json_encode($result), Response::HTTP_BAD_REQUEST);
         }
 
         $this->userService->save($result);

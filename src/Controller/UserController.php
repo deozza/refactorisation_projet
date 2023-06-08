@@ -7,14 +7,12 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\User;
-use App\Repository\UserRepository;
 use App\UseCase\UserUseCase;
-use PDO;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\HttpFoundation\Response;
 
 class UserController extends AbstractController
 {
@@ -31,8 +29,9 @@ class UserController extends AbstractController
     {
         $users = $this->userUseCase->getUserList();
         return $this->json(
-            data: $users,
-            headers: ['Content-Type' => 'application/json;charset=UTF-8']
+            $users,
+            Response::HTTP_OK,
+            ['Content-Type' => 'application/json;charset=UTF-8']
         );
     }
 
@@ -45,16 +44,16 @@ class UserController extends AbstractController
             $createdUser = $this->userUseCase->createUser($dataAsArray);
 
             return $this->json(
-                data: $createdUser,
-                status: 201,
-                headers: ['Content-Type' => 'application/json;charset=UTF-8']
+                $createdUser,
+                Response::HTTP_CREATED,
+                ['Content-Type' => 'application/json;charset=UTF-8']
             );
 
         }catch(BadRequestException $e){
             return $this->json(
-                data: $e->getMessage(),
-                status: $e->getCode(),
-                headers: ['Content-Type' => 'application/json;charset=UTF-8']
+                $e->getMessage(),
+                $e->getCode(),
+                ['Content-Type' => 'application/json;charset=UTF-8']
             );
         }
     }
