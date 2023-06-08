@@ -5,6 +5,7 @@ namespace App\UseCase;
 use App\Entity\Game;
 use App\Service\GameService;
 use App\Service\UserService;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class GameUseCase
@@ -44,6 +45,24 @@ class GameUseCase
         $game = $this->gameService->initGame($playerLeft);
 
         $this->gameService->save($game);
+
+        return $game;
+    }
+
+    /**
+     * @param int $id
+     * 
+     * @return Game
+     * 
+     * @throw NotFoundHttpException
+     */
+    public function getGameById(int $id): Game 
+    {
+        $game = $this->gameService->getGameById($id);
+
+        if(empty($game)){
+            throw new NotFoundHttpException('Game not found');
+        }
 
         return $game;
     }

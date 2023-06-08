@@ -39,6 +39,16 @@ class GameService
     }
 
     /**
+     * @param int $id
+     * 
+     * @return Game|null
+     */
+    public function getGameById(int $id): Game | null
+    {
+        return $this->gameRepository->find($id);
+    }
+
+    /**
      * @param Game|null $game
      * 
      * @return void

@@ -12,6 +12,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -58,22 +59,23 @@ class GameController extends AbstractController
         }
     }
 
-    #[Route('/game/{identifiant}', name: 'fetch_game', methods:['GET'])]
-    public function getGameInfo(EntityManagerInterface $entityManager, $identifiant): JsonResponse
+    #[Route('/game/{gameUd}', name: 'get_game_by_id', methods:['GET'])]
+    public function getGameById(int $gameId): JsonResponse
     {
-        if(ctype_digit($identifiant)){
-            $party = $entityManager->getRepository(Game::class)->findOneBy(['id' => $identifiant]);
+        try{
+            $game = $this->gameUseCase->getGameById($gameId);
 
-            if($party !== null){
-                return $this->json(
-                    $party,
-                    headers: ['Content-Type' => 'application/json;charset=UTF-8']
-                );
-            }else{
-                return new JsonResponse('Game not found', 404);
-            }
-        }else{
-            return new JsonResponse('Game not found', 404);
+            return $this->json(
+                $game,
+                Response::HTTP_CREATED,
+                ['Content-Type' => 'application/json;charset=UTF-8']
+            );
+        }catch(NotFoundHttpException $e){
+            return $this->json(
+                $e->getMessage(),
+                $e->getStatusCode(),
+                ['Content-Type' => 'application/json;charset=UTF-8']
+            );
         }
     }
 
