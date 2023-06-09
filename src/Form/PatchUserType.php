@@ -3,6 +3,7 @@
 namespace App\Form;
 
 use App\Entity\User;
+use App\Entity\UserInput;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -16,14 +17,14 @@ class PatchUserType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('name', TextType::class, [
+            ->add('nom', TextType::class, [
                 'constraints' => [
                     new Length(['min'=> 1, 'max' => 255])
                 ]
             ])
             ->add('age', NumberType::class, [
                 'constraints' => [
-                    new GreaterThanOrEqual(21)
+                    new GreaterThanOrEqual(User::MIN_AGE_AUTHORIZED)
                 ]
             ])
         ;
@@ -32,7 +33,7 @@ class PatchUserType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => User::class,
+            'data_class' => UserInput::class,
         ]);
     }
 }

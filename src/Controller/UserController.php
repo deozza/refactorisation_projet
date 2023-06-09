@@ -38,7 +38,9 @@ class UserController extends AbstractController
     public function postUser(Request $request): JsonResponse
     {
         $dataAsArray = json_decode(json: $request->getContent(), associative: true);
-
+        if($dataAsArray === null){
+            $dataAsArray = [];
+        }
         try{
             $createdUser = $this->userUseCase->createUser($dataAsArray);
 
@@ -57,8 +59,8 @@ class UserController extends AbstractController
         }
     }
 
-    #[Route('/user/{userId}', name: 'get_user_by_id', methods:['GET'])]
-    public function getUserByIdt(int $userId): JsonResponse
+    #[Route('/user/{userId}', name: 'get_user_by_id', methods:['GET'], requirements:['userId' => '\d+'])]
+    public function getUserById(int $userId): JsonResponse
     {
         try{
             $user = $this->userUseCase->getUserById($userId);
@@ -77,11 +79,13 @@ class UserController extends AbstractController
         }
     }
 
-    #[Route('/user/{userId}', name: 'patch_user_by_id', methods:['PATCH'])]
+    #[Route('/user/{userId}', name: 'patch_user_by_id', methods:['PATCH'], requirements:['userId' => '\d+'])]
     public function patchUserById(int $userId, Request $request): JsonResponse
     {
         $dataAsArray = json_decode(json: $request->getContent(), associative: true);
-
+        if($dataAsArray === null){
+            $dataAsArray = [];
+        }
         try{
             $patchedUser = $this->userUseCase->patchUserById($userId, $dataAsArray);
 
@@ -101,7 +105,7 @@ class UserController extends AbstractController
         }
     }
 
-    #[Route('/user/{userId}', name: 'delete_user_by_id', methods:['DELETE'])]
+    #[Route('/user/{userId}', name: 'delete_user_by_id', methods:['DELETE'], requirements:['userId' => '\d+'])]
     public function deleteUserById(int $userId): JsonResponse
     {
         try{

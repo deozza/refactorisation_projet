@@ -38,7 +38,7 @@ class UserUseCase
         $result = $this->userService->validateUserCreation($input);
 
         if($result instanceof FormErrorIterator){
-            throw new BadRequestHttpException(json_encode($result));
+            throw new BadRequestHttpException($result);
         }
 
         $this->userService->save($result);
