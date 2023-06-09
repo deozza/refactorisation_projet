@@ -10,15 +10,15 @@ class GameControllerTest extends WebTestCase
     use RecreateDatabaseTrait;
 
     /**
-     * @dataProvider dataprovider_getPartieList_checkAuthorizedMethods
+     * @dataProvider dataprovider_getGameList_checkAuthorizedMethods
      */
-    public function test_getPartieList_checkAuthorizedMethods($method){
+    public function test_getGameList_checkAuthorizedMethods($method){
         $client = static::createClient();
         $client->request($method, '/games');
         $this->assertEquals(405, $client->getResponse()->getStatusCode());
     }
 
-    private static function dataprovider_getPartieList_checkAuthorizedMethods(): array
+    private static function dataprovider_getGameList_checkAuthorizedMethods(): array
     {
         return [
             ['PUT'],
@@ -27,32 +27,32 @@ class GameControllerTest extends WebTestCase
         ];
     }
 
-     public function test_getPartieList_checkReturnStatus(){
+     public function test_getGameList_checkReturnStatus(){
         $client = static::createClient();
         $client->request('GET', '/games');
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
     }
 
-    public function test_getPartieList_checkValues(){
+    public function test_getGameList_checkValues(){
         $client = static::createClient();
         $client->request('GET', '/games');
 
         $content = json_decode($client->getResponse()->getContent());
 
-        $expectedResult = json_decode(file_get_contents(__DIR__.'/expect/test_getPartieList_checkValues.json'));
+        $expectedResult = json_decode(file_get_contents(__DIR__.'/expect/test_getGameList_checkValues.json'));
         $this->assertEquals($expectedResult, $content);
     }
 
     /**
-     * @dataProvider dataprovider_getGameInfo_checkAuthorizedMethods
+     * @dataProvider dataprovider_getGameById_checkAuthorizedMethods
      */
-    public function test_getGameInfo_checkAuthorizedMethods(string $method){
+    public function test_getGameById_checkAuthorizedMethods(string $method){
         $client = static::createClient();
         $client->request($method, '/game/1');
         $this->assertEquals(405, $client->getResponse()->getStatusCode());
     }
 
-    private static function dataprovider_getGameInfo_checkAuthorizedMethods(): array
+    private static function dataprovider_getGameById_checkAuthorizedMethods(): array
     {
         return [
             ['POST'],
@@ -61,15 +61,15 @@ class GameControllerTest extends WebTestCase
     }
 
     /**
-     * @dataProvider dataprovider_getGameInfo_checkWithInvalidId
+     * @dataProvider dataprovider_getGameById_checkWithInvalidId
      */
-    public function test_getGameInfo_checkWithInvalidId($id){
+    public function test_getGameById_checkWithInvalidId($id){
         $client = static::createClient();
         $client->request('GET', '/game/'.$id);
         $this->assertEquals(404, $client->getResponse()->getStatusCode());
     }
 
-    private static function dataprovider_getGameInfo_checkWithInvalidId(): array
+    private static function dataprovider_getGameById_checkWithInvalidId(): array
     {
         return [
             [0],
@@ -78,13 +78,13 @@ class GameControllerTest extends WebTestCase
         ];
     }
 
-    public function test_getGameInfo_checkReturnStatus(){
+    public function test_getGameById_checkReturnStatus(){
         $client = static::createClient();
         $client->request('GET', '/game/1');
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
     }
 
-    public function test_getGameInfo_checkValues(){
+    public function test_getGameById_checkValues(){
         $client = static::createClient();
         $client->request('GET', '/game/4');
 
@@ -92,22 +92,22 @@ class GameControllerTest extends WebTestCase
         $this->assertJsonStringEqualsJsonString('{"id":4,"state":"finished","playLeft":"paper","playRight":"scissors","result":"winLeft","playerLeft":{"id":1,"name":"John","age":25},"playerRight":{"id":2,"name":"Jane","age":22}}', $content);
     }
 
-    public function test_launchGame_checkStatusWithoutUserParam(){
+    public function test_postGame_checkStatusWithoutUserParam(){
         $client = static::createClient();
         $client->request('POST', '/games');
         $this->assertEquals(401, $client->getResponse()->getStatusCode());
     }
 
     /**
-     * @dataProvider dataprovider_launchGame_checkStatusWithInvalidUserParam
+     * @dataProvider dataprovider_postGame_checkStatusWithInvalidUserParam
      */
-    public function test_launchGame_checkStatusWithInvalidUserParam($userParam){
+    public function test_postGame_checkStatusWithInvalidUserParam($userParam){
         $client = static::createClient([], ['HTTP_X_USER_ID' => $userParam]);
         $client->request('POST', '/games');
         $this->assertEquals(401, $client->getResponse()->getStatusCode());
     }
 
-    private static function dataprovider_launchGame_checkStatusWithInvalidUserParam(): array
+    private static function dataprovider_postGame_checkStatusWithInvalidUserParam(): array
     {
         return [
             [''],
@@ -117,13 +117,13 @@ class GameControllerTest extends WebTestCase
         ];
     }
 
-    public function test_launchGame_checkStatusWhenValid(){
+    public function test_postGame_checkStatusWhenValid(){
         $client = static::createClient([], ['HTTP_X_USER_ID' => 1]);
         $client->request('POST', '/games');
         $this->assertEquals(201, $client->getResponse()->getStatusCode());
     }
 
-    public function test_launchGame_checkValuesWhenValid(){
+    public function test_postGame_checkValuesWhenValid(){
         $client = static::createClient([], ['HTTP_X_USER_ID' => 1]);
         $client->request('POST', '/games');
 
@@ -140,7 +140,7 @@ class GameControllerTest extends WebTestCase
     /**
      * @dataProvider dataprovider_inviteToGane_checkAuthorizedMethods
      */
-    public function test_inviteToGame_checkAuthorizedMethods($method){
+    public function test_addPlayerRightToGame_checkAuthorizedMethods($method){
         $client = static::createClient();
         $client->request($method, '/game/1/add/2');
         $this->assertEquals(405, $client->getResponse()->getStatusCode());
@@ -157,15 +157,15 @@ class GameControllerTest extends WebTestCase
     }
 
     /**
-     * @dataProvider dataprovider_inviteToGame_checkWithInvalidAuth
+     * @dataProvider dataprovider_addPlayerRightToGame_checkWithInvalidAuth
      */
-    public function test_inviteToGame_checkWithInvalidAuth($id){
+    public function test_addPlayerRightToGame_checkWithInvalidAuth($id){
         $client = static::createClient([], ['HTTP_X_USER_ID' => $id]);
         $client->request('PATCH', '/game/1/add/2');
         $this->assertEquals(401, $client->getResponse()->getStatusCode());
     }
 
-    private static function dataprovider_inviteToGame_checkWithInvalidAuth(): array
+    private static function dataprovider_addPlayerRightToGame_checkWithInvalidAuth(): array
     {
         return [
             [''],
@@ -176,15 +176,15 @@ class GameControllerTest extends WebTestCase
     }
 
     /**
-     * @dataProvider dataprovider_inviteToGame_checkWithInvalidGameId
+     * @dataProvider dataprovider_addPlayerRightToGame_checkWithInvalidGameId
      */
-    public function test_inviteToGame_checkWithInvalidGameId($id){
+    public function test_addPlayerRightToGame_checkWithInvalidGameId($id){
         $client = static::createClient([], ['HTTP_X_USER_ID' => 1]);
         $client->request('PATCH', '/game/'.$id.'/add/2');
         $this->assertEquals(404, $client->getResponse()->getStatusCode());
     }
 
-    private static function dataprovider_inviteToGame_checkWithInvalidGameId(): array
+    private static function dataprovider_addPlayerRightToGame_checkWithInvalidGameId(): array
     {
         return [
             ['a'],
@@ -195,15 +195,15 @@ class GameControllerTest extends WebTestCase
     }
 
     /**
-     * @dataProvider dataprovider_inviteToGame_checkWithInvalidGameStatus
+     * @dataProvider dataprovider_addPlayerRightToGame_checkWithInvalidGameStatus
      */
-    public function test_inviteToGame_checkWithInvalidGameStatus($id){
+    public function test_addPlayerRightToGame_checkWithInvalidGameStatus($id){
         $client = static::createClient([], ['HTTP_X_USER_ID' => 1]);
         $client->request('PATCH', '/game/'.$id.'/add/2');
         $this->assertEquals(409, $client->getResponse()->getStatusCode());
     }
 
-    private static function dataprovider_inviteToGame_checkWithInvalidGameStatus(): array
+    private static function dataprovider_addPlayerRightToGame_checkWithInvalidGameStatus(): array
     {
         return [
             [2],
@@ -212,15 +212,15 @@ class GameControllerTest extends WebTestCase
     }
 
     /**
-     * @dataProvider dataprovider_inviteToGame_checkWithInvalidPlayerRight
+     * @dataProvider dataprovider_addPlayerRightToGame_checkWithInvalidPlayerRight
      */
-    public function test_inviteToGame_checkWithInvalidPlayerRight($id){
+    public function test_addPlayerRightToGame_checkWithInvalidPlayerRight($id){
         $client = static::createClient([], ['HTTP_X_USER_ID' => 1]);
         $client->request('PATCH', '/game/1/add/'.$id);
         $this->assertEquals(404, $client->getResponse()->getStatusCode());
     }
 
-    private static function dataprovider_inviteToGame_checkWithInvalidPlayerRight(): array
+    private static function dataprovider_addPlayerRightToGame_checkWithInvalidPlayerRight(): array
     {
         return [
             ['a'],
@@ -230,19 +230,19 @@ class GameControllerTest extends WebTestCase
         ];
     }
 
-    public function test_inviteToGame_checkWithDuplicatePlayer(){
+    public function test_addPlayerRightToGame_checkWithDuplicatePlayer(){
         $client = static::createClient([], ['HTTP_X_USER_ID' => 1]);
         $client->request('PATCH', '/game/1/add/1');
         $this->assertEquals(409, $client->getResponse()->getStatusCode());
     }
 
-    public function test_inviteToGame_checkValidStatusCode(){
+    public function test_addPlayerRightToGame_checkValidStatusCode(){
         $client = static::createClient([], ['HTTP_X_USER_ID' => 1]);
         $client->request('PATCH', '/game/1/add/2');
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
     }
 
-    public function test_inviteToGame_checkValidValues(){
+    public function test_addPlayerRightToGame_checkValidValues(){
         $client = static::createClient([], ['HTTP_X_USER_ID' => 1]);
         $client->request('PATCH', '/game/1/add/2');
 
@@ -257,15 +257,15 @@ class GameControllerTest extends WebTestCase
     }
 
     /**
-     * @dataProvider dataprovider_play_checkWithInvalidAuth
+     * @dataProvider dataprovider_addChoiceToGame_checkWithInvalidAuth
      */
-    public function test_play_checkWithInvalidAuth($id){
+    public function test_addChoiceToGame_checkWithInvalidAuth($id){
         $client = static::createClient([], ['HTTP_X_USER_ID' => $id]);
         $client->request('PATCH', '/game/2');
         $this->assertEquals(401, $client->getResponse()->getStatusCode());
     }
 
-    private static function dataprovider_play_checkWithInvalidAuth(): array
+    private static function dataprovider_addChoiceToGame_checkWithInvalidAuth(): array
     {
         return [
             [''],
@@ -277,15 +277,15 @@ class GameControllerTest extends WebTestCase
     }
 
     /**
-     * @dataProvider dataprovider_play_checkWithGameNotFound
+     * @dataProvider dataprovider_addChoiceToGame_checkWithGameNotFound
      */
-    public function test_play_checkWithGameNotFound($id){
+    public function test_addChoiceToGame_checkWithGameNotFound($id){
         $client = static::createClient([], ['HTTP_X_USER_ID' => 1]);
         $client->request('PATCH', '/game/'.$id);
         $this->assertEquals(404, $client->getResponse()->getStatusCode());
     }
 
-    private static function dataprovider_play_checkWithGameNotFound(): array
+    private static function dataprovider_addChoiceToGame_checkWithGameNotFound(): array
     {
         return [
             ['a'],
@@ -296,15 +296,15 @@ class GameControllerTest extends WebTestCase
     }
 
     /**
-     * @dataProvider dataprovider_play_checkWithForbiddenGame
+     * @dataProvider dataprovider_addChoiceToGame_checkWithForbiddenGame
      */
-    public function test_play_checkWithForbiddenGame($id){
+    public function test_addChoiceToGame_checkWithForbiddenGame($id){
         $client = static::createClient([], ['HTTP_X_USER_ID' => 3]);
         $client->request('PATCH', '/game/2');
         $this->assertEquals(403, $client->getResponse()->getStatusCode());
     }
 
-    private static function dataprovider_play_checkWithForbiddenGame(): array
+    private static function dataprovider_addChoiceToGame_checkWithForbiddenGame(): array
     {
         return [
             [1],
@@ -312,25 +312,25 @@ class GameControllerTest extends WebTestCase
         ];
     }
 
-    public function test_play_checkWithGameNotStarted(){
+    public function test_addChoiceToGame_checkWithGameNotStarted(){
         $client = static::createClient([], ['HTTP_X_USER_ID' => 1]);
         $client->request('PATCH', '/game/1');
         $this->assertEquals(409, $client->getResponse()->getStatusCode());
     }
 
-    public function test_play_checkWithInvalidChoice(){
+    public function test_addChoiceToGame_checkWithInvalidChoice(){
         $client = static::createClient([], ['HTTP_X_USER_ID' => 1]);
         $client->request('PATCH', '/game/2', [], [], ['CONTENT_TYPE' => 'application/json'], '{"choice":"invalid"}');
         $this->assertEquals(400, $client->getResponse()->getStatusCode());
     }
 
-    public function test_play_checkValidStatusCode(){
+    public function test_addChoiceToGame_checkValidStatusCode(){
         $client = static::createClient([], ['HTTP_X_USER_ID' => 1]);
         $client->request('PATCH', '/game/2', [], [], ['CONTENT_TYPE' => 'application/json'], '{"choice":"rock"}');
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
     }
 
-    public function test_play_checkValidValuesForFirstTurn(){
+    public function test_addChoiceToGame_checkValidValuesForFirstTurn(){
         $client = static::createClient([], ['HTTP_X_USER_ID' => 1]);
         $client->request('PATCH', '/game/2', [], [], ['CONTENT_TYPE' => 'application/json'], '{"choice":"rock"}');
 
@@ -350,9 +350,9 @@ class GameControllerTest extends WebTestCase
     }
 
     /**
-     * @dataProvider dataprovider_play_checkValidValuesWithGameResult
+     * @dataProvider dataprovider_addChoiceToGame_checkValidValuesWithGameResult
      */
-    public function test_play_checkValidValuesWithGameResult($choice, $expectedResult){
+    public function test_addChoiceToGame_checkValidValuesWithGameResult($choice, $expectedResult){
         $client = static::createClient([], ['HTTP_X_USER_ID' => 2]);
         $client->request('PATCH', '/game/3', [], [], ['CONTENT_TYPE' => 'application/json'], '{"choice":"'.$choice.'"}');
 
@@ -370,7 +370,7 @@ class GameControllerTest extends WebTestCase
         $this->assertEquals($expectedResult, $content->result);
     }
 
-    private static function dataprovider_play_checkValidValuesWithGameResult(): array
+    private static function dataprovider_addChoiceToGame_checkValidValuesWithGameResult(): array
     {
         return [
             ['rock', 'winRight'],
