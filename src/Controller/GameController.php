@@ -124,13 +124,13 @@ class GameController extends AbstractController
             );
         }
 
-        $inputAsArray = json_decode($request->getContent(), true);
-        if($inputAsArray === null){
-            $inputAsArray = [];
+        $dataAsArray = json_decode($request->getContent(), true);
+        if($dataAsArray === null){
+            $dataAsArray = [];
         }
 
         try{
-            $updatedGame = $this->gameUseCase->addChoiceToGame($currentUserId, $gameId, $inputAsArray);
+            $updatedGame = $this->gameUseCase->addChoiceToGame($currentUserId, $gameId, $dataAsArray);
             return $this->json(
                 $updatedGame,
                 Response::HTTP_OK,
@@ -146,7 +146,7 @@ class GameController extends AbstractController
     }
 
     #[Route('/game/{gameId}', name: 'delete_game', methods:['DELETE'], requirements:['gameId' => '\d+'])]
-    public function deleteGame(Request $request, int $gameId): JsonResponse
+    public function deleteGameById(Request $request, int $gameId): JsonResponse
     {
         $currentUserId = $request->headers->get('X-User-Id');
 
