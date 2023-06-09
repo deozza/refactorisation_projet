@@ -380,15 +380,15 @@ class GameControllerTest extends WebTestCase
     }
 
     /**
-     * @dataProvider dataprovider_deleteGame_checkWithInvalidAuth
+     * @dataProvider dataprovider_deleteGameById_checkWithInvalidAuth
      */
-    public function test_deleteGame_checkWithInvalidAuth($id){
+    public function test_deleteGameById_checkWithInvalidAuth($id){
         $client = static::createClient([], ['HTTP_X_USER_ID' => $id]);
         $client->request('DELETE', '/game/1');
         $this->assertEquals(401, $client->getResponse()->getStatusCode());
     }
 
-    private static function dataprovider_deleteGame_checkWithInvalidAuth(): array
+    private static function dataprovider_deleteGameById_checkWithInvalidAuth(): array
     {
         return [
             [''],
@@ -400,15 +400,15 @@ class GameControllerTest extends WebTestCase
     }
 
     /**
-     * @dataProvider dataprovider_deleteGame_checkWithGameNotFound
+     * @dataProvider dataprovider_deleteGameById_checkWithGameNotFound
      */
-    public function test_deleteGame_checkWithGameNotFound($id){
+    public function test_deleteGameById_checkWithGameNotFound($id){
         $client = static::createClient([], ['HTTP_X_USER_ID' => 1]);
         $client->request('DELETE', '/game/'.$id);
         $this->assertEquals(404, $client->getResponse()->getStatusCode());
     }
 
-    private static function dataprovider_deleteGame_checkWithGameNotFound(): array
+    private static function dataprovider_deleteGameById_checkWithGameNotFound(): array
     {
         return [
             ['a'],
@@ -416,25 +416,25 @@ class GameControllerTest extends WebTestCase
         ];
     }
 
-    public function test_deleteGame_checkWithForbiddenGame(){
+    public function test_deleteGameById_checkWithForbiddenGame(){
         $client = static::createClient([], ['HTTP_X_USER_ID' => 3]);
         $client->request('DELETE', '/game/1');
         $this->assertEquals(403, $client->getResponse()->getStatusCode());
     }
 
     /**
-     * @dataProvider dataprovider_deleteGame_checkValid
+     * @dataProvider dataprovider_deleteGameById_checkValid
      */
-    public function test_deleteGame_checkValidStatusCode($id){
+    public function test_deleteGameById_checkValidStatusCode($id){
         $client = static::createClient([], ['HTTP_X_USER_ID' => $id]);
         $client->request('DELETE', '/game/2');
         $this->assertEquals(204, $client->getResponse()->getStatusCode());
     }
 
     /**
-     * @dataProvider dataprovider_deleteGame_checkValid
+     * @dataProvider dataprovider_deleteGameById_checkValid
      */
-    public function test_deleteGame_checkGameIsDeleted($id){
+    public function test_deleteGameById_checkGameIsDeleted($id){
         $client = static::createClient([], ['HTTP_X_USER_ID' => $id]);
         $client->request('DELETE', '/game/2');
         $this->assertEquals(204, $client->getResponse()->getStatusCode());
@@ -443,7 +443,7 @@ class GameControllerTest extends WebTestCase
         $this->assertEquals(404, $client->getResponse()->getStatusCode());
     }
 
-    private static function dataprovider_deleteGame_checkValid(): array
+    private static function dataprovider_deleteGameById_checkValid(): array
     {
         return [
             [1],
