@@ -31,8 +31,8 @@ class GameRepository extends ServiceEntityRepository
     public function getGameByEitherPlayer(User $player, int $gameId): Game | null
     {
         $qb = $this->createQueryBuilder('g')
-            ->andWhere('p.id = :gameId')
-            ->andWhere('p.playerLeft = :player OR p.playerRight = :player');
+            ->andWhere('g.id = :gameId')
+            ->andWhere('g.playerLeft = :player OR g.playerRight = :player');
             
         $qb->setParameters([
             'gameId' => $gameId,
@@ -43,4 +43,29 @@ class GameRepository extends ServiceEntityRepository
 
         return $query->setMaxResults(1)->getOneOrNullResult();
    }
+
+       /**
+     * @param Game|null $game
+     * 
+     * @return void
+     */
+    public function save(?Game $game = null)
+    {
+        if(empty($game) === false){
+            $this->getEntityManager()->persist($game);
+        }
+
+        $this->getEntityManager()->flush();
+    }
+   
+    /**
+     * @param Game $game
+     * 
+     * @return void
+     */
+    public function delete(Game $game): void
+    {
+        $this->getEntityManager()->remove($game);
+        $this->save();
+    }
 }

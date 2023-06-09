@@ -102,7 +102,7 @@ class GameUseCase
         
         $playerRight = $this->userService->getUserById($playerRightId);
 
-        if(empty($playerLeft)){
+        if(empty($playerRight)){
             throw new NotFoundHttpException('User not found');
         }
 

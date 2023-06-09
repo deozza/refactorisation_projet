@@ -116,7 +116,7 @@ class GameService
             return $playerChoiceOnGameForm->getErrors();
         }
 
-        return $playerChoiceOnGameForm;
+        return $playerChoiceOnGame;
     }
 
     /**
@@ -137,6 +137,11 @@ class GameService
         return $game;
     }
 
+    /**
+     * @param Game $game
+     * 
+     * @return Game
+     */
     public function computeGameResult(Game $game): Game
     {
         if(empty($game->getPlayLeft()) || empty($game->getPlayRight())){
@@ -174,11 +179,7 @@ class GameService
      */
     public function save(?Game $game = null): void
     {
-        if(empty($game) === false){
-            $this->gameRepository->persist($game);
-        }
-
-        $this->gameRepository->flush();
+        $this->gameRepository->save($game);
     }
 
     /**
@@ -188,7 +189,6 @@ class GameService
      */
     public function delete(Game $game): void
     {
-        $this->gameRepository->remove($game);
-        $this->save();
+        $this->gameRepository->delete($game);
     }
 }

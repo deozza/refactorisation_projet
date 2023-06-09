@@ -2,20 +2,15 @@
 
 namespace App\Controller;
 
-use App\Entity\Game;
-use App\Entity\User;
 use App\UseCase\GameUseCase;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
-use Symfony\Component\Validator\Constraints as Assert;
 
 class GameController extends AbstractController
 {
@@ -43,6 +38,14 @@ class GameController extends AbstractController
     {
         $currentUserId = $request->headers->get('X-User-Id');
 
+        if($this->checkUserHasToken($currentUserId) === false){
+            return $this->json(
+                'User not Found',
+                Response::HTTP_UNAUTHORIZED,
+                ['Content-Type' => 'application/json;charset=UTF-8']
+            );
+        }
+
         try{
             $createdGame = $this->gameUseCase->createGame($currentUserId);
 
@@ -60,7 +63,7 @@ class GameController extends AbstractController
         }
     }
 
-    #[Route('/game/{gameUd}', name: 'get_game_by_id', methods:['GET'])]
+    #[Route('/game/{gameId}', name: 'get_game_by_id', methods:['GET'], requirements:['gameId' => '\d+'])]
     public function getGameById(int $gameId): JsonResponse
     {
         try{
@@ -68,7 +71,7 @@ class GameController extends AbstractController
 
             return $this->json(
                 $game,
-                Response::HTTP_CREATED,
+                Response::HTTP_OK,
                 ['Content-Type' => 'application/json;charset=UTF-8']
             );
         }catch(NotFoundHttpException $e){
@@ -80,10 +83,18 @@ class GameController extends AbstractController
         }
     }
 
-    #[Route('/game/{gameId}/add/{playerRightId}', name: 'add_player_right_to_game', methods:['PATCH'])]
+    #[Route('/game/{gameId}/add/{playerRightId}', name: 'add_player_right_to_game', methods:['PATCH'], requirements:['gameId' => '\d+', 'playerRightId' => '\d+'])]
     public function addPlayerRightToGame(Request $request, int $gameId, int $playerRightId): JsonResponse
     {
         $currentUserId = $request->headers->get('X-User-Id');
+
+        if($this->checkUserHasToken($currentUserId) === false){
+            return $this->json(
+                'User not Found',
+                Response::HTTP_UNAUTHORIZED,
+                ['Content-Type' => 'application/json;charset=UTF-8']
+            );
+        }
 
         try{
             $updatedGame = $this->gameUseCase->addPlayerRightToGame($currentUserId, $gameId, $playerRightId);
@@ -101,11 +112,22 @@ class GameController extends AbstractController
         }
     }
 
-    #[Route('/game/{gameId}', name: 'add_choice_to_game', methods:['PATCH'])]
+    #[Route('/game/{gameId}', name: 'add_choice_to_game', methods:['PATCH'], requirements:['gameId' => '\d+'])]
     public function addChoiceToGame(Request $request, int $gameId): JsonResponse
     {
         $currentUserId = $request->headers->get('X-User-Id');
+        if($this->checkUserHasToken($currentUserId) === false){
+            return $this->json(
+                'User not Found',
+                Response::HTTP_UNAUTHORIZED,
+                ['Content-Type' => 'application/json;charset=UTF-8']
+            );
+        }
+
         $inputAsArray = json_decode($request->getContent(), true);
+        if($inputAsArray === null){
+            $inputAsArray = [];
+        }
 
         try{
             $updatedGame = $this->gameUseCase->addChoiceToGame($currentUserId, $gameId, $inputAsArray);
@@ -123,10 +145,18 @@ class GameController extends AbstractController
         }
     }
 
-    #[Route('/game/{gameId}', name: 'delete_game', methods:['DELETE'])]
+    #[Route('/game/{gameId}', name: 'delete_game', methods:['DELETE'], requirements:['gameId' => '\d+'])]
     public function deleteGame(Request $request, int $gameId): JsonResponse
     {
         $currentUserId = $request->headers->get('X-User-Id');
+
+        if($this->checkUserHasToken($currentUserId) === false){
+            return $this->json(
+                'User not Found',
+                Response::HTTP_UNAUTHORIZED,
+                ['Content-Type' => 'application/json;charset=UTF-8']
+            );
+        }
 
         try{
             $this->gameUseCase->deleteGame($currentUserId, $gameId);
@@ -143,5 +173,19 @@ class GameController extends AbstractController
                 ['Content-Type' => 'application/json;charset=UTF-8']
             );
         }
+    }
+
+    /**
+     * @param $currentUserId
+     * 
+     * @return bool
+     */
+    private function checkUserHasToken($currentUserId): bool
+    {
+        if($currentUserId === null || ctype_digit($currentUserId) === false){
+            return false;
+        }
+
+        return true;
     }
 }
