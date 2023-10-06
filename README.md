@@ -58,3 +58,4 @@ composer reset-db
 # Lance tous les tests disponibles. Le script s'arrête lorsqu'une erreur est rencontrée. Ne pas prendre en compte les warnings
 bin/phpunit
 ```
+test
