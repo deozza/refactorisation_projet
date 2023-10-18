@@ -12,6 +12,9 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 
 use Symfony\Component\Validator\Constraints as Assert;
+
+//Test_modif_Julie
+
 class GameController extends AbstractController
 {
     #[Route('/games', name: 'get_list_of_games', methods:['GET'])]
