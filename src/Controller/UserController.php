@@ -8,8 +8,6 @@ use Symfony\Component\Routing\Annotation\Route;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\User;
 use PDO;
-use Symfony\Component\Form\Extension\Core\Type\NumberType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -30,19 +28,7 @@ class UserController extends AbstractController
     {
         if($request->getMethod() === 'POST'){
             $data = json_decode($request->getContent(), true);
-            $form = $this->createFormBuilder()
-                ->add('nom', TextType::class, [
-                    'constraints'=>[
-                        new Assert\NotBlank(),
-                        new Assert\Length(['min'=>1, 'max'=>255])
-                    ]
-                ])
-                ->add('age', NumberType::class, [
-                    'constraints'=>[
-                        new Assert\NotBlank()
-                    ]
-                ])
-                ->getForm();
+            $form = $this->createForm(UserType::class,$user);
 
             $form->submit($data);
 
