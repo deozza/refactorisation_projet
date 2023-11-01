@@ -11,10 +11,13 @@ use PDO;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Constraints as Assert;
 
+use App\Form\Type\CreateUserType;
+use App\Form\Type\UpdateUserType;
+
 class UserController extends AbstractController
 {
-    #[Route('/users', name: 'liste_des_users', methods:['GET'])]
-    public function getListeDesUsers(EntityManagerInterface $entityManager): JsonResponse
+    #[Route('/users', name: 'list_users', methods:['GET'])]
+    public function listUsers(EntityManagerInterface $entityManager): JsonResponse
     {
         $data = $entityManager->getRepository(User::class)->findAll();
         return $this->json(
@@ -23,12 +26,13 @@ class UserController extends AbstractController
         );
     }
 
-    #[Route('/users', name: 'user_post', methods:['POST'])]
-    public function createUser(Request $request,EntityManagerInterface $entityManager): JsonResponse
+    #[Route('/users', name: 'create_user', methods:['POST'])]
+    public function createUser(Request $request, EntityManagerInterface $entityManager): JsonResponse
     {
         if($request->getMethod() === 'POST'){
             $data = json_decode($request->getContent(), true);
-            $form = $this->createForm(UserType::class,$user);
+
+            $form = $this->createForm(CreateUserType::class, $user);
 
             $form->submit($data);
 
@@ -36,15 +40,15 @@ class UserController extends AbstractController
             {
                 if($data['age'] > 21){
                     $user = $entityManager->getRepository(User::class)->findBy(['name'=>$data['nom']]);
-                    if(count($user) === 0){
-                        $joueur = new User();
-                        $joueur->setName($data['nom']);
-                        $joueur->setAge($data['age']);
-                        $entityManager->persist($joueur);
+                    if(!$user){
+                        $newUser = new User();
+                        $newUser->setName($data['nom']);
+                        $newUser->setAge($data['age']);
+                        $entityManager->persist($newUser);
                         $entityManager->flush();
 
                         return $this->json(
-                                    $joueur,
+                                    $newUser,
                                     201,
                                     ['Content-Type' => 'application/json;charset=UTF-8']
                                 );                    
@@ -62,117 +66,40 @@ class UserController extends AbstractController
         }
     }
 
-    #[Route('/user/{identifiant}', name: 'get_user_by_id', methods:['GET'])]
-    public function getUserWithIdentifiant($identifiant, EntityManagerInterface $entityManager): JsonResponse
+    #[Route('/user/{id}', name: 'get_user_by_id', methods:['GET'])]
+    public function getUserById($id, EntityManagerInterface $entityManager): JsonResponse
     {
-        if(ctype_digit($identifiant)){
-            $joueur = $entityManager->getRepository(User::class)->findBy(['id'=>$identifiant]);
-            if(count($joueur) == 1){
-                return new JsonResponse(array('name'=>$joueur[0]->getName(), "age"=>$joueur[0]->getAge(), 'id'=>$joueur[0]->getId()), 200);
+        if(ctype_digit($id)){
+            $user = $entityManager->getRepository(User::class)->find($id);
+            if($user){
+                return new JsonResponse(array('name'=>$user->getName(), "age"=>$user->getAge(), 'id'=>$user->getId()), 200);
             }else{
-                return new JsonResponse('Wrong id', 404);
+                return new JsonResponse('User not found', 404);
             }
         }
-        return new JsonResponse('Wrong id', 404);
+        return new JsonResponse('Invalid ID', 400);
     }
 
-    #[Route('/user/{identifiant}', name: 'udpate_user', methods:['PATCH'])]
-    public function updateUser(EntityManagerInterface $entityManager, $identifiant, Request $request): JsonResponse
+    #[Route('/user/{id}', name: 'udpate_user', methods:['PATCH'])]
+    public function updateUser(EntityManagerInterface $entityManager, $id, Request $request): JsonResponse
     {
-        $joueur = $entityManager->getRepository(User::class)->findBy(['id'=>$identifiant]);
+        $user = $entityManager->getRepository(User::class)->find($id);
 
-
-        if(count($joueur) == 1){
-
-            // ETO 01/05/2023 on n'utilise plus le put
-            // on est passé au patch
-            // parce que c'etait plus simple a utiliser
-            /*
-            if($request->getMethod() == 'PUT'){
-                $data = json_decode($request->getContent(), true);
-
-                $form = $this->createFormBuilder()
-                    ->add('nom', TextType::class)
-                    ->add('age', NumberType::class)
-                    ->getForm();
-
-                $form->submit($data);
-
-                if($form->isValid()) {
-                    if($data['age'] > 21){
-                        $user = $entityManager->getRepository(User::class)->findBy(['name'=>$data['nom']]);
-                        if(count($user) === 0){
-                            $joueur->setName($data['nom']);
-                            $joueur->setAge($data['age']);
-                            $entityManager->persist($joueur);
-                            $entityManager->flush();
-
-                            return new JsonResponse($joueur, 200);
-                        }else{
-                            return new JsonResponse('Name already exists', 400);
-                        }
-                    }else{
-                        return new JsonResponse('Wrong age', 400);
-                    }
-                }else{
-                    return new JsonResponse('Invalid form', 400);
-                }
-            }elseif($request->getMethod() == 'PATCH'){
-                $data = json_decode($request->getContent(), true);
-                $form = $this->createFormBuilder()
-                    ->add('nom', TextType::class, array(
-                        'required'=>false
-                    ))
-                    ->add('age', NumberType::class, [
-                        'required' => false
-                    ])
-                    ->getForm();
-
-                $form->submit($data);
-                if($form->isValid()) {
-                    if($data['age'] > 21){
-                        $user = $entityManager->getRepository(User::class)->findBy(['name'=>$data['nom']]);
-                        if(count($user) === 0){
-                            $joueur->setName($data['nom']);
-                            $joueur->setAge($data['age']);
-                            $entityManager->flush();
-
-                            return new JsonResponse($joueur, 200);
-                        }else{
-                            return new JsonResponse('Name already exists', 400);
-                        }
-                    }else{
-                        return new JsonResponse('Wrong age', 400);
-                    }
-                }else{
-                    return new JsonResponse('Invalid form', 400);
-                }
-            }else{
-                $data = json_decode($request->getContent(), true);
-                return new JsonResponse('Wrong method', 405);
-            }
-            */
-
+        if($user){
             if($request->getMethod() == 'PATCH'){
                 $data = json_decode($request->getContent(), true);
-                $form = $this->createFormBuilder()
-                    ->add('nom', TextType::class, array(
-                        'required'=>false
-                    ))
-                    ->add('age', NumberType::class, [
-                        'required' => false
-                    ])
-                    ->getForm();
+
+                $form = $this->createForm(UpdateUserType::class, $user);
 
                 $form->submit($data);
-                if($form->isValid()) {
 
+                if($form->isValid()) {
                     foreach($data as $key=>$value){
                         switch($key){
                             case 'nom':
-                                $user = $entityManager->getRepository(User::class)->findBy(['name'=>$data['nom']]);
-                                if(count($user) === 0){
-                                    $joueur[0]->setName($data['nom']);
+                                $existingUser = $entityManager->getRepository(User::class)->findOneBy(['name'=>$data['nom']]);
+                                if(!$existingUser || $existingUser === $user){
+                                    $user->setName($data['nom']);
                                     $entityManager->flush();
                                 }else{
                                     return new JsonResponse('Name already exists', 400);
@@ -180,7 +107,7 @@ class UserController extends AbstractController
                                 break;
                             case 'age':
                                 if($data['age'] > 21){
-                                    $joueur[0]->setAge($data['age']);
+                                    $user->setAge($data['age']);
                                     $entityManager->flush();
                                 }else{
                                     return new JsonResponse('Wrong age', 400);
@@ -196,25 +123,25 @@ class UserController extends AbstractController
                 return new JsonResponse('Wrong method', 405);
             }
 
-            return new JsonResponse(array('name'=>$joueur[0]->getName(), "age"=>$joueur[0]->getAge(), 'id'=>$joueur[0]->getId()), 200);
+            return new JsonResponse(array('name'=>$user->getName(), "age"=>$user->getAge(), 'id'=>$user->getId()), 200);
         }else{
             return new JsonResponse('Wrong id', 404);
         }    
     }
 
-    #[Route('/user/{id}', name: 'delete_user_by_identifiant', methods:['DELETE'])]
-    public function suprUser($id, EntityManagerInterface $entityManager): JsonResponse | null
+    #[Route('/user/{id}', name: 'delete_user_by_id', methods:['DELETE'])]
+    public function deleteUserById($id, EntityManagerInterface $entityManager): JsonResponse | null
     {
-        $joueur = $entityManager->getRepository(User::class)->findBy(['id'=>$id]);
-        if(count($joueur) == 1){
+        $user = $entityManager->getRepository(User::class)->find($id);
+        if($user){
             try{
-                $entityManager->remove($joueur[0]);
+                $entityManager->remove($user);
                 $entityManager->flush();
 
-                $existeEncore = $entityManager->getRepository(User::class)->findBy(['id'=>$id]);
+                $userStillExists = $entityManager->getRepository(User::class)->find($id);
     
-                if(!empty($existeEncore)){
-                    throw new \Exception("Le user n'a pas éte délété");
+                if($userStillExists){
+                    throw new \Exception('The user was not deleted');
                     return null;
                 }else{
                     return new JsonResponse('', 204);
@@ -223,7 +150,7 @@ class UserController extends AbstractController
                 return new JsonResponse($e->getMessage(), 500);
             }
         }else{
-            return new JsonResponse('Wrong id', 404);
+            return new JsonResponse('User not found', 404);
         }    
     }
 }
