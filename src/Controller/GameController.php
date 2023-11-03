@@ -139,6 +139,8 @@ class GameController extends AbstractController
     #[Route('/game/{identifiant}', name: 'send_choice', methods:['PATCH'])]
     public function play(Request $request, EntityManagerInterface $entityManager, $identifiant): JsonResponse
     {
+
+		//check if the user right or left is associated with a game
         $UserId = $request->headers->get('X-User-Id');
 		$User = $entityManager->getRepository(User::class)->find($UserId);
 		$game = $entityManager->getRepository(Game::class)->find($identifiant);
@@ -164,7 +166,7 @@ class GameController extends AbstractController
             return new JsonResponse('You are not a player of this game', 403);
         }
 
-        // we must check the game is ongoing and the user is a player of this game
+        // check if the game is ongoing and the user is a player of this game
         if($game->getState() === 'finished' || $game->getState() === 'pending'){
             return new JsonResponse('Game not started', 409);
         }
@@ -218,16 +220,9 @@ class GameController extends AbstractController
 				headers: ['Content-Type' => 'application/json;charset=UTF-8']
 			);
 
-        }else{
+		}
             return new JsonResponse('Invalid choice', 400);
-        }
-
-        return new JsonResponse('coucou');
     }
-
-	private function checkRules() {
-
-	}
 
 	private function defineWinner($leftChoice, $rightChoice) {
 		if ($leftChoice === $rightChoice) {
