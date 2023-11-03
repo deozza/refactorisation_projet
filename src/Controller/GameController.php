@@ -139,34 +139,24 @@ class GameController extends AbstractController
     #[Route('/game/{identifiant}', name: 'send_choice', methods:['PATCH'])]
     public function play(Request $request, EntityManagerInterface $entityManager, $identifiant): JsonResponse
     {
-        $currentUserId = $request->headers->get('X-User-Id');
+        $UserId = $request->headers->get('X-User-Id');
+		$User = $entityManager->getRepository(User::class)->find($UserId);
+		$game = $entityManager->getRepository(Game::class)->find($identifiant);
 
-        if(ctype_digit($currentUserId) === false){
-            return new JsonResponse('User not found', 401);
-        }
-
-        $currentUser = $entityManager->getRepository(User::class)->find($currentUserId);
-
-        if($currentUser === null){
+        if(ctype_digit($UserId) === false || $User === null){
             return new JsonResponse('User not found', 401);
         }
     
-        if(ctype_digit($identifiant) === false){
-            return new JsonResponse('Game not found', 404);
-        }
-
-        $game = $entityManager->getRepository(Game::class)->find($identifiant);
-
-        if($game === null){
+        if(ctype_digit($identifiant) === false || $game === null){
             return new JsonResponse('Game not found', 404);
         }
 
         $userIsPlayerLeft = false;
         $userIsPlayerRight = $userIsPlayerLeft;
         
-        if($game->getPlayerLeft()->getId() === $currentUser->getId()){
+        if($game->getPlayerLeft()->getId() === $User->getId()){
             $userIsPlayerLeft = true;
-        }elseif($game->getPlayerRight()->getId() === $currentUser->getId()){
+        }elseif($game->getPlayerRight()->getId() === $User->getId()){
             $userIsPlayerRight = true;
         }
         
@@ -195,11 +185,11 @@ class GameController extends AbstractController
 
             $data = $form->getData();
 
-            // on joue avec les règles de base de pierre feuille ciseaux
             if($data['choice'] !== 'rock' && $data['choice'] !== 'paper' && $data['choice'] !== 'scissors'){
                 return new JsonResponse('Invalid choice', 400);
             }
 
+			// Play with the rules of rock, paper, scissors
 			if ($userIsPlayerLeft) {
 				$game->setPlayLeft($data['choice']);
 				$entityManager->flush();
@@ -222,7 +212,7 @@ class GameController extends AbstractController
 				$game->setState('finished');
 				$entityManager->flush();
 			}
-			
+
 			return $this->json(
 				$game,
 				headers: ['Content-Type' => 'application/json;charset=UTF-8']
@@ -235,8 +225,11 @@ class GameController extends AbstractController
         return new JsonResponse('coucou');
     }
 
-	private function defineWinner($leftChoice, $rightChoice)
-	{
+	private function checkRules() {
+
+	}
+
+	private function defineWinner($leftChoice, $rightChoice) {
 		if ($leftChoice === $rightChoice) {
 			return 'draw';
 		}
@@ -252,10 +245,9 @@ class GameController extends AbstractController
 		}
 	}
 
-    #[Route('/game/{id}', name: 'annuler_game', methods:['DELETE'])]
+    #[Route('/game/{id}', name: 'cancel_game', methods:['DELETE'])]
     public function deleteGame(EntityManagerInterface $entityManager, Request $request, $id): JsonResponse
     {
-   
         $currentUserId = $request->headers->get('X-User-Id');
 
         if(ctype_digit($currentUserId) === true){
