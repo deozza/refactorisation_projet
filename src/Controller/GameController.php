@@ -196,26 +196,37 @@ class GameController extends AbstractController
             $data = $form->getData();
 
             // on joue avec les règles de base de pierre feuille ciseaux
-
             if($data['choice'] !== 'rock' && $data['choice'] !== 'paper' && $data['choice'] !== 'scissors'){
                 return new JsonResponse('Invalid choice', 400);
             }
 
-			$leftChoice = $game->getPlayLeft();
-			$rightChoice = $game->getPlayRight();
-
 			if ($userIsPlayerLeft) {
-				$leftChoice = $data['choice'];
-			} elseif ($userIsPlayerRight) {
-				$rightChoice = $data['choice'];
-			}
+				$game->setPlayLeft($data['choice']);
+				$entityManager->flush();
 
-			if ($leftChoice !== null && $rightChoice !== null) {
-				$result = $this->defineWinner($leftChoice, $rightChoice);
-				$game->setResult($result);
+				if ($game->getPlayRight() !== null) {
+					$result = $this->defineWinner($data['choice'], $game->getPlayRight());
+					$game->setResult($result);
+				}
+				$game->setState('finished');
+				$entityManager->flush();
+
+			} else if($userIsPlayerRight) {
+				$game->setPlayRight($data['choice']);
+				$entityManager->flush();
+
+				if ($game->getPlayLeft() !== null) {
+					$result = $this->defineWinner($game->getPlayLeft(), $data['choice']);
+					$game->setResult($result);
+				}
 				$game->setState('finished');
 				$entityManager->flush();
 			}
+			
+			return $this->json(
+				$game,
+				headers: ['Content-Type' => 'application/json;charset=UTF-8']
+			);
 
         }else{
             return new JsonResponse('Invalid choice', 400);
@@ -224,18 +235,21 @@ class GameController extends AbstractController
         return new JsonResponse('coucou');
     }
 
-	private function defineWinner($leftChoice, $rightChoice) {
-		if($leftChoice == $rightChoice) {
+	private function defineWinner($leftChoice, $rightChoice)
+	{
+		if ($leftChoice === $rightChoice) {
 			return 'draw';
 		}
 
-		if (($leftChoice == 'rock' && $rightChoice == 'scissors') ||
-		($leftChoice == 'paper' && $rightChoice == 'rock') ||
-		($leftChoice == 'scissors' && $rightChoice == 'paper')) {
+		if (($leftChoice === 'rock' && $rightChoice === 'scissors') ||
+			($leftChoice === 'paper' && $rightChoice === 'rock') ||
+			($leftChoice === 'scissors' && $rightChoice === 'paper')
+		) {
 			return 'winLeft';
 		}
-
-		return 'winRight';
+		else {
+			return 'winRight';
+		}
 	}
 
     #[Route('/game/{id}', name: 'annuler_game', methods:['DELETE'])]
