@@ -196,6 +196,7 @@ class GameController extends AbstractController
             $data = $form->getData();
 
             // on joue avec les règles de base de pierre feuille ciseaux
+
             if($data['choice'] !== 'rock' && $data['choice'] !== 'paper' && $data['choice'] !== 'scissors'){
                 return new JsonResponse('Invalid choice', 400);
             }
@@ -254,7 +255,7 @@ class GameController extends AbstractController
                 $game->setPlayRight($data['choice']);
 
                 $entityManager->flush();
-				
+
                 if($game->getPlayLeft() !== null){
 
                     switch($data['choice']){
@@ -309,6 +310,20 @@ class GameController extends AbstractController
 
         return new JsonResponse('coucou');
     }
+
+	private function defineWinner($leftChoice, $rightChoice) {
+		if($leftChoice == $rightChoice) {
+			return 'draw';
+		}
+
+		if (($leftChoice == 'rock' && $rightChoice == 'scissors') ||
+		($leftChoice == 'paper' && $rightChoice == 'rock') ||
+		($leftChoice == 'scissors' && $rightChoice == 'paper')) {
+			return 'winLeft';
+		}
+
+		return 'winRight';
+	}
 
     #[Route('/game/{id}', name: 'annuler_game', methods:['DELETE'])]
     public function deleteGame(EntityManagerInterface $entityManager, Request $request, $id): JsonResponse
