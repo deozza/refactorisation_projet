@@ -152,7 +152,7 @@ class GameController extends AbstractController
         }
 
         $userIsPlayerLeft = false;
-        $userIsPlayerRight = $userIsPlayerLeft;
+        $userIsPlayerRight = false;
         
         if($game->getPlayerLeft()->getId() === $User->getId()){
             $userIsPlayerLeft = true;
@@ -160,7 +160,7 @@ class GameController extends AbstractController
             $userIsPlayerRight = true;
         }
         
-        if(false === $userIsPlayerLeft && !$userIsPlayerRight){
+        if(!$userIsPlayerLeft && !$userIsPlayerRight){
             return new JsonResponse('You are not a player of this game', 403);
         }
 
