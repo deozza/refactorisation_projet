@@ -139,7 +139,6 @@ class GameController extends AbstractController
     #[Route('/game/{identifiant}', name: 'send_choice', methods:['PATCH'])]
     public function play(Request $request, EntityManagerInterface $entityManager, $identifiant): JsonResponse
     {
-
 		//check if the user right or left is associated with a game
         $UserId = $request->headers->get('X-User-Id');
 		$User = $entityManager->getRepository(User::class)->find($UserId);
@@ -158,7 +157,7 @@ class GameController extends AbstractController
         
         if($game->getPlayerLeft()->getId() === $User->getId()){
             $userIsPlayerLeft = true;
-        }elseif($game->getPlayerRight()->getId() === $User->getId()){
+        } elseif($game->getPlayerRight()->getId() === $User->getId()){
             $userIsPlayerRight = true;
         }
         
@@ -176,15 +175,13 @@ class GameController extends AbstractController
                 'constraints' => [
                     new Assert\NotBlank()
                 ]
-            ])
+			])
             ->getForm();
 
         $choice = json_decode($request->getContent(), true);
-
         $form->submit($choice);
 
         if($form->isValid()){
-
             $data = $form->getData();
 
             if($data['choice'] !== 'rock' && $data['choice'] !== 'paper' && $data['choice'] !== 'scissors'){
@@ -192,50 +189,44 @@ class GameController extends AbstractController
             }
 
 			// Play with the rules of rock, paper, scissors
-			if ($userIsPlayerLeft) {
+			if ($userIsPlayerLeft){
 				$game->setPlayLeft($data['choice']);
 				$entityManager->flush();
-
-				if ($game->getPlayRight() !== null) {
+				if ($game->getPlayRight() !== null){
 					$result = $this->defineWinner($data['choice'], $game->getPlayRight());
 					$game->setResult($result);
 				}
 				$game->setState('finished');
 				$entityManager->flush();
-
-			} else if($userIsPlayerRight) {
+			} else if($userIsPlayerRight){
 				$game->setPlayRight($data['choice']);
 				$entityManager->flush();
-
-				if ($game->getPlayLeft() !== null) {
+				if($game->getPlayLeft() !== null){
 					$result = $this->defineWinner($game->getPlayLeft(), $data['choice']);
 					$game->setResult($result);
 				}
 				$game->setState('finished');
 				$entityManager->flush();
 			}
-
 			return $this->json(
 				$game,
 				headers: ['Content-Type' => 'application/json;charset=UTF-8']
 			);
-
 		}
-            return new JsonResponse('Invalid choice', 400);
+        return new JsonResponse('Invalid choice', 400);
     }
 
-	private function defineWinner($leftChoice, $rightChoice) {
-		if ($leftChoice === $rightChoice) {
+	private function defineWinner($leftChoice, $rightChoice){
+		if ($leftChoice === $rightChoice){
 			return 'draw';
 		}
 
 		if (($leftChoice === 'rock' && $rightChoice === 'scissors') ||
 			($leftChoice === 'paper' && $rightChoice === 'rock') ||
 			($leftChoice === 'scissors' && $rightChoice === 'paper')
-		) {
+		){
 			return 'winLeft';
-		}
-		else {
+		} else{
 			return 'winRight';
 		}
 	}
@@ -269,11 +260,7 @@ class GameController extends AbstractController
 
                 return new JsonResponse(null, 204);
 
-            }else{
-                return new JsonResponse('User not found', 401);
-            }
-        }else{
+			}}
             return new JsonResponse('User not found', 401);
-        }
-    }
+	}
 }
