@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Game;
 use App\Entity\User;
+use App\Form\PlayerChoiceType;
 use App\Repository\GameRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -11,9 +12,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
 
-use Symfony\Component\Validator\Constraints as Assert;
+
 class GameController extends AbstractController
 {
     private $gameRepository;
@@ -169,16 +169,9 @@ class GameController extends AbstractController
             return new JsonResponse('Game not started', 409);
         }
 
-        $form = $this->createFormBuilder()
-            ->add('choice', TextType::class, [
-                'constraints' => [
-                    new Assert\NotBlank()
-                ]
-			])
-            ->getForm();
-
-        $choice = json_decode($request->getContent(), true);
-        $form->submit($choice);
+		$form = $this->createForm(PlayerChoiceType::class);
+		$choice = json_decode($request->getContent(), true);
+		$form->submit($choice);
 
         if($form->isValid()){
             $data = $form->getData();
