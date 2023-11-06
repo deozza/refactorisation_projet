@@ -26,45 +26,51 @@ class UserController extends AbstractController
         );
     }
 
-    #[Route('/users', name: 'create_user', methods:['POST'])]
-    public function createUser(Request $request, EntityManagerInterface $entityManager): JsonResponse
-    {
-        if($request->getMethod() === 'POST'){
-            $data = json_decode($request->getContent(), true);
+	#[Route('/users', name: 'user_post', methods: ['POST'])]
+	public function createUser(Request $request, EntityManagerInterface $entityManager): JsonResponse
+	{
+		try {
+			if ($request->getMethod() === 'POST') {
+				$data = json_decode($request->getContent(), true);
 
-            $form = $this->createForm(CreateUserType::class, $user);
+				$form = $this->createForm(CreateUserType::class);
+				$form->submit($data);
 
-            $form->submit($data);
+				if ($form->isSubmitted() && $form->isValid()) {
+					$data = $form->getData();
 
-            if($form->isValid())
-            {
-                if($data['age'] > 21){
-                    $user = $entityManager->getRepository(User::class)->findBy(['name'=>$data['nom']]);
-                    if(!$user){
-                        $newUser = new User();
-                        $newUser->setName($data['nom']);
-                        $newUser->setAge($data['age']);
-                        $entityManager->persist($newUser);
-                        $entityManager->flush();
+					if ($data['age'] > 21) {
+						$user = $entityManager->getRepository(User::class)->findBy(['name' => $data['nom']]);
 
-                        return $this->json(
-                                    $newUser,
-                                    201,
-                                    ['Content-Type' => 'application/json;charset=UTF-8']
-                                );                    
-                    }else{
-                        return new JsonResponse('Name already exists', 400);
-                    }
-                }else{
-                    return new JsonResponse('Wrong age', 400);
-                }
-            }else{
-                return new JsonResponse('Invalid form', 400);
-            }
-        }else{
-            return new JsonResponse('Wrong method', 405);
-        }
-    }
+						if (count($user) === 0) {
+							$joueur = new User();
+							$joueur->setName($data['nom']);
+							$joueur->setAge($data['age']);
+							$entityManager->persist($joueur);
+							$entityManager->flush();
+
+							return $this->json(
+								$joueur,
+								201,
+								['Content-Type' => 'application/json;charset=UTF-8']
+							);
+						} else {
+							return new JsonResponse('Name already exists', 400);
+						}
+					} else {
+						return new JsonResponse('Wrong age', 400);
+					}
+				} else {
+					return new JsonResponse('Invalid form', 400);
+				}
+			} else {
+				return new JsonResponse('Wrong method', 405);
+			}
+			return new JsonResponse("Success", 201);
+		} catch (\Exception $e) {
+			return new JsonResponse($e->getMessage(), 400);
+		}
+	}
 
     #[Route('/user/{id}', name: 'get_user_by_id', methods:['GET'])]
     public function getUserById($id, EntityManagerInterface $entityManager): JsonResponse
@@ -77,7 +83,7 @@ class UserController extends AbstractController
                 return new JsonResponse('User not found', 404);
             }
         }
-        return new JsonResponse('Invalid ID', 400);
+        return new JsonResponse('Invalid ID', 404);
     }
 
     #[Route('/user/{id}', name: 'udpate_user', methods:['PATCH'])]
