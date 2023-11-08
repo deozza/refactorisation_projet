@@ -45,24 +45,20 @@ class GameController extends AbstractController
     public function launchGame(Request $request): JsonResponse
     {
         $currentUserId = $request->headers->get('X-User-Id');
-
-        if($currentUserId === null || !ctype_digit($currentUserId)){
-            return new JsonResponse('User not found', 401);
+    
+        if ($currentUserId === null || !ctype_digit($currentUserId)) {
+            return new JsonResponse(['message' => 'User not found'], 401);
         }
-
+    
         $currentUser = $this->userRepository->find($currentUserId);
-
-        if($currentUser === null){
-            return new JsonResponse('User not found', 401);
+        
+        $result = $this->gameService->createNewGame($currentUser);
+    
+        if ($result['status'] === 'error') {
+            return new JsonResponse(['message' => $result['message']], 401);
         }
-
-        $newGame = $this->gameService->createNewGame($currentUser);
-
-        return $this->json(
-            $newGame,
-            201,
-            headers: ['Content-Type' => 'application/json;charset=UTF-8']
-        );
+    
+        return $this->json($result['data'], 201);
     }
 
 
