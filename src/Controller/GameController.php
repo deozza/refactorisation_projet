@@ -95,14 +95,13 @@ class GameController extends AbstractController
     #[Route('/game/{id}/add/{playerRightId}', name: 'add_user_right', methods:['PATCH'])]
     public function inviteToGame(
         Request $request, 
-        EntityManagerInterface $entityManager, 
         $id, 
         $playerRightId
     ): JsonResponse {
         $currentUserId = $request->headers->get('X-User-Id');
-        $playerLeft = $entityManager->getRepository(User::class)->find($currentUserId);
-        $game = $entityManager->getRepository(Game::class)->find($id);
-        $playerRight = $entityManager->getRepository(User::class)->find($playerRightId);
+        $playerLeft = $this->entityManager->getRepository(User::class)->find($currentUserId);
+        $game = $this->entityManager->getRepository(Game::class)->find($id);
+        $playerRight = $this->entityManager->getRepository(User::class)->find($playerRightId);
 
     if (empty($currentUserId) || !ctype_digit($currentUserId) || $playerLeft === null) {
         return new JsonResponse('User not found', 401);
@@ -136,12 +135,12 @@ class GameController extends AbstractController
 
     
     #[Route('/game/{identifiant}', name: 'send_choice', methods:['PATCH'])]
-    public function play(Request $request, EntityManagerInterface $entityManager, $identifiant): JsonResponse
+    public function play(Request $request, $identifiant): JsonResponse
     {
 		//check if the user right or left is associated with a game
         $UserId = $request->headers->get('X-User-Id');
-		$User = $entityManager->getRepository(User::class)->find($UserId);
-		$game = $entityManager->getRepository(Game::class)->find($identifiant);
+		$User = $this->entityManager->getRepository(User::class)->find($UserId);
+		$game = $this->entityManager->getRepository(Game::class)->find($identifiant);
 
         if(ctype_digit($UserId) === false || $User === null){
             return new JsonResponse('User not found', 401);
@@ -183,22 +182,22 @@ class GameController extends AbstractController
 			// Play with the rules of rock, paper, scissors
 			if ($userIsPlayerLeft){
 				$game->setPlayLeft($data['choice']);
-				$entityManager->flush();
+				$this->entityManager->flush();
 				if ($game->getPlayRight() !== null){
 					$result = $this->defineWinner($data['choice'], $game->getPlayRight());
 					$game->setResult($result);
 				}
 				$game->setState('finished');
-				$entityManager->flush();
+				$this->entityManager->flush();
 			} else if($userIsPlayerRight){
 				$game->setPlayRight($data['choice']);
-				$entityManager->flush();
+				$this->entityManager->flush();
 				if($game->getPlayLeft() !== null){
 					$result = $this->defineWinner($game->getPlayLeft(), $data['choice']);
 					$game->setResult($result);
 				}
 				$game->setState('finished');
-				$entityManager->flush();
+				$this->entityManager->flush();
 			}
 			return $this->json(
 				$game,
@@ -223,15 +222,13 @@ class GameController extends AbstractController
 		}
 	}
 
-    // test
-
     #[Route('/game/{id}', name: 'cancel_game', methods:['DELETE'])]
-    public function deleteGame(EntityManagerInterface $entityManager, Request $request, $id): JsonResponse
+    public function deleteGame(Request $request, $id): JsonResponse
     {
         $currentUserId = $request->headers->get('X-User-Id');
 
         if(ctype_digit($currentUserId) === true){
-            $player = $entityManager->getRepository(User::class)->find($currentUserId);
+            $player = $this->entityManager->getRepository(User::class)->find($currentUserId);
 
             if($player !== null){
 
@@ -239,18 +236,18 @@ class GameController extends AbstractController
                     return new JsonResponse('Game not found', 404);
                 }
         
-                $game = $entityManager->getRepository(Game::class)->findOneBy(['id' => $id, 'playerLeft' => $player]);
+                $game = $this->entityManager->getRepository(Game::class)->findOneBy(['id' => $id, 'playerLeft' => $player]);
 
                 if(empty($game)){
-                    $game = $entityManager->getRepository(Game::class)->findOneBy(['id' => $id, 'playerRight' => $player]);
+                    $game = $this->entityManager->getRepository(Game::class)->findOneBy(['id' => $id, 'playerRight' => $player]);
                 }
 
                 if(empty($game)){
                     return new JsonResponse('Game not found', 403);
                 }
 
-                $entityManager->remove($game);
-                $entityManager->flush();
+                $this->entityManager->remove($game);
+                $this->entityManager->flush();
 
                 return new JsonResponse(null, 204);
 
