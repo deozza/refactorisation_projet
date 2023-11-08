@@ -7,6 +7,7 @@ use App\Entity\User;
 use App\Form\PlayerChoiceType;
 use App\Repository\GameRepository;
 use App\Repository\UserRepository;
+use App\Service\GameService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -16,12 +17,15 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class GameController extends AbstractController
 {
+    private $gameService;
+
     private $gameRepository;
     private $userRepository;
     private $entityManager;
 
-    public function __construct(GameRepository $gameRepository, EntityManagerInterface $entityManager, UserRepository $userRepository)
+    public function __construct(GameRepository $gameRepository, EntityManagerInterface $entityManager, UserRepository $userRepository, GameService $gameService)
     {
+        $this->gameService = $gameService;
         $this->gameRepository = $gameRepository;
         $this->entityManager = $entityManager;
         $this->userRepository = $userRepository;
@@ -52,7 +56,7 @@ class GameController extends AbstractController
             return new JsonResponse('User not found', 401);
         }
 
-        $newGame = $this->createNewGame($currentUser);
+        $newGame = $this->gameService->createNewGame($currentUser);
 
         return $this->json(
             $newGame,
@@ -61,17 +65,6 @@ class GameController extends AbstractController
         );
     }
 
-    private function createNewGame(User $currentUser): Game
-    {
-        $newGame = new Game();
-        $newGame->setState('pending');
-        $newGame->setPlayerLeft($currentUser);
-
-        $this->entityManager->persist($newGame);
-        $this->entityManager->flush();
-
-        return $newGame;
-    }
 
     #[Route('/game/{identifiant}', name: 'fetch_game', methods:['GET'])]
     public function getGameInfo($identifiant): JsonResponse
@@ -184,7 +177,7 @@ class GameController extends AbstractController
 				$game->setPlayLeft($data['choice']);
 				$this->entityManager->flush();
 				if ($game->getPlayRight() !== null){
-					$result = $this->defineWinner($data['choice'], $game->getPlayRight());
+					$result = $this->gameService->defineWinner($data['choice'], $game->getPlayRight());
 					$game->setResult($result);
 				}
 				$game->setState('finished');
@@ -193,7 +186,7 @@ class GameController extends AbstractController
 				$game->setPlayRight($data['choice']);
 				$this->entityManager->flush();
 				if($game->getPlayLeft() !== null){
-					$result = $this->defineWinner($game->getPlayLeft(), $data['choice']);
+					$result = $this->gameService->defineWinner($game->getPlayLeft(), $data['choice']);
 					$game->setResult($result);
 				}
 				$game->setState('finished');
@@ -207,20 +200,7 @@ class GameController extends AbstractController
         return new JsonResponse('Invalid choice', 400);
     }
 
-	private function defineWinner($leftChoice, $rightChoice){
-		if ($leftChoice === $rightChoice){
-			return 'draw';
-		}
-
-		if (($leftChoice === 'rock' && $rightChoice === 'scissors') ||
-			($leftChoice === 'paper' && $rightChoice === 'rock') ||
-			($leftChoice === 'scissors' && $rightChoice === 'paper')
-		){
-			return 'winLeft';
-		} else{
-			return 'winRight';
-		}
-	}
+// METTRE LE DEFINE WINNER ICI !!!!!
 
     #[Route('/game/{id}', name: 'cancel_game', methods:['DELETE'])]
     public function deleteGame(Request $request, $id): JsonResponse
