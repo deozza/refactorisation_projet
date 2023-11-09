@@ -14,4 +14,4 @@ services:
     ports:
       - '8888:8000'
     volumes:
-      - refacto-projet-php/:/home/refactorisation_projet:cached
+      - ./:/home/refactorisation_projet:cached
