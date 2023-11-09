@@ -1,7 +1,7 @@
 # NOM :
 3kinox70-1 = Aïcha EL HAMED
 IYamna = Imene BENDACHA
-Hugoez = Hugo CHEN
+Hugolez = Hugo CHEN
 
 Hello Mr, voici notre projet de refacto. La majorité du projet a été réalisé ensemble durant des appels discord. On a essayé de faire des commit chacun à notre tour.
 Bonne lecture
