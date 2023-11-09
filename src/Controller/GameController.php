@@ -37,6 +37,111 @@ class GameController extends AbstractController
 
             $currentUser = $entityManager->getRepository(User::class)->find($currentUserId);
 
+
+            if($currentUser === null){
+                return new JsonResponse('User not found', 401);
+            }
+
+            $nouvelle_partie = new Game();
+            $nouvelle_partie->setState('pending');
+            $nouvelle_partie->setPlayerLeft($currentUser);
+
+            $entityManager->persist($nouvelle_partie);
+
+            $entityManager->flush();
+
+            return $this->json(
+                $nouvelle_partie,
+                201,
+                headers: ['Content-Type' => 'application/json;charset=UTF-8']
+            );
+        }else{
+            return new JsonResponse('User not found', 401);
+        }
+    }
+
+    #[Route('/game/{identifiant}', name: 'fetch_game', methods:['GET'])]
+    public function getGameInfo(EntityManagerInterface $entityManager, $identifiant): JsonResponse
+    {
+        if(ctype_digit($identifiant)){
+            $party = $entityManager->getRepository(Game::class)->findOneBy(['id' => $identifiant]);
+
+            if($party !== null){
+                return $this->json(
+                    $party,
+                    headers: ['Content-Type' => 'application/json;charset=UTF-8']
+                );
+            }else{
+                return new JsonResponse('Game not found', 404);
+            }
+        }else{
+            return new JsonResponse('Game not found', 404);
+        }
+    }
+
+    #[Route('/game/{id}/add/{playerRightId}', name: 'add_user_right', methods:['PATCH'])]
+    public function inviteToGame(Request $request, EntityManagerInterface $entityManager, $id, $playerRightId): JsonResponse
+    {
+        $currentUserId = $request->headers->get('X-User-Id');
+
+        if(empty($currentUserId)){
+            return new JsonResponse('User not found', 401);
+        }
+
+        if(ctype_digit($id) && ctype_digit($playerRightId) && ctype_digit($currentUserId)){
+   
+            $playerLeft = $entityManager->getRepository(User::class)->find($currentUserId);
+
+            if($playerLeft === null){
+                return new JsonResponse('User not found', 401);
+            }
+
+            $game = $entityManager->getRepository(Game::class)->find($id);
+
+... (263 lignes restantes)
+Réduire
+message.txt
+14 Ko
+﻿
+<?php
+
+namespace App\Controller;
+
+use App\Entity\Game;
+use App\Entity\User;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+
+use Symfony\Component\Validator\Constraints as Assert;
+class GameController extends AbstractController
+{
+    #[Route('/games', name: 'get_list_of_games', methods:['GET'])]
+    public function getPartieList(EntityManagerInterface $entityManager): JsonResponse
+    {
+        $data = $entityManager->getRepository(Game::class)->findAll();
+        return $this->json(
+            $data,
+            headers: ['Content-Type' => 'application/json;charset=UTF-8']
+        );
+    }
+
+    #[Route('/games', name: 'create_game', methods:['POST'])]
+    public function launchGame(Request $request, EntityManagerInterface $entityManager): JsonResponse
+    {
+        $currentUserId = $request->headers->get('X-User-Id');
+
+        if($currentUserId !== null){
+
+            if(ctype_digit($currentUserId) === false){
+                return new JsonResponse('User not found', 401);
+            }
+
+            $currentUser = $entityManager->getRepository(User::class)->find($currentUserId);
+
             // Si l'utilisateur n'existe pas -> stop creation de partie
             if($currentUser === null){
                 return new JsonResponse('User not found', 401);
@@ -195,7 +300,7 @@ class GameController extends AbstractController
 
             $data = $form->getData();
 
-            // on joue avec les règles de base de pierre feuille ciseaux
+            // on joue avec les rÃ¨gles de base de pierre feuille ciseaux
             if($data['choice'] !== 'rock' && $data['choice'] !== 'paper' && $data['choice'] !== 'scissors'){
                 return new JsonResponse('Invalid choice', 400);
             }
@@ -360,3 +465,5 @@ class GameController extends AbstractController
         }
     }
 }
+message.txt
+14 Ko
