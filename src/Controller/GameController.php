@@ -196,8 +196,6 @@ class GameController extends AbstractController
         return new JsonResponse('Invalid choice', 400);
     }
 
-// METTRE LE DEFINE WINNER ICI !!!!!
-
     #[Route('/game/{id}', name: 'cancel_game', methods:['DELETE'])]
     public function deleteGame(Request $request, $id): JsonResponse
     {
