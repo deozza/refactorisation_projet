@@ -16,8 +16,8 @@ class GameController extends AbstractController
 
 //C'est parti!
 {
-    #[Route('/games', name: 'get_list_of_games', methods:['GET'])]
-    public function getPartieList(EntityManagerInterface $entityManager): JsonResponse
+    #[Route('/games', name: 'get_game_list', methods:['GET'])]
+    public function getGameList(EntityManagerInterface $entityManager): JsonResponse
     {
         $data = $entityManager->getRepository(Game::class)->findAll();
         return $this->json(
@@ -26,8 +26,8 @@ class GameController extends AbstractController
         );
     }
 
-    #[Route('/games', name: 'create_game', methods:['POST'])]
-    public function launchGame(Request $request, EntityManagerInterface $entityManager): JsonResponse
+    #[Route('/games', name: 'post_game', methods:['POST'])]
+    public function postGame(Request $request, EntityManagerInterface $entityManager): JsonResponse
     {
         $currentUserId = $request->headers->get('X-User-Id');
 
@@ -62,8 +62,8 @@ class GameController extends AbstractController
         }
     }
 
-    #[Route('/game/{identifiant}', name: 'fetch_game', methods:['GET'])]
-    public function getGameInfo(EntityManagerInterface $entityManager, $identifiant): JsonResponse
+    #[Route('/game/{identifiant}', name: 'get_game_by_id', methods:['GET'])]
+    public function getGameById(EntityManagerInterface $entityManager, $identifiant): JsonResponse
     {
         if(ctype_digit($identifiant)){
             $party = $entityManager->getRepository(Game::class)->findOneBy(['id' => $identifiant]);
@@ -81,8 +81,8 @@ class GameController extends AbstractController
         }
     }
 
-    #[Route('/game/{id}/add/{playerRightId}', name: 'add_user_right', methods:['PATCH'])]
-    public function inviteToGame(Request $request, EntityManagerInterface $entityManager, $id, $playerRightId): JsonResponse
+    #[Route('/game/{id}/add/{playerRightId}', name: 'add_player_right_to_game', methods:['PATCH'])]
+    public function addPlayerRightToGame(Request $request, EntityManagerInterface $entityManager, $id, $playerRightId): JsonResponse
     {
         $currentUserId = $request->headers->get('X-User-Id');
 
@@ -138,8 +138,8 @@ class GameController extends AbstractController
         }
     }
 
-    #[Route('/game/{identifiant}', name: 'send_choice', methods:['PATCH'])]
-    public function play(Request $request, EntityManagerInterface $entityManager, $identifiant): JsonResponse
+    #[Route('/game/{identifiant}', name: 'add_choice_to_game', methods:['PATCH'])]
+    public function addChoiceToGame(Request $request, EntityManagerInterface $entityManager, $identifiant): JsonResponse
     {
         $currentUserId = $request->headers->get('X-User-Id');
 
@@ -324,8 +324,8 @@ class GameController extends AbstractController
         return new JsonResponse('coucou');
     }
 
-    #[Route('/game/{id}', name: 'annuler_game', methods:['DELETE'])]
-    public function deleteGame(EntityManagerInterface $entityManager, Request $request, $id): JsonResponse
+    #[Route('/game/{id}', name: 'delete_game_by_id', methods:['DELETE'])]
+    public function deleteGameById(EntityManagerInterface $entityManager, Request $request, $id): JsonResponse
     {
    
         $currentUserId = $request->headers->get('X-User-Id');
