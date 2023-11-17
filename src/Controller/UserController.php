@@ -28,52 +28,55 @@ class UserController extends AbstractController
     #[Route('/users', name: 'create_user', methods:['POST'])]
     public function createUser(Request $request,EntityManagerInterface $entityManager): JsonResponse
     {
-        if($request->getMethod() === 'POST'){
-            $data = json_decode($request->getContent(), true);
-            $form = $this->createFormBuilder()
-                ->add('nom', TextType::class, [
-                    'constraints'=>[
-                        new Assert\NotBlank(),
-                        new Assert\Length(['min'=>1, 'max'=>255])
-                    ]
-                ])
-                ->add('age', NumberType::class, [
-                    'constraints'=>[
-                        new Assert\NotBlank()
-                    ]
-                ])
-                ->getForm();
+        if($request->getMethod() !== 'POST'){
+            return new JsonResponse('Wrong method', 405);
 
-            $form->submit($data);
+        }
+        
+        $data = json_decode($request->getContent(), true);
+        $form = $this->createFormBuilder()
+            ->add('nom', TextType::class, [
+                'constraints'=>[
+                    new Assert\NotBlank(),
+                    new Assert\Length(['min'=>1, 'max'=>255])
+                ]
+            ])
+            ->add('age', NumberType::class, [
+                'constraints'=>[
+                    new Assert\NotBlank()
+                ]
+            ])
+            ->getForm();
+
+        $form->submit($data);
 
             if($form->isValid())
             {
-                if($data['age'] > 21){
-                    $user = $entityManager->getRepository(User::class)->findBy(['name'=>$data['nom']]);
-                    if(count($user) === 0){
-                        $player = new User();
-                        $player->setName($data['nom']);
-                        $player->setAge($data['age']);
-                        $entityManager->persist($player);
-                        $entityManager->flush();
-
-                        return $this->json(
-                                    $player,
-                                    201,
-                                    ['Content-Type' => 'application/json;charset=UTF-8']
-                                );                    
-                    }else{
-                        return new JsonResponse('Name already exists', 400);
-                    }
-                }else{
+                if($data['age'] <= 20){
                     return new JsonResponse('Wrong age', 400);
                 }
+
+                $user = $entityManager->getRepository(User::class)->findBy(['name'=>$data['nom']]);
+                if(count($user) !== 0){
+                    return new JsonResponse('Name already exists', 400);
+                }
+
+                $player = new User();
+                $player->setName($data['nom']);
+                $player->setAge($data['age']);
+                $entityManager->persist($player);
+                $entityManager->flush();
+
+                return $this->json(
+                            $player,
+                            201,
+                            ['Content-Type' => 'application/json;charset=UTF-8']
+                        );                    
+
             }else{
                 return new JsonResponse('Invalid form', 400);
-            }
-        }else{
-            return new JsonResponse('Wrong method', 405);
         }
+        
     }
 
     #[Route('/user/{identifiant}', name: 'get_user_id', methods:['GET'])]
