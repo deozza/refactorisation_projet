@@ -174,7 +174,6 @@ class GameController extends AbstractController
             return new JsonResponse('You are not a player of this game', 403);
         }
 
-        // we must check the game is ongoing and the user is a player of this game
         if($game->getState() === 'finished' || $game->getState() === 'pending'){
             return new JsonResponse('Game not started', 409);
         }
@@ -195,7 +194,6 @@ class GameController extends AbstractController
 
             $data = $form->getData();
 
-            // on joue avec les règles de base de pierre feuille ciseaux
             if($data['choice'] !== 'rock' && $data['choice'] !== 'paper' && $data['choice'] !== 'scissors'){
                 return new JsonResponse('Invalid choice', 400);
             }
@@ -254,18 +252,6 @@ class GameController extends AbstractController
                 $game->setPlayRight($data['choice']);
 
                 $entityManager->flush();
-
-
-
-
-
-
-
-
-
-
-
-
 
                 if($game->getPlayLeft() !== null){
 
