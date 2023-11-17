@@ -13,6 +13,8 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 
 use Symfony\Component\Validator\Constraints as Assert;
 class GameController extends AbstractController
+
+//C'est parti!
 {
     #[Route('/games', name: 'get_list_of_games', methods:['GET'])]
     public function getPartieList(EntityManagerInterface $entityManager): JsonResponse
