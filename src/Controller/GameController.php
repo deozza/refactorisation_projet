@@ -14,7 +14,6 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Validator\Constraints as Assert;
 class GameController extends AbstractController
 
-//C'est parti!
 {
     #[Route('/games', name: 'get_game_list', methods:['GET'])]
     public function getGameList(EntityManagerInterface $entityManager): JsonResponse
@@ -39,7 +38,6 @@ class GameController extends AbstractController
 
             $currentUser = $entityManager->getRepository(User::class)->find($currentUserId);
 
-            // Si l'utilisateur n'existe pas -> stop creation de partie
             if($currentUser === null){
                 return new JsonResponse('User not found', 401);
             }
@@ -107,7 +105,6 @@ class GameController extends AbstractController
             if($game->getState() === 'ongoing' || $game->getState() === 'finished'){
                 return new JsonResponse('Game already started', 409);
             }
-
  
             $playerRight = $entityManager->getRepository(User::class)->find($playerRightId);
 
@@ -197,7 +194,6 @@ class GameController extends AbstractController
 
             $data = $form->getData();
 
-            // on joue avec les règles de base de pierre feuille ciseaux
             if($data['choice'] !== 'rock' && $data['choice'] !== 'paper' && $data['choice'] !== 'scissors'){
                 return new JsonResponse('Invalid choice', 400);
             }
@@ -256,18 +252,6 @@ class GameController extends AbstractController
                 $game->setPlayRight($data['choice']);
 
                 $entityManager->flush();
-
-
-
-
-
-
-
-
-
-
-
-
 
                 if($game->getPlayLeft() !== null){
 
