@@ -23,10 +23,11 @@ class UserController extends AbstractController
             $data,
             headers: ['Content-Type' => 'application/json;charset=UTF-8']
         );
+
     }
 
     #[Route('/users', name: 'user_post', methods:['POST'])]
-    /*public function createUser(Request $request,EntityManagerInterface $entityManager): JsonResponse
+    public function createUser(Request $request,EntityManagerInterface $entityManager): JsonResponse
     {
         if($request->getMethod() === 'POST'){
             $data = json_decode($request->getContent(), true);
@@ -48,20 +49,19 @@ class UserController extends AbstractController
 
             if($form->isValid())
             {
-                if($data['age'] > 21){
-                    $user = $entityManager->getRepository(User::class)->findBy(['name'=>$data['nom']]);
-                    if(count($user) === 0){
-                        $joueur = new User();
-                        $joueur->setName($data['nom']);
-                        $joueur->setAge($data['age']);
-                        $entityManager->persist($joueur);
-                        $entityManager->flush();
-
-                        return $this->json(
-                                    $joueur,
-                                    201,
-                                    ['Content-Type' => 'application/json;charset=UTF-8']
-                                );                    
+                    if ($data['age'] > 21) {
+                        if (!$this->isUsernameExists($data['nom'], $entityManager)) {
+                            $joueur = new User();
+                            $joueur->setName($data['nom']);
+                            $joueur->setAge($data['age']);
+                            $entityManager->persist($joueur);
+                            $entityManager->flush();
+                
+                            return $this->json(
+                                $joueur,
+                                201,
+                                ['Content-Type' => 'application/json;charset=UTF-8']
+                            );                  
                     }else{
                         return new JsonResponse('Name already exists', 400);
                     }
@@ -74,53 +74,9 @@ class UserController extends AbstractController
         }else{
             return new JsonResponse('Wrong method', 405);
         }
-    }*/
 
-    public function createUser(Request $request, EntityManagerInterface $entityManager): JsonResponse
-   {
-       $data = json_decode($request->getContent(), true);
-
-
-       if (!$this->isRequestValid($request, $data)) {
-           return new JsonResponse('Invalid request', 400);
-       }
-
-
-       $form = $this->createForm($data);
-       $form->submit($data);
-
-
-       if ($form->isValid()) {
-           $nom = $data['nom'];
-           $age = $data['age'];
-
-
-           if ($this->isAgeValid($age)) {
-               $existingUser = $entityManager->getRepository(User::class)->findOneBy(['name' => $nom]);
-
-
-               if ($existingUser === null) {
-                   $user = new User();
-                   $user->setName($nom);
-                   $user->setAge($age);
-
-
-                   $entityManager->persist($user);
-                   $entityManager->flush();
-
-
-                   return $this->json($user, 201, ['Content-Type' => 'application/json;charset=UTF-8']);
-               } else {
-                   return new JsonResponse('Name already exists', 400);
-               }
-           } else {
-               return new JsonResponse('Invalid age', 400);
-           }
-       } else {
-           return new JsonResponse('Invalid form', 400);
-       }
-   }
-
+        
+    }
 
     #[Route('/user/{identifiant}', name: 'get_user_by_id', methods:['GET'])]
     public function getUserWithIdentifiant($identifiant, EntityManagerInterface $entityManager): JsonResponse
@@ -163,19 +119,18 @@ class UserController extends AbstractController
                     foreach($data as $key=>$value){
                         switch($key){
                             case 'nom':
-                                $user = $entityManager->getRepository(User::class)->findBy(['name'=>$data['nom']]);
-                                if(count($user) === 0){
+                                if (!$this->isUsernameExists($data['nom'], $entityManager)) {
                                     $joueur[0]->setName($data['nom']);
                                     $entityManager->flush();
-                                }else{
+                                } else {
                                     return new JsonResponse('Name already exists', 400);
                                 }
                                 break;
                             case 'age':
-                                if($data['age'] > 21){
+                                if ($data['age'] > 21) {
                                     $joueur[0]->setAge($data['age']);
                                     $entityManager->flush();
-                                }else{
+                                } else {
                                     return new JsonResponse('Wrong age', 400);
                                 }
                                 break;
@@ -218,5 +173,13 @@ class UserController extends AbstractController
         }else{
             return new JsonResponse('Wrong id', 404);
         }    
+
+        
     }
+    private function isUsernameExists(string $username, EntityManagerInterface $entityManager): bool
+    {
+        $user = $entityManager->getRepository(User::class)->findBy(['name' => $username]);
+        return count($user) > 0;
+    }
+    
 }
