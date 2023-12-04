@@ -98,9 +98,6 @@ class UserController extends AbstractController
 
         if(count($joueur) == 1){
 
-            // ETO 01/05/2023 on n'utilise plus le put
-            // on est passé au patch
-            // parce que c'etait plus simple a utiliser
             /*
             if($request->getMethod() == 'PUT'){
                 $data = json_decode($request->getContent(), true);
