@@ -29,53 +29,58 @@ class GameController extends AbstractController
     {
         $currentUserId = $request->headers->get('X-User-Id');
 
-        if($currentUserId !== null){
-
-            if(ctype_digit($currentUserId) === false){
-                return new JsonResponse('User not found', 401);
-            }
-
-            $currentUser = $entityManager->getRepository(User::class)->find($currentUserId);
-
-            if($currentUser === null){
-                return new JsonResponse('User not found', 401);
-            }
-
-            $newGame = new Game();
-            $newGame->setState('pending');
-            $newGame->setPlayerLeft($currentUser);
-
-            $entityManager->persist($newGame);
-
-            $entityManager->flush();
-
-            return $this->json(
-                $newGame,
-                201,
-                headers: ['Content-Type' => 'application/json;charset=UTF-8']
-            );
-        }else{
+        if($currentUserId === null){
             return new JsonResponse('User not found', 401);
         }
+
+        if(ctype_digit($currentUserId) === false){
+            return new JsonResponse('User not found', 401);
+        }
+
+        $currentUser = $entityManager->getRepository(User::class)->find($currentUserId);
+
+        if($currentUser === null){
+            return new JsonResponse('User not found', 401);
+        }
+
+        $newGame = new Game();
+        $newGame->setState('pending');
+        $newGame->setPlayerLeft($currentUser);
+
+        $entityManager->persist($newGame);
+
+        $entityManager->flush();
+
+        return $this->json(
+            $newGame,
+            201,
+            headers: ['Content-Type' => 'application/json;charset=UTF-8']
+        );
+        
     }
 
     #[Route('/game/{gameId}', name: 'fetch_game', methods:['GET'])]
     public function getGameInfo(EntityManagerInterface $entityManager, $gameId): JsonResponse
     {
-        if(ctype_digit($gameId)){
-            $party = $entityManager->getRepository(Game::class)->findOneBy(['id' => $gameId]);
 
-            if($party !== null){
-                return $this->json(
-                    $party,
-                    headers: ['Content-Type' => 'application/json;charset=UTF-8']
-                );
-            }else{
-                return new JsonResponse('Game not found', 404);
-            }
-        }else{
+        if(ctype_digit($gameId) === false){
             return new JsonResponse('Game not found', 404);
         }
+
+
+        $party = $entityManager->getRepository(Game::class)->findOneBy(['id' => $gameId]);
+
+        if($party === null){
+            return new JsonResponse('Game not found', 404);
+        }
+
+        if($party !== null){
+            return $this->json(
+                $party,
+                headers: ['Content-Type' => 'application/json;charset=UTF-8']
+            );
+        }
+        
     }
 
     #[Route('/game/{id}/add/{playerRightId}', name: 'add_user_right', methods:['PATCH'])]
