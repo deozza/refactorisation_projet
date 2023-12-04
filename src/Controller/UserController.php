@@ -26,7 +26,7 @@ class UserController extends AbstractController
     }
 
     #[Route('/users', name: 'user_post', methods:['POST'])]
-    public function createUser(Request $request,EntityManagerInterface $entityManager): JsonResponse
+    /*public function createUser(Request $request,EntityManagerInterface $entityManager): JsonResponse
     {
         if($request->getMethod() === 'POST'){
             $data = json_decode($request->getContent(), true);
@@ -74,7 +74,53 @@ class UserController extends AbstractController
         }else{
             return new JsonResponse('Wrong method', 405);
         }
-    }
+    }*/
+
+    public function createUser(Request $request, EntityManagerInterface $entityManager): JsonResponse
+   {
+       $data = json_decode($request->getContent(), true);
+
+
+       if (!$this->isRequestValid($request, $data)) {
+           return new JsonResponse('Invalid request', 400);
+       }
+
+
+       $form = $this->createForm($data);
+       $form->submit($data);
+
+
+       if ($form->isValid()) {
+           $nom = $data['nom'];
+           $age = $data['age'];
+
+
+           if ($this->isAgeValid($age)) {
+               $existingUser = $entityManager->getRepository(User::class)->findOneBy(['name' => $nom]);
+
+
+               if ($existingUser === null) {
+                   $user = new User();
+                   $user->setName($nom);
+                   $user->setAge($age);
+
+
+                   $entityManager->persist($user);
+                   $entityManager->flush();
+
+
+                   return $this->json($user, 201, ['Content-Type' => 'application/json;charset=UTF-8']);
+               } else {
+                   return new JsonResponse('Name already exists', 400);
+               }
+           } else {
+               return new JsonResponse('Invalid age', 400);
+           }
+       } else {
+           return new JsonResponse('Invalid form', 400);
+       }
+   }
+
 
     #[Route('/user/{identifiant}', name: 'get_user_by_id', methods:['GET'])]
     public function getUserWithIdentifiant($identifiant, EntityManagerInterface $entityManager): JsonResponse
