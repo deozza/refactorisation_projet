@@ -27,6 +27,7 @@ cd refactorisation_projet
 
 docker-compose up -d --build
 
+# 
 docker-compose exec -u 1000 refacto-projet-php bash
 
 composer install
