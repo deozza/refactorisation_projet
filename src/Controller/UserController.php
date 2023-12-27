@@ -86,15 +86,20 @@ class UserController extends AbstractController
     #[Route('/user/{userId}', name: 'get_user_by_id', methods:['GET'])]
     public function getUserWithUserId($userId, EntityManagerInterface $entityManager): JsonResponse
     {
-        if(ctype_digit($userId)){
-            $player = $entityManager->getRepository(User::class)->findBy(['id'=>$userId]);
-            if(count($player) == 1){
-                return new JsonResponse(array('name'=>$player[0]->getName(), "age"=>$player[0]->getAge(), 'id'=>$player[0]->getId()), 200);
-            }else{
-                return new JsonResponse('Wrong id', 404);
-            }
+        if(!ctype_digit($userId)){
+            return new JsonResponse('Wrong id', 404);
         }
-        return new JsonResponse('Wrong id', 404);
+
+        $player = $entityManager->getRepository(User::class)->findBy(['id'=>$userId]);
+
+        if(count($player) !== 1) {
+            return new JsonResponse('Wrong id', 404);
+        }
+
+        if(count($player) === 1){
+            return new JsonResponse(array('name'=>$player[0]->getName(), "age"=>$player[0]->getAge(), 'id'=>$player[0]->getId()), 200);
+        }
+        
     }
 
     #[Route('/user/{userId}', name: 'udpate_user', methods:['PATCH'])]
@@ -117,32 +122,34 @@ class UserController extends AbstractController
                     ->getForm();
 
                 $form->submit($data);
-                if($form->isValid()) {
 
-                    foreach($data as $key=>$value){
-                        switch($key){
-                            case 'nom':
-                                $user = $entityManager->getRepository(User::class)->findBy(['name'=>$data['nom']]);
-                                if(count($user) === 0){
-                                    $player[0]->setName($data['nom']);
-                                    $entityManager->flush();
-                                }else{
-                                    return new JsonResponse('Name already exists', 400);
-                                }
-                                break;
-                            case 'age':
-                                if($data['age'] > 21){
-                                    $player[0]->setAge($data['age']);
-                                    $entityManager->flush();
-                                }else{
-                                    return new JsonResponse('Wrong age', 400);
-                                }
-                                break;
-                        }
-                    }
-                }else{
+                if(!$form->isValid()){
                     return new JsonResponse('Invalid form', 400);
                 }
+                
+                foreach($data as $key=>$value){
+                    switch($key){
+                        case 'nom':
+                            $user = $entityManager->getRepository(User::class)->findBy(['name'=>$data['nom']]);
+                            
+                            if(count($user) === 0){
+                                $player[0]->setName($data['nom']);
+                                $entityManager->flush();
+                            }else{
+                                return new JsonResponse('Name already exists', 400);
+                            }
+                            break;
+                        case 'age':
+                            if($data['age'] > 21){
+                                $player[0]->setAge($data['age']);
+                                $entityManager->flush();
+                            }else{
+                                return new JsonResponse('Wrong age', 400);
+                            }
+                            break;
+                    }
+                }
+                
             }else{
                 $data = json_decode($request->getContent(), true);
                 return new JsonResponse('Wrong method', 405);
