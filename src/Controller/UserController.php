@@ -107,10 +107,18 @@ class UserController extends AbstractController
     {
         $player = $entityManager->getRepository(User::class)->findBy(['id'=>$userId]);
 
+        if(count($player) !== 1){
+            return new JsonResponse('Wrong id', 404);
+        }
 
-        if(count($player) == 1){
+        if(count($player) === 1){
 
-            if($request->getMethod() == 'PATCH'){
+            if($request->getMethod() !== 'PATCH'){
+                $data = json_decode($request->getContent(), true);
+                return new JsonResponse('Wrong method', 405);
+            }
+
+            if($request->getMethod() === 'PATCH'){
                 $data = json_decode($request->getContent(), true);
                 $form = $this->createFormBuilder()
                     ->add('nom', TextType::class, array(
@@ -131,58 +139,58 @@ class UserController extends AbstractController
                     switch($key){
                         case 'nom':
                             $user = $entityManager->getRepository(User::class)->findBy(['name'=>$data['nom']]);
-                            
+                            if(count($user) !== 0){
+                                return new JsonResponse('Name already exists', 400);
+                            }
                             if(count($user) === 0){
                                 $player[0]->setName($data['nom']);
                                 $entityManager->flush();
-                            }else{
-                                return new JsonResponse('Name already exists', 400);
                             }
                             break;
                         case 'age':
+                            if($data['age'] <= 21){
+                                return new JsonResponse('Wrong age', 400);
+                            }
                             if($data['age'] > 21){
                                 $player[0]->setAge($data['age']);
                                 $entityManager->flush();
-                            }else{
-                                return new JsonResponse('Wrong age', 400);
                             }
                             break;
                     }
                 }
                 
-            }else{
-                $data = json_decode($request->getContent(), true);
-                return new JsonResponse('Wrong method', 405);
             }
 
             return new JsonResponse(array('name'=>$player[0]->getName(), "age"=>$player[0]->getAge(), 'id'=>$player[0]->getId()), 200);
-        }else{
-            return new JsonResponse('Wrong id', 404);
-        }    
+        }  
     }
 
     #[Route('/user/{id}', name: 'delete_user_by_id', methods:['DELETE'])]
     public function deleteUser($id, EntityManagerInterface $entityManager): JsonResponse | null
     {
         $player = $entityManager->getRepository(User::class)->findBy(['id'=>$id]);
-        if(count($player) == 1){
+
+        if(count($player) !== 1) {
+            return new JsonResponse('Wrong id', 404);
+        }
+        
+        if(count($player) === 1){
             try{
                 $entityManager->remove($player[0]);
                 $entityManager->flush();
 
                 $alreadyExists = $entityManager->getRepository(User::class)->findBy(['id'=>$id]);
     
+                if(empty($alreadyExists)){
+                    return new JsonResponse('', 204);
+                }
                 if(!empty($alreadyExists)){
                     throw new \Exception("User not deleted");
                     return null;
-                }else{
-                    return new JsonResponse('', 204);
                 }
             }catch(\Exception $e){
                 return new JsonResponse($e->getMessage(), 500);
             }
-        }else{
-            return new JsonResponse('Wrong id', 404);
-        }    
+        } 
     }
 }
