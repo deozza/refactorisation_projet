@@ -57,7 +57,7 @@ class UserController extends AbstractController
 
         $user = $entityManager->getRepository(User::class)->findBy(['name' => $data['name']]);
 
-        if (count($user) === 0) {
+        if (count($user) != 0) {
             return new JsonResponse('Name already exists', 400);
         }
 
