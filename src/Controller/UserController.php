@@ -24,7 +24,7 @@ class UserController extends AbstractController
         );
     }
 
-    #[Route('/users', name: 'user_post', methods: ['POST'])]
+    #[Route('/users', name: 'create_user', methods: ['POST'])]
     public function createUser(Request $request, EntityManagerInterface $entityManager): JsonResponse
     {
         if ($request->getMethod() != 'POST') {
