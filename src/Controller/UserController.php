@@ -122,7 +122,7 @@ class UserController extends AbstractController
             return new JsonResponse('Invalid form', 400);
         }
 
-        foreach ($data as $key => $value) {
+        foreach ($data as $key => $_) {
             switch ($key) {
                 case 'name':
                     $user = $entityManager->getRepository(User::class)->findBy(['name' => $data['name']]);
