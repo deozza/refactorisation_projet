@@ -26,7 +26,7 @@ class UserRepository extends ServiceEntityRepository
         $this->getEntityManager()->persist($entity);
 
         if ($flush) {
-            $this->getEntityManager()->flush();
+            $this->flush();
         }
     }
 
@@ -35,7 +35,12 @@ class UserRepository extends ServiceEntityRepository
         $this->getEntityManager()->remove($entity);
 
         if ($flush) {
-            $this->getEntityManager()->flush();
+            $this->flush();
         }
+    }
+
+    private function flush(): void
+    {
+        $this->getEntityManager()->flush();
     }
 }
