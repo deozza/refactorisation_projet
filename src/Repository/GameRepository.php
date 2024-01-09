@@ -7,8 +7,6 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<Game>
- *
  * @method Game|null find($id, $lockMode = null, $lockVersion = null)
  * @method Game|null findOneBy(array $criteria, array $orderBy = null)
  * @method Game[]    findAll()
@@ -21,46 +19,38 @@ class GameRepository extends ServiceEntityRepository
         parent::__construct($registry, Game::class);
     }
 
+    /**
+     * Save a game entity.
+     *
+     * @param Game $entity
+     * @param bool $flush
+     */
     public function save(Game $entity, bool $flush = false): void
     {
         $this->getEntityManager()->persist($entity);
 
         if ($flush) {
-            $this->getEntityManager()->flush();
+            $this->flush();
         }
     }
 
+    /**
+     * Remove a game entity.
+     *
+     * @param Game $entity
+     * @param bool $flush
+     */
     public function remove(Game $entity, bool $flush = false): void
     {
         $this->getEntityManager()->remove($entity);
 
         if ($flush) {
-            $this->getEntityManager()->flush();
+            $this->flush();
         }
     }
 
-//    /**
-//     * @return Game[] Returns an array of Game objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('g')
-//            ->andWhere('g.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('g.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
-
-//    public function findOneBySomeField($value): ?Game
-//    {
-//        return $this->createQueryBuilder('g')
-//            ->andWhere('g.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+    private function flush(): void
+    {
+        $this->getEntityManager()->flush();
+    }
 }
