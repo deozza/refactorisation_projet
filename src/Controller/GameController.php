@@ -14,6 +14,12 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Validator\Constraints as Assert;
 class GameController extends AbstractController
 {
+    private GameUse $gameUse;
+
+    public function __construct(GameUse $gameUse) {
+        $this->gameUse = $gameUse;
+    }
+
     #[Route('/games', name: 'get_list_of_games', methods:['GET'])]
     public function getPartieList(EntityManagerInterface $entityManager): JsonResponse
     {
@@ -52,76 +58,36 @@ class GameController extends AbstractController
     #[Route('/game/{identifiant}', name: 'fetch_game', methods:['GET'])]
     public function getGameInfo(EntityManagerInterface $entityManager, $identifiant): JsonResponse
     {
-        if(ctype_digit($identifiant)){
-            $party = $entityManager->getRepository(Game::class)->findOneBy(['id' => $identifiant]);
-
-            if($party !== null){
-                return $this->json(
-                    $party,
-                    headers: ['Content-Type' => 'application/json;charset=UTF-8']
-                );
-            }else{
-                return new JsonResponse('Game not found', 404);
-            }
-        }else{
-            return new JsonResponse('Game not found', 404);
+        try{
+            $game = $this->gameUse->getGameInfo($gameId);
+            return new JsonResponse('Playser Found', 200);
+        }catch(NotFoundHttpException $exception){
+            return $this->json(
+                $exception->getMessage(),
+                $exception->getStatusCode(),
+                ['Content-Type' => 'application/json;charset=UTF-8']
+            );
         }
     }
 
-    #[Route('/game/{id}/add/{playerRightId}', name: 'add_user_right', methods:['PATCH'])]
-    public function inviteToGame(Request $request, EntityManagerInterface $entityManager, $id, $playerRightId): JsonResponse
+    #[Route('/game/{id}/add/{playerRightId}', name: 'add_player_right', methods:['PATCH'])]
+    public function addPlayerRight(Request $request, EntityManagerInterface $entityManager, $gameId, $playerRightId): JsonResponse
     {
         $currentUserId = $request->headers->get('X-User-Id');
 
-        if(empty($currentUserId)){
+        if($this->checkUserIdIsNumber($currentUserId) === false){
             return new JsonResponse('User not found', 401);
         }
 
-        if(ctype_digit($id) && ctype_digit($playerRightId) && ctype_digit($currentUserId)){
-   
-            $playerLeft = $entityManager->getRepository(User::class)->find($currentUserId);
-
-            if($playerLeft === null){
-                return new JsonResponse('User not found', 401);
-            }
-
-            $game = $entityManager->getRepository(Game::class)->find($id);
-
-            if($game === null){
-                return new JsonResponse('Game not found', 404);
-            }
-
-            if($game->getState() === 'ongoing' || $game->getState() === 'finished'){
-                return new JsonResponse('Game already started', 409);
-            }
-
- 
-            $playerRight = $entityManager->getRepository(User::class)->find($playerRightId);
-
-            if($playerRight !== null){
-
-                if($playerLeft->getId() === $playerRight->getId()){
-                    return new JsonResponse('You can\'t play against yourself', 409);
-                }
-                
-                $game->setPlayerRight($playerRight);
-                $game->setState('ongoing');
-
-                $entityManager->flush();
-
-                return $this->json(
-                    $game,
-                    headers: ['Content-Type' => 'application/json;charset=UTF-8']
-                );
-            }else{
-                return new JsonResponse('User not found', 404);
-            }
-        }else{
-            if(ctype_digit($currentUserId) === false){
-                return new JsonResponse('User not found', 401);
-            }
-    
-            return new JsonResponse('Game not found', 404);
+        try {
+            $updatedGame = $this->gameUse->addPlayerRight($currentUserId, $gameId, $playerRightId);
+            return new JsonResponse('Playser Found', 200);
+        } catch(HttpException $exception) {
+            return $this->json(
+                $exception->$getMessage(),
+                $exception->getStatusCode(),
+                ['Content-Type' => 'application/json;charset=UTF-8']
+            );
         }
     }
 
