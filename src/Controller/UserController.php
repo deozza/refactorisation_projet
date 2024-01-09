@@ -29,53 +29,26 @@ class UserController extends AbstractController
     #[Route('/users', name: 'user_post', methods:['POST'])]
     public function createUser(Request $request,EntityManagerInterface $entityManager): JsonResponse
     {
-        if($request->getMethod() === 'POST'){
-            $data = json_decode($request->getContent(), true);
-            $form = $this->createFormBuilder()
-                ->add('nom', TextType::class, [
-                    'constraints'=>[
-                        new Assert\NotBlank(),
-                        new Assert\Length(['min'=>1, 'max'=>255])
-                    ]
-                ])
-                ->add('age', NumberType::class, [
-                    'constraints'=>[
-                        new Assert\NotBlank()
-                    ]
-                ])
-                ->getForm();
-
-            $form->submit($data);
-
-            if($form->isValid())
-            {
-                    if ($data['age'] > 21) {
-                        if (!$this->isUsernameExists($data['nom'], $entityManager)) {
-                            $joueur = new User();
-                            $joueur->setName($data['nom']);
-                            $joueur->setAge($data['age']);
-                            $entityManager->persist($joueur);
-                            $entityManager->flush();
-                
-                            return $this->json(
-                                $joueur,
-                                201,
-                                ['Content-Type' => 'application/json;charset=UTF-8']
-                            );                  
-                    }else{
-                        return new JsonResponse('Name already exists', 400);
-                    }
-                }else{
-                    return new JsonResponse('Wrong age', 400);
-                }
-            }else{
-                return new JsonResponse('Invalid form', 400);
-            }
-        }else{
-            return new JsonResponse('Wrong method', 405);
+        $dataUserAsArray = json_decode(json: $request->getContent(), associative: true);
+        if($dataUserAsArray === null){
+            $dataUserAsArray = [];
         }
+        try{
+            $createdUser = $this->userUseCase->createUser($dataAsArray);
 
-        
+            return $this->json(
+                $createdUser,
+                Response::HTTP_CREATED,
+                ['Content-Type' => 'application/json;charset=UTF-8']
+            );
+
+        }catch(BadRequestHttpException $e){
+            return $this->json(
+                $e->getMessage(),
+                $e->getStatusCode(),
+                ['Content-Type' => 'application/json;charset=UTF-8']
+            );
+        }
     }
 
     #[Route('/user/{identifiant}', name: 'get_user_by_id', methods:['GET'])]
