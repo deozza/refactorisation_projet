@@ -2,17 +2,19 @@
 
 namespace App\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\Routing\Annotation\Route;
-use Doctrine\ORM\EntityManagerInterface;
-use App\Entity\User;
 use PDO;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Validator\Constraints as Assert;
-
+use App\Entity\User;
 use App\Form\Type\CreateUserType;
 use App\Form\Type\UpdateUserType;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\JsonResponse;
+
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class UserController extends AbstractController
 {
@@ -86,58 +88,57 @@ class UserController extends AbstractController
 		return new JsonResponse('Invalid ID', 404);
 	}
 
-	#[Route('/user/{id}', name: 'udpate_user', methods: ['PATCH'])]
-	public function updateUser(EntityManagerInterface $entityManager, $id, Request $request): JsonResponse
+	#[Route('/user/{identifiant}', name: 'update_user', methods: ['PATCH'])]
+	public function updateUser(EntityManagerInterface $entityManager, $identifiant, Request $request): JsonResponse
 	{
-		try {
-			$user = $entityManager->getRepository(User::class)->find($id);
+		$user = $entityManager->getRepository(User::class)->find($identifiant);
 
-			if ($user) {
-				if ($request->getMethod() == 'PATCH') {
-					$data = json_decode($request->getContent(), true);
-
-					$form = $this->createForm(UpdateUserType::class, $user);
-
-					$form->submit($data);
-
-					if ($form->isValid()) {
-						foreach ($data as $key => $value) {
-							switch ($key) {
-								case 'nom':
-									$existingUser = $entityManager->getRepository(User::class)->findOneBy(['name' => $data['nom']]);
-									if (!$existingUser || $existingUser === $user) {
-										$user->setName($data['nom']);
-										$entityManager->flush();
-									} else {
-										return new JsonResponse('Name already exists', 400);
-									}
-									break;
-								case 'age':
-									if ($data['age'] > 21) {
-										$user->setAge($data['age']);
-										$entityManager->flush();
-									} else {
-										return new JsonResponse('Wrong age', 400);
-									}
-									break;
-							}
-						}
-					} else {
-						return new JsonResponse('Invalid form', 400);
-					}
-				} else {
-					$data = json_decode($request->getContent(), true);
-					return new JsonResponse('Wrong method', 405);
-				}
-
-				return new JsonResponse(array('name' => $user->getName(), "age" => $user->getAge(), 'id' => $user->getId()), 200);
-			} else {
-				return new JsonResponse('Wrong id', 404);
-			}
-		} catch (\Exception $e) {
-			return new JsonResponse($e->getMessage(), 400);
+		if (!$user) {
+			return new JsonResponse('Wrong id', 404);
 		}
+
+		if ($request->getMethod() !== 'PATCH') {
+			return new JsonResponse('Wrong method', 405);
+		}
+
+		$data = json_decode($request->getContent(), true);
+		$form = $this->createFormBuilder()
+			->add('nom', TextType::class, ['required' => false])
+			->add('age', NumberType::class, ['required' => false])
+			->getForm();
+
+		$form->submit($data);
+
+		if (!$form->isValid()) {
+			return new JsonResponse('Invalid form', 400);
+		}
+
+		if (isset($data['nom'])) {
+			$existingUser = $entityManager->getRepository(User::class)->findBy(['name' => $data['nom']]);
+			if ($existingUser && $existingUser[0]->getId() !== $user->getId()) {
+				return new JsonResponse('Name already exists', 400);
+			}
+
+			$user->setName($data['nom']);
+		}
+
+		if (isset($data['age'])) {
+			if ($data['age'] <= 21) {
+				return new JsonResponse('Wrong age', 400);
+			}
+
+			$user->setAge($data['age']);
+		}
+
+		$entityManager->flush();
+
+		return new JsonResponse([
+			'name' => $user->getName(),
+			'age' => $user->getAge(),
+			'id' => $user->getId()
+		], 200);
 	}
+
 
 	#[Route('/user/{id}', name: 'delete_user_by_id', methods: ['DELETE'])]
 	public function deleteUserById($id, EntityManagerInterface $entityManager): JsonResponse | null
