@@ -38,4 +38,14 @@ class GameRepository extends ServiceEntityRepository
             $this->getEntityManager()->flush();
         }
     }
+
+    
+    public function delete(Game $game): void
+    {
+        $this->getEntityManager()->remove($game);
+        $this->save();
+    }
+
+    
+
 }
