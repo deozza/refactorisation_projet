@@ -10,16 +10,16 @@ class UserControllerTest extends WebTestCase
     use RecreateDatabaseTrait;
 
     /**
-     * @dataProvider dataprovider_getListeDesUsers_checkAuthorizedMethods
+     * @dataProvider dataprovider_getUsersList_checkAuthorizedMethods
      */
-    public function test_getListeDesUsers_checkAuthorizedMethods(string $method)
+    public function test_getUsersList_checkAuthorizedMethods(string $method)
     {
         $client = static::createClient();
         $client->request($method, '/users');
         $this->assertEquals(405, $client->getResponse()->getStatusCode());
     }
 
-    private static function dataprovider_getListeDesUsers_checkAuthorizedMethods(): array
+    private static function dataprovider_getUsersList_checkAuthorizedMethods(): array
     {
         return [
             ['PUT'],
@@ -28,13 +28,13 @@ class UserControllerTest extends WebTestCase
         ];
     }
 
-    public function test_getListeDesUsers_checkReturnStatus(){
+    public function test_getUsersList_checkReturnStatus(){
         $client = static::createClient();
         $client->request('GET', '/users');
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
     }
 
-    public function test_getListeDesUsers_checkValues(){
+    public function test_getUsersList_checkValues(){
         $client = static::createClient();
         $client->request('GET', '/users');
 
@@ -54,7 +54,7 @@ class UserControllerTest extends WebTestCase
     private static function dataprovider_createUser_checkWhenMissingData(): array
     {
         return [
-            ['{"nom":"John"}'],
+            ['{"name":"John"}'],
             ['{"age":25}'],
             ['{}'],
         ];
@@ -62,44 +62,44 @@ class UserControllerTest extends WebTestCase
 
     public function test_createUser_checkWithTooManyData(){
         $client = static::createClient();
-        $client->request('POST', '/users', [], [], ['CONTENT_TYPE' => 'application/json'], '{"nom":"John","age":25,"foo":"bar"}');
+        $client->request('POST', '/users', [], [], ['CONTENT_TYPE' => 'application/json'], '{"name":"John","age":25,"foo":"bar"}');
         $this->assertEquals(400, $client->getResponse()->getStatusCode());
     }
 
     public function test_createUser_checkWhenWrongAge(){
         $client = static::createClient();
-        $client->request('POST', '/users', [], [], ['CONTENT_TYPE' => 'application/json'], '{"nom":"John","age":15}');
+        $client->request('POST', '/users', [], [], ['CONTENT_TYPE' => 'application/json'], '{"name":"John","age":15}');
         $this->assertEquals(400, $client->getResponse()->getStatusCode());
     }
 
     public function test_createUser_checkWhenUserAlreadyExists(){
         $client = static::createClient();
-        $client->request('POST', '/users', [], [], ['CONTENT_TYPE' => 'application/json'], '{"nom":"John","age":25}');
+        $client->request('POST', '/users', [], [], ['CONTENT_TYPE' => 'application/json'], '{"name":"John","age":25}');
         $this->assertEquals(400, $client->getResponse()->getStatusCode());
     }
 
     public function test_createUser_checkWithValidData(){
         $client = static::createClient();
-        $client->request('POST', '/users', [], [], ['CONTENT_TYPE' => 'application/json'], '{"nom":"Joe","age":30}');
+        $client->request('POST', '/users', [], [], ['CONTENT_TYPE' => 'application/json'], '{"name":"Joe","age":30}');
         $this->assertEquals(201, $client->getResponse()->getStatusCode());
     }
 
-    public function test_getUserWithIdentifiant_checkWithInvalidMethod(){
+    public function test_getUserFromId_checkWithInvalidMethod(){
         $client = static::createClient();
         $client->request('POST', '/user/1');
         $this->assertEquals(405, $client->getResponse()->getStatusCode());
     }
 
     /**
-     * @dataProvider dataprovider_getUserWithIdentifiant_checkWithInvalidId
+     * @dataProvider dataprovider_getUserFromId_checkWithInvalidId
      */
-    public function test_getUserWithIdentifiant_checkWithInvalidId($id){
+    public function test_getUserFromId_checkWithInvalidId($id){
         $client = static::createClient();
         $client->request('GET', '/user/'.$id);
         $this->assertEquals(404, $client->getResponse()->getStatusCode());
     }
 
-    private static function dataprovider_getUserWithIdentifiant_checkWithInvalidId(): array
+    private static function dataprovider_getUserFromId_checkWithInvalidId(): array
     {
         return [
             [0],
@@ -109,13 +109,13 @@ class UserControllerTest extends WebTestCase
         ];
     }
 
-    public function test_getUserWithIdentifiant_checkStatusWithValidId(){
+    public function test_getUserFromId_checkStatusWithValidId(){
         $client = static::createClient();
         $client->request('GET', '/user/1');
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
     }
 
-    public function test_getUserWithIdentifiant_checkValuesWithValidId(){
+    public function test_getUserFromId_checkValuesWithValidId(){
         $client = static::createClient();
         $client->request('GET', '/user/1');
 
@@ -144,7 +144,7 @@ class UserControllerTest extends WebTestCase
 
     public function test_updateUser_withTooManyData(){
         $client = static::createClient();
-        $client->request('PATCH', '/user/1', [], [], ['CONTENT_TYPE' => 'application/json'], '{"nom":"John","age":25,"foo":"bar"}');
+        $client->request('PATCH', '/user/1', [], [], ['CONTENT_TYPE' => 'application/json'], '{"name":"John","age":25,"foo":"bar"}');
         $this->assertEquals(400, $client->getResponse()->getStatusCode());
     }
 
@@ -156,34 +156,34 @@ class UserControllerTest extends WebTestCase
 
     public function test_updateUser_whenUserAlreadyExists(){
         $client = static::createClient();
-        $client->request('PATCH', '/user/1', [], [], ['CONTENT_TYPE' => 'application/json'], '{"nom":"Jane"}');
+        $client->request('PATCH', '/user/1', [], [], ['CONTENT_TYPE' => 'application/json'], '{"name":"Jane"}');
         $this->assertEquals(400, $client->getResponse()->getStatusCode());
     }
 
     public function test_updateUser_checkValidStatus(){
         $client = static::createClient();
-        $client->request('PATCH', '/user/1', [], [], ['CONTENT_TYPE' => 'application/json'], '{"nom":"Joe","age":30}');
+        $client->request('PATCH', '/user/1', [], [], ['CONTENT_TYPE' => 'application/json'], '{"name":"Joe","age":30}');
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
     }
 
     public function test_updateUser_checkValidValues(){
         $client = static::createClient();
-        $client->request('PATCH', '/user/1', [], [], ['CONTENT_TYPE' => 'application/json'], '{"nom":"Joe","age":30}');
+        $client->request('PATCH', '/user/1', [], [], ['CONTENT_TYPE' => 'application/json'], '{"name":"Joe","age":30}');
 
         $content = $client->getResponse()->getContent();
         $this->assertJsonStringEqualsJsonString('{"id":1,"name":"Joe","age":30}', $content);
     }
 
     /**
-     * @dataProvider dataprovider_suprUser_withInvalidId
+     * @dataProvider dataprovider_deleteUser_withInvalidId
      */
-    public function test_suprUser_withInvalidId($id){
+    public function test_deleteUser_withInvalidId($id){
         $client = static::createClient();
         $client->request('DELETE', '/user/'.$id);
         $this->assertEquals(404, $client->getResponse()->getStatusCode());
     }
 
-    private static function dataprovider_suprUser_withInvalidId(): array
+    private static function dataprovider_deleteUser_withInvalidId(): array
     {
         return [
             [0],
@@ -193,13 +193,13 @@ class UserControllerTest extends WebTestCase
         ];
     }
 
-    public function test_suprUser_checkValidStatus(){
+    public function test_deleteUser_checkValidStatus(){
         $client = static::createClient();
         $client->request('DELETE', '/user/1');
         $this->assertEquals(204, $client->getResponse()->getStatusCode());
     }
 
-    public function test_suprUser_checkUserIsDeleted(){
+    public function test_deleteUser_checkUserIsDeleted(){
         $client = static::createClient();
         $client->request('DELETE', '/user/1');
         $client->request('GET', '/user/1');
