@@ -17,7 +17,7 @@ class GameController extends AbstractController
     private GameUse $gameUse;
 
     public function __construct(GameUse $gameUse) {
-        $this->GameUse = $gameUse;
+        $this->gameUse = $gameUse;
     }
 
     #[Route('/games', name: 'get_list_of_games', methods:['GET'])]
