@@ -282,7 +282,7 @@ class GameController extends AbstractController
     }
 
     #[Route('/game/{id}', name: 'delete_game', methods:['DELETE'])]
-    public function deleteGameById(EntityManagerInterface $entityManager, Request $request, $gameId): JsonResponse
+    public function deleteGame(EntityManagerInterface $entityManager, Request $request, $gameId): JsonResponse
     {
    
         $currentUserId = $request->headers->get('X-User-Id');
