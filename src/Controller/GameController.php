@@ -17,7 +17,7 @@ class GameController extends AbstractController
     private GameUse $gameUse;
 
     public function __construct(GameUse $gameUse) {
-        $this->GameUse = $gameUse;
+        $this->gameUse = $gameUse;
     }
 
     #[Route('/games', name: 'get_list_of_games', methods:['GET'])]
@@ -58,19 +58,15 @@ class GameController extends AbstractController
     #[Route('/game/{identifiant}', name: 'fetch_game', methods:['GET'])]
     public function getGameInfo(EntityManagerInterface $entityManager, $identifiant): JsonResponse
     {
-        if(ctype_digit($identifiant)){
-            $party = $entityManager->getRepository(Game::class)->findOneBy(['id' => $identifiant]);
-
-            if($party !== null){
-                return $this->json(
-                    $party,
-                    headers: ['Content-Type' => 'application/json;charset=UTF-8']
-                );
-            }else{
-                return new JsonResponse('Game not found', 404);
-            }
-        }else{
-            return new JsonResponse('Game not found', 404);
+        try{
+            $game = $this->gameUse->getGameInfo($gameId);
+            return new JsonResponse('Playser Found', 200);
+        }catch(NotFoundHttpException $exception){
+            return $this->json(
+                $exception->getMessage(),
+                $exception->getStatusCode(),
+                ['Content-Type' => 'application/json;charset=UTF-8']
+            );
         }
     }
 
