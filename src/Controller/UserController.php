@@ -52,21 +52,28 @@ class UserController extends AbstractController
         }
     }
 
-    #[Route('/user/{identifiant}', name: 'get_user_by_id', methods:['GET'])]
-    public function getUserWithIdentifiant($identifiant, EntityManagerInterface $entityManager): JsonResponse
+    #[Route('/user/{identifiant}', name: 'get_user_with_id', methods:['GET'])]
+   public function getUserWithIdentifiant($identifiant, EntityManagerInterface $entityManager): JsonResponse
     {
-        if(ctype_digit($identifiant)){
-            $joueur = $entityManager->getRepository(User::class)->findBy(['id'=>$identifiant]);
-            if(count($joueur) == 1){
-                return new JsonResponse(array('name'=>$joueur[0]->getName(), "age"=>$joueur[0]->getAge(), 'id'=>$joueur[0]->getId()), 200);
-            }else{
-                return new JsonResponse('Wrong id', 404);
-            }
+        if (!ctype_digit($identifiant)) {
+            return new JsonResponse('Wrong id', 404);
         }
+
+        $joueur = $entityManager->getRepository(User::class)->findOneBy(['id' => $identifiant]);
+
+        if ($joueur) {
+            $userData = [
+                'name' => $joueur->getName(),
+                'age' => $joueur->getAge(),
+                'id' => $joueur->getId(),
+            ];
+
+            return $this->json($userData, 200, ['Content-Type' => 'application/json;charset=UTF-8']);
+        }
+
         return new JsonResponse('Wrong id', 404);
     }
 
-    
 
     #[Route('/user/{identifiant}', name: 'udpate_user', methods:['PATCH'])]
     public function updateUser(EntityManagerInterface $entityManager, $identifiant, Request $request): JsonResponse
