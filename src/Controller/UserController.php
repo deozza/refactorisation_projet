@@ -65,6 +65,10 @@ class UserController extends AbstractController
         return new JsonResponse('Wrong id', 404);
     }
 
+
+
+    
+
     #[Route('/user/{identifiant}', name: 'udpate_user', methods:['PATCH'])]
     public function updateUser(EntityManagerInterface $entityManager, $identifiant, Request $request): JsonResponse
     {
