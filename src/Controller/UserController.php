@@ -29,7 +29,8 @@ class UserController extends AbstractController
     #[Route('/users', name: 'user_post', methods:['POST'])]
     public function createUser(Request $request,EntityManagerInterface $entityManager): JsonResponse
     {
-        $datUserAsArray = json_decode(json: $request->getContent(), associative: true);
+        $dataUserAsArray = json_decode(json: $request->getContent(), associative: true);
+
         if($dataUserAsArray === null){
             $dataUserAsArray = [];
         }
@@ -64,6 +65,8 @@ class UserController extends AbstractController
         }
         return new JsonResponse('Wrong id', 404);
     }
+
+    
 
     #[Route('/user/{identifiant}', name: 'udpate_user', methods:['PATCH'])]
     public function updateUser(EntityManagerInterface $entityManager, $identifiant, Request $request): JsonResponse
@@ -116,32 +119,31 @@ class UserController extends AbstractController
     }
 
 
-    #[Route('/user/{id}', name: 'delete_user_by_identifiant', methods:['DELETE'])]
-    public function suprUser($id, EntityManagerInterface $entityManager): JsonResponse | null
+    #[Route('/user/{userId}', name: 'delete_user_by_id', methods:['DELETE'], requirements:['userId' => '\d+'])]
+    public function deleteUserById(int $userId, EntityManagerInterface $entityManager): JsonResponse
     {
-        $joueur = $entityManager->getRepository(User::class)->findBy(['id'=>$id]);
-        if(count($joueur) == 1){
-            try{
-                $entityManager->remove($joueur[0]);
-                $entityManager->flush();
-
-                $existeEncore = $entityManager->getRepository(User::class)->findBy(['id'=>$id]);
+        $user = $entityManager->getRepository(User::class)->find($userId);
     
-                if(!empty($existeEncore)){
-                    throw new \Exception("Le user n'a pas éte délété");
-                    return null;
-                }else{
-                    return new JsonResponse('', 204);
-                }
-            }catch(\Exception $e){
-                return new JsonResponse($e->getMessage(), 500);
-            }
-        }else{
+        if (!$user) {
             return new JsonResponse('Wrong id', 404);
-        }    
-
-        
+        }
+    
+        try {
+            $entityManager->remove($user);
+            $entityManager->flush();
+    
+            $exists = $entityManager->getRepository(User::class)->find($userId);
+    
+            if ($exists) {
+                throw new \Exception("Le user n'a pas été supprimé");
+            }
+    
+            return new JsonResponse('', 204);
+        } catch (\Exception $e) {
+            return new JsonResponse($e->getMessage(), 500);
+        }
     }
+    
     private function isUsernameExists(string $username, EntityManagerInterface $entityManager): bool
     {
         $user = $entityManager->getRepository(User::class)->findBy(['name' => $username]);
