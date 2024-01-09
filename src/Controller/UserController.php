@@ -34,7 +34,7 @@ class UserController extends AbstractController
             $dataUserAsArray = [];
         }
         try{
-            $createdUser = $this->userUseCase->createUser($dataAsArray);
+            $createdUser = $this->userUseCase->createUser($dataUserAsArray);
 
             return $this->json(
                 $createdUser,
@@ -42,10 +42,10 @@ class UserController extends AbstractController
                 ['Content-Type' => 'application/json;charset=UTF-8']
             );
 
-        }catch(BadRequestHttpException $e){
+        }catch(BadRequestHttpException $error){
             return $this->json(
-                $e->getMessage(),
-                $e->getStatusCode(),
+                $error->getMessage(),
+                $error->getStatusCode(),
                 ['Content-Type' => 'application/json;charset=UTF-8']
             );
         }
@@ -64,8 +64,6 @@ class UserController extends AbstractController
         }
         return new JsonResponse('Wrong id', 404);
     }
-
-
 
     
 
