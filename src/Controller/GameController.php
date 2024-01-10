@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use App\Repository\GameRepository;
 
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -26,39 +27,35 @@ class GameController extends AbstractController
     }
 
     #[Route('/games', name: 'create_game', methods: ['POST'])]
-    public function createGame(Request $request, EntityManagerInterface $entityManager): JsonResponse
+    public function createGame(Request $request, EntityManagerInterface $entityManager, GameRepository $gameRepository): JsonResponse
     {
         $currentUserId = $request->headers->get('X-User-Id');
 
-        if ($currentUserId !== null) {
-
-            if (ctype_digit($currentUserId) === false) {
-                return new JsonResponse('User not found', 401);
-            }
-
-            $currentUser = $entityManager->getRepository(User::class)->find($currentUserId);
-
-            // Si l'utilisateur n'existe pas -> stop creation de partie
-            if ($currentUser === null) {
-                return new JsonResponse('User not found', 401);
-            }
-
-            $nouvelle_partie = new Game();
-            $nouvelle_partie->setState('pending');
-            $nouvelle_partie->setPlayerLeft($currentUser);
-
-            $entityManager->persist($nouvelle_partie);
-
-            $entityManager->flush();
-
-            return $this->json(
-                $nouvelle_partie,
-                201,
-                headers: ['Content-Type' => 'application/json;charset=UTF-8']
-            );
-        } else {
+        if ($currentUserId == null) {
             return new JsonResponse('User not found', 401);
         }
+
+        if (ctype_digit($currentUserId) === false) {
+            return new JsonResponse('User not found', 401);
+        }
+
+        $currentUser = $entityManager->getRepository(User::class)->find($currentUserId);
+
+        if ($currentUser === null) {
+            return new JsonResponse('User not found', 401);
+        }
+
+        $nouvelle_partie = new Game();
+        $nouvelle_partie->setState('pending');
+        $nouvelle_partie->setPlayerLeft($currentUser);
+
+        $gameRepository->save($nouvelle_partie);
+
+        return $this->json(
+            $nouvelle_partie,
+            201,
+            headers: ['Content-Type' => 'application/json;charset=UTF-8']
+        );
     }
 
     #[Route('/game/{identifiant}', name: 'find_game_info_by_id', methods: ['GET'])]
@@ -254,18 +251,6 @@ class GameController extends AbstractController
                 $game->setPlayRight($data['choice']);
 
                 $entityManager->flush();
-
-
-
-
-
-
-
-
-
-
-
-
 
                 if ($game->getPlayLeft() !== null) {
 
