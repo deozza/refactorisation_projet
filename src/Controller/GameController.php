@@ -117,41 +117,31 @@ class GameController extends AbstractController
             }
         }
     }
-    #[Route('/game/{id}', name: 'annuler_game', methods:['DELETE'])]
-    public function deleteGame(EntityManagerInterface $entityManager, Request $request, $id): JsonResponse
+
+    #[Route('/game/{id}', name: 'delete_game', methods:['DELETE'])]
+    public function deleteGame(EntityManagerInterface $entityManager, Request $request, $gameId): JsonResponse
     {
    
         $currentUserId = $request->headers->get('X-User-Id');
 
-        if(ctype_digit($currentUserId) === true){
-            $player = $entityManager->getRepository(User::class)->find($currentUserId);
-
-            if($player !== null){
-
-                if(ctype_digit($id) === false){
-                    return new JsonResponse('Game not found', 404);
-                }
-        
-                $game = $entityManager->getRepository(Game::class)->findOneBy(['id' => $id, 'playerLeft' => $player]);
-
-                if(empty($game)){
-                    $game = $entityManager->getRepository(Game::class)->findOneBy(['id' => $id, 'playerRight' => $player]);
-                }
-
-                if(empty($game)){
-                    return new JsonResponse('Game not found', 403);
-                }
-
-                $entityManager->remove($game);
-                $entityManager->flush();
-
-                return new JsonResponse(null, 204);
-
-            }else{
-                return new JsonResponse('User not found', 401);
-            }
-        }else{
+        if($this->checkUserIdIsNumber($currentUserId) === false){
             return new JsonResponse('User not found', 401);
+        }
+
+        try{
+            $this->gameUse->deleteGame($currentUserId, $gameId);
+            return $this->json(
+                null,
+                Response::HTTP_NO_CONTENT,
+                ['Content-Type' => 'application/json;charset=UTF-8']
+            );
+
+        }catch(HttpException $exception){
+            return $this->json(
+                $exception->getMessage(),
+                $exception->getStatusCode(),
+                ['Content-Type' => 'application/json;charset=UTF-8']
+            );
         }
     }
 
