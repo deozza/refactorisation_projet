@@ -11,6 +11,7 @@ use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Constraints as Assert;
+use App\Repository\UserRepository;
 
 class UserController extends AbstractController
 {
@@ -25,7 +26,7 @@ class UserController extends AbstractController
     }
 
     #[Route('/users', name: 'create_user', methods: ['POST'])]
-    public function createUser(Request $request, EntityManagerInterface $entityManager): JsonResponse
+    public function createUser(Request $request, EntityManagerInterface $entityManager, UserRepository $userRepository): JsonResponse
     {
         if ($request->getMethod() != 'POST') {
             return new JsonResponse('Wrong method', 405);
@@ -64,8 +65,7 @@ class UserController extends AbstractController
         $player = new User();
         $player->setName($data['name']);
         $player->setAge($data['age']);
-        $entityManager->persist($player);
-        $entityManager->flush();
+        $userRepository->save($player, true);
 
         return $this->json(
             $player,
@@ -147,15 +147,14 @@ class UserController extends AbstractController
     }
 
     #[Route('/user/{id}', name: 'delete_user_by_id', methods: ['DELETE'])]
-    public function deleteUser($id, EntityManagerInterface $entityManager): JsonResponse | null
+    public function deleteUser($id, EntityManagerInterface $entityManager, UserRepository $userRepository): JsonResponse | null
     {
         $player = $entityManager->getRepository(User::class)->findBy(['id' => $id]);
         if (count($player) != 1) {
             return new JsonResponse('Wrong id', 404);
         }
         try {
-            $entityManager->remove($player[0]);
-            $entityManager->flush();
+            $userRepository->remove($player[0], true);
 
             $existeEncore = $entityManager->getRepository(User::class)->findBy(['id' => $id]);
 
