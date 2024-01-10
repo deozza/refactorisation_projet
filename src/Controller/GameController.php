@@ -81,7 +81,7 @@ class GameController extends AbstractController
 
         try {
             $updatedGame = $this->gameUse->addPlayerRight($currentUserId, $gameId, $playerRightId);
-            return new JsonResponse('Playser Found', 200);
+            return new JsonResponse('Player Found', 200);
         } catch(HttpException $exception) {
             return $this->json(
                 $exception->$getMessage(),
