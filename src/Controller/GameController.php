@@ -86,52 +86,48 @@ class GameController extends AbstractController
             return new JsonResponse('User not found', 401);
         }
 
-        if (ctype_digit($id) && ctype_digit($playerRightId) && ctype_digit($currentUserId)) {
-
-            $playerLeft = $entityManager->getRepository(User::class)->find($currentUserId);
-
-            if ($playerLeft === null) {
-                return new JsonResponse('User not found', 401);
-            }
-
-            $game = $entityManager->getRepository(Game::class)->find($id);
-
-            if ($game === null) {
-                return new JsonResponse('Game not found', 404);
-            }
-
-            if ($game->getState() === 'ongoing' || $game->getState() === 'finished') {
-                return new JsonResponse('Game already started', 409);
-            }
-
-
-            $playerRight = $entityManager->getRepository(User::class)->find($playerRightId);
-
-            if ($playerRight !== null) {
-
-                if ($playerLeft->getId() === $playerRight->getId()) {
-                    return new JsonResponse('You can\'t play against yourself', 409);
-                }
-
-                $game->setPlayerRight($playerRight);
-                $game->setState('ongoing');
-
-                $entityManager->flush();
-
-                return $this->json(
-                    $game,
-                    headers: ['Content-Type' => 'application/json;charset=UTF-8']
-                );
-            } else {
-                return new JsonResponse('User not found', 404);
-            }
-        } else {
+        if (!ctype_digit($id) && !ctype_digit($playerRightId) && !ctype_digit($currentUserId)) {
             if (ctype_digit($currentUserId) === false) {
                 return new JsonResponse('User not found', 401);
             }
-
             return new JsonResponse('Game not found', 404);
         }
+
+        $playerLeft = $entityManager->getRepository(User::class)->find($currentUserId);
+
+        if ($playerLeft === null) {
+            return new JsonResponse('User not found', 401);
+        }
+
+        $game = $entityManager->getRepository(Game::class)->find($id);
+
+        if ($game === null) {
+            return new JsonResponse('Game not found', 404);
+        }
+
+        if ($game->getState() === 'ongoing' || $game->getState() === 'finished') {
+            return new JsonResponse('Game already started', 409);
+        }
+
+        $playerRight = $entityManager->getRepository(User::class)->find($playerRightId);
+
+        if ($playerRight == null) {
+            return new JsonResponse('User not found', 404);
+        }
+
+        if ($playerLeft->getId() === $playerRight->getId()) {
+            return new JsonResponse('You can\'t play against yourself', 409);
+        }
+
+        $game->setPlayerRight($playerRight);
+        $game->setState('ongoing');
+
+        $entityManager->flush();
+
+        return $this->json(
+            $game,
+            headers: ['Content-Type' => 'application/json;charset=UTF-8']
+        );
     }
 
     #[Route('/game/{identifiant}', name: 'send_move_choice', methods: ['PATCH'])]
