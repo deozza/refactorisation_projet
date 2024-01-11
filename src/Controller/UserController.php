@@ -156,10 +156,8 @@ class UserController extends AbstractController
                             Response::HTTP_BAD_REQUEST
                         );
                     }
-                    if($data['age'] > 21){
-                        $player[0]->setAge($data['age']);
-                        $entityManager->flush();
-                    }
+                    $player[0]->setAge($data['age']);
+                    $entityManager->flush();
                     break;
             }
         }   
@@ -184,29 +182,25 @@ class UserController extends AbstractController
             );
         }
 
-        if(count($player) === 1){
-            try{
-                $entityManager->remove($player[0]);
-                $entityManager->flush();
+        try{
+            $entityManager->remove($player[0]);
+            $entityManager->flush();
 
-                $alreadyExists = $entityManager->getRepository(User::class)->findBy(['id'=>$id]);
-    
-                if(empty($alreadyExists)){
-                    return new JsonResponse(
-                        "No content",
-                        Response::HTTP_NO_CONTENT,
-                    );
-                }
-                if(!empty($alreadyExists)){
-                    throw new \Exception("User not deleted");
-                    return null;
-                }
-            }catch(\Exception $e){
+            $alreadyExists = $entityManager->getRepository(User::class)->findBy(['id'=>$id]);
+
+            if(empty($alreadyExists)){
                 return new JsonResponse(
-                    $e->getMessage(),
-                    Response::HTTP_INTERNAL_SERVER_ERROR
+                    "No content",
+                    Response::HTTP_NO_CONTENT,
                 );
             }
-        } 
+                throw new \Exception("User not deleted");
+                return null;
+        }catch(\Exception $e){
+            return new JsonResponse(
+                $e->getMessage(),
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
+        }
     }
 }
