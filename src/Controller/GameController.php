@@ -242,12 +242,6 @@ class GameController extends AbstractController
 
                 $game->setState('finished');
                 $entityManager->flush();
-
-                return $this->json(
-                    $game,
-                    200,
-                    headers: ['Content-Type' => 'application/json;charset=UTF-8']
-                );
             }
 
             return $this->json(
@@ -260,50 +254,42 @@ class GameController extends AbstractController
 
             $entityManager->flush();
 
-            if (null !== $game->getPlayLeft()) {
-
-                switch ($data['choice']) {
-                    case 'rock':
-                        if($game->getPlayLeft() !== 'paper' && $game->getPlayLeft() !== 'scissors'){
-                            $game->setResult('draw');
-                        }
-                        if ($game->getPlayLeft() === 'paper') {
-                            $game->setResult('winLeft');
-                        } elseif ($game->getPlayLeft() === 'scissors') {
-                            $game->setResult('winRight');
-                        }
-                        break;
-                    case 'paper':
-                        if($game->getPlayLeft() !== 'scissors' && $game->getPlayLeft() !== 'rock'){
-                            $game->setResult('draw');
-                        }
-                        if ($game->getPlayLeft() === 'scissors') {
-                            $game->setResult('winLeft');
-                        } elseif ($game->getPlayLeft() === 'rock') {
-                            $game->setResult('winRight');
-                        }
-                        break;
-                    case 'scissors':
-                        if($game->getPlayLeft() !== 'rock' && $game->getPlayLeft() !== 'paper'){
-                            $game->setResult('draw');
-                        }
-                        if ($game->getPlayLeft() === 'rock') {
-                            $game->setResult('winLeft');
-                        } elseif ($game->getPlayLeft() === 'paper') {
-                            $game->setResult('winRight');
-                        }
-                        break;
-                }
-
-                $game->setState('finished');
-                $entityManager->flush();
-
-                return $this->json(
-                    $game,
-                    200,
-                    headers: ['Content-Type' => 'application/json;charset=UTF-8']
-                );
+            switch ($data['choice']) {
+                case 'rock':
+                    if($game->getPlayLeft() !== 'paper' && $game->getPlayLeft() !== 'scissors'){
+                        $game->setResult('draw');
+                    }
+                    if ($game->getPlayLeft() === 'paper') {
+                        $game->setResult('winLeft');
+                    } elseif ($game->getPlayLeft() === 'scissors') {
+                        $game->setResult('winRight');
+                    }
+                    break;
+                case 'paper':
+                    if($game->getPlayLeft() !== 'scissors' && $game->getPlayLeft() !== 'rock'){
+                        $game->setResult('draw');
+                    }
+                    if ($game->getPlayLeft() === 'scissors') {
+                        $game->setResult('winLeft');
+                    } elseif ($game->getPlayLeft() === 'rock') {
+                        $game->setResult('winRight');
+                    }
+                    break;
+                case 'scissors':
+                    if($game->getPlayLeft() !== 'rock' && $game->getPlayLeft() !== 'paper'){
+                        $game->setResult('draw');
+                    }
+                    if ($game->getPlayLeft() === 'rock') {
+                        $game->setResult('winLeft');
+                    } elseif ($game->getPlayLeft() === 'paper') {
+                        $game->setResult('winRight');
+                    }
+                    break;
             }
+
+            $game->setState('finished');
+            $entityManager->flush();
+            
             return $this->json(
                 $game,
                 200,
@@ -345,6 +331,6 @@ class GameController extends AbstractController
         $entityManager->remove($game);
         $entityManager->flush();
 
-        return new JsonResponse(null, 204);        
+        return new JsonResponse("No content", 204);        
     }
 }
