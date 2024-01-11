@@ -34,7 +34,7 @@ class GameController extends AbstractController
 
         if (null === $currentUserId) {
             return new JsonResponse(
-                'You to be a user !',
+                'You\'re not a user',
                 Response::HTTP_UNAUTHORIZED,
             );
         }
@@ -87,20 +87,6 @@ class GameController extends AbstractController
     public function inviteToGame(Request $request, EntityManagerInterface $entityManager, $id, $playerRightId): JsonResponse
     {
         $currentUserId = $request->headers->get('X-User-Id');
-
-        if (empty($currentUserId)) {
-            return new JsonResponse(
-                'You need to be a user !',
-                Response::HTTP_UNAUTHORIZED,
-            );
-        }
-
-        if (false === ctype_digit($currentUserId)) {
-            return new JsonResponse(
-                'Your user id doesn\'t respect the good format',
-                Response::HTTP_UNAUTHORIZED,
-            );
-        }
 
         $playerLeft = $entityManager->getRepository(User::class)->find($currentUserId);
 
@@ -179,7 +165,7 @@ class GameController extends AbstractController
         }
 
         $userIsPlayerLeft = false;
-        $userIsPlayerRight = $userIsPlayerLeft;
+        $userIsPlayerRight = false;
 
         if ($game->getPlayerLeft()->getId() === $currentUser->getId()) {
             $userIsPlayerLeft = true;
