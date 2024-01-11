@@ -214,7 +214,6 @@ class GameController extends AbstractController
             );
         } elseif ($userIsPlayerRight) {
             $game->setPlayRight($data['choice']);
-
             $entityManager->flush();
 
             switch ($data['choice']) {
@@ -249,10 +248,9 @@ class GameController extends AbstractController
                     }
                     break;
             }
-
             $game->setState('finished');
             $entityManager->flush();
-            
+
             return $this->json(
                 $game,
                 Response::HTTP_OK,
@@ -264,10 +262,9 @@ class GameController extends AbstractController
     #[Route('/game/{id}', name: 'annuler_game', methods: ['DELETE'])]
     public function deleteGame(EntityManagerInterface $entityManager, Request $request, $id): JsonResponse
     {
-
         $currentUserId = $request->headers->get('X-User-Id');
-
         $player = $entityManager->getRepository(User::class)->find($currentUserId);
+        $game = $entityManager->getRepository(Game::class)->findOneBy(['id' => $id, 'playerLeft' => $player]);
 
         if(null === $player){
             return new JsonResponse(
@@ -275,20 +272,15 @@ class GameController extends AbstractController
                 Response::HTTP_UNAUTHORIZED,
             );
         }
-
         if (false === ctype_digit($id)) {
             return new JsonResponse(
                 'Game not found', 
                 Response::HTTP_NOT_FOUND
             );
         }
-
-        $game = $entityManager->getRepository(Game::class)->findOneBy(['id' => $id, 'playerLeft' => $player]);
-
         if (empty($game)) {
             $game = $entityManager->getRepository(Game::class)->findOneBy(['id' => $id, 'playerRight' => $player]);
         }
-
         if (empty($game)) {
             return new JsonResponse(
                 'It\'s forbidden my friend',
