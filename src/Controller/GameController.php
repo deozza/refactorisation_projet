@@ -73,12 +73,11 @@ class GameController extends AbstractController
             return new JsonResponse('Game not found', 404);
         }
 
-        if ($party !== null) {
-            return $this->json(
-                $party,
-                headers: ['Content-Type' => 'application/json;charset=UTF-8']
-            );
-        }
+        return $this->json(
+            $party,
+            200,
+            headers: ['Content-Type' => 'application/json;charset=UTF-8']
+        );
     }
 
     #[Route('/game/{id}/add/{playerRightId}', name: 'add_user_right', methods: ['PATCH'])]
@@ -131,6 +130,7 @@ class GameController extends AbstractController
 
         return $this->json(
             $game,
+            200,
             headers: ['Content-Type' => 'application/json;charset=UTF-8']
         );
     }
@@ -245,19 +245,20 @@ class GameController extends AbstractController
 
                 return $this->json(
                     $game,
+                    200,
                     headers: ['Content-Type' => 'application/json;charset=UTF-8']
                 );
             }
 
             return $this->json(
                 $game,
+                200,
                 headers: ['Content-Type' => 'application/json;charset=UTF-8']
             );
         } elseif ($userIsPlayerRight) {
             $game->setPlayRight($data['choice']);
 
             $entityManager->flush();
-
 
             if (null !== $game->getPlayLeft()) {
 
@@ -299,16 +300,16 @@ class GameController extends AbstractController
 
                 return $this->json(
                     $game,
+                    200,
                     headers: ['Content-Type' => 'application/json;charset=UTF-8']
                 );
             }
             return $this->json(
                 $game,
+                200,
                 headers: ['Content-Type' => 'application/json;charset=UTF-8']
             );
         }
-
-        return new JsonResponse('coucou');
     }
 
     #[Route('/game/{id}', name: 'annuler_game', methods: ['DELETE'])]
