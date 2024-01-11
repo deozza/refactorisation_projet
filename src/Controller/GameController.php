@@ -34,7 +34,7 @@ class GameController extends AbstractController
 
         if (null === $currentUserId) {
             return new JsonResponse(
-                'It\'s unauthorized my friend',
+                'You to be a user !',
                 Response::HTTP_UNAUTHORIZED,
             );
         }
@@ -50,7 +50,7 @@ class GameController extends AbstractController
 
         if (null === $currentUser) {
             return new JsonResponse(
-                'It\'s unauthorized my friend',
+                'You to be a user !',
                 Response::HTTP_UNAUTHORIZED,
             );
         }
@@ -81,9 +81,9 @@ class GameController extends AbstractController
             );
         }
 
-        $party = $entityManager->getRepository(Game::class)->findOneBy(['id' => $gameId]);
+        $game = $entityManager->getRepository(Game::class)->findOneBy(['id' => $gameId]);
 
-        if ($party === null) {
+        if ($game === null) {
             return new JsonResponse(
                 'Game not found',
                 Response::HTTP_NOT_FOUND
@@ -91,7 +91,7 @@ class GameController extends AbstractController
         }
 
         return $this->json(
-            $party,
+            $game,
             Response::HTTP_OK,
             headers: ['Content-Type' => 'application/json;charset=UTF-8']
         );
@@ -104,21 +104,21 @@ class GameController extends AbstractController
 
         if (empty($currentUserId)) {
             return new JsonResponse(
-                'It\'s unauthorized my friend',
+                'You need to be a user !',
                 Response::HTTP_UNAUTHORIZED,
             );
         }
 
         if (false === ctype_digit($currentUserId)) {
             return new JsonResponse(
-                'It\'s unauthorized my friend',
+                'Your user id doesn\'t respect the good format',
                 Response::HTTP_UNAUTHORIZED,
             );
         }
 
         if(!ctype_digit($id) || !ctype_digit($playerRightId) || !ctype_digit($currentUserId)){
             return new JsonResponse(
-                'Player not found',
+                'Player right not found',
                 Response::HTTP_NOT_FOUND
             );
         }
@@ -127,7 +127,7 @@ class GameController extends AbstractController
 
         if (null === $playerLeft) {
             return new JsonResponse(
-                'It\'s unauthorized my friend',
+                'You need to have a player left',
                 Response::HTTP_UNAUTHORIZED,
             );
         }
@@ -143,7 +143,7 @@ class GameController extends AbstractController
 
         if ($game->getState() === 'ongoing' || $game->getState() === 'finished') {
             return new JsonResponse(
-                'Conflict',
+                'Conflict, it\'s impossible to start and finish a game in a same time !',
                 Response::HTTP_CONFLICT
             );
         }
@@ -183,7 +183,7 @@ class GameController extends AbstractController
 
         if (false === ctype_digit($currentUserId)) {
             return new JsonResponse(
-                'It\'s unauthorized my friend',
+                'Your user id doesn\'t respect the good format',
                 Response::HTTP_UNAUTHORIZED,
             );
         }
@@ -192,14 +192,14 @@ class GameController extends AbstractController
 
         if (null === $currentUser) {
             return new JsonResponse(
-                'It\'s unauthorized my friend',
+                'You need to be a player',
                 Response::HTTP_UNAUTHORIZED,
             );
         }
 
         if (false === ctype_digit($gameId)) {
             return new JsonResponse(
-                'Game not found',
+                'Your game id doesn\'t respect the good format',
                 Response::HTTP_NOT_FOUND
             );
         }
@@ -368,7 +368,7 @@ class GameController extends AbstractController
 
         if(false === ctype_digit($currentUserId)){
             return new JsonResponse(
-                'It\'s unauthorized my friend',
+                'Your user id doesn\'t respect the good format',
                 Response::HTTP_UNAUTHORIZED,
             );
         }
