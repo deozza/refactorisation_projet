@@ -39,13 +39,6 @@ class GameController extends AbstractController
             );
         }
 
-        if (false === ctype_digit($currentUserId)) {
-            return new JsonResponse(
-                'It\'s unauthorized my friend',
-                Response::HTTP_UNAUTHORIZED,
-            );
-        }
-
         $currentUser = $entityManager->getRepository(User::class)->find($currentUserId);
 
         if (null === $currentUser) {
@@ -73,13 +66,6 @@ class GameController extends AbstractController
     #[Route('/game/{gameId}', name: 'fetch_game', methods: ['GET'])]
     public function getGameInfo(EntityManagerInterface $entityManager, $gameId): JsonResponse
     {
-
-        if (false === ctype_digit($gameId)) {
-            return new JsonResponse(
-                'Game not found',
-                Response::HTTP_NOT_FOUND
-            );
-        }
 
         $game = $entityManager->getRepository(Game::class)->findOneBy(['id' => $gameId]);
 
@@ -113,13 +99,6 @@ class GameController extends AbstractController
             return new JsonResponse(
                 'Your user id doesn\'t respect the good format',
                 Response::HTTP_UNAUTHORIZED,
-            );
-        }
-
-        if(!ctype_digit($id) || !ctype_digit($playerRightId) || !ctype_digit($currentUserId)){
-            return new JsonResponse(
-                'Player right not found',
-                Response::HTTP_NOT_FOUND
             );
         }
 
@@ -181,26 +160,12 @@ class GameController extends AbstractController
     {
         $currentUserId = $request->headers->get('X-User-Id');
 
-        if (false === ctype_digit($currentUserId)) {
-            return new JsonResponse(
-                'Your user id doesn\'t respect the good format',
-                Response::HTTP_UNAUTHORIZED,
-            );
-        }
-
         $currentUser = $entityManager->getRepository(User::class)->find($currentUserId);
 
         if (null === $currentUser) {
             return new JsonResponse(
                 'You need to be a player',
                 Response::HTTP_UNAUTHORIZED,
-            );
-        }
-
-        if (false === ctype_digit($gameId)) {
-            return new JsonResponse(
-                'Your game id doesn\'t respect the good format',
-                Response::HTTP_NOT_FOUND
             );
         }
 
@@ -365,13 +330,6 @@ class GameController extends AbstractController
     {
 
         $currentUserId = $request->headers->get('X-User-Id');
-
-        if(false === ctype_digit($currentUserId)){
-            return new JsonResponse(
-                'Your user id doesn\'t respect the good format',
-                Response::HTTP_UNAUTHORIZED,
-            );
-        }
 
         $player = $entityManager->getRepository(User::class)->find($currentUserId);
 
