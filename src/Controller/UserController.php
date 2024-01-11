@@ -21,6 +21,7 @@ class UserController extends AbstractController
         $data = $entityManager->getRepository(User::class)->findAll();
         return $this->json(
             $data,
+            200,
             headers: ['Content-Type' => 'application/json;charset=UTF-8']
         );
     }
@@ -150,7 +151,12 @@ class UserController extends AbstractController
             }
         }   
         
-        return new JsonResponse(array('name'=>$player[0]->getName(), "age"=>$player[0]->getAge(), 'id'=>$player[0]->getId()), 200);
+        return new JsonResponse(
+            array('name'=>$player[0]->getName(),
+            "age"=>$player[0]->getAge(),
+            'id'=>$player[0]->getId()),
+            200
+        );
     }
 
     #[Route('/user/{id}', name: 'delete_user_by_id', methods:['DELETE'])]
