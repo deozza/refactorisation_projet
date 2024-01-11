@@ -40,10 +40,9 @@ class GameController extends AbstractController
         }
 
         $currentUser = $entityManager->getRepository(User::class)->find($currentUserId);
-
         if (null === $currentUser) {
             return new JsonResponse(
-                'You to be a user !',
+                'You\'re not a user',
                 Response::HTTP_UNAUTHORIZED,
             );
         }
@@ -66,7 +65,6 @@ class GameController extends AbstractController
     #[Route('/game/{gameId}', name: 'fetch_game', methods: ['GET'])]
     public function getGameInfo(EntityManagerInterface $entityManager, $gameId): JsonResponse
     {
-
         $game = $entityManager->getRepository(Game::class)->findOneBy(['id' => $gameId]);
 
         if ($game === null) {
@@ -87,41 +85,40 @@ class GameController extends AbstractController
     public function inviteToGame(Request $request, EntityManagerInterface $entityManager, $id, $playerRightId): JsonResponse
     {
         $currentUserId = $request->headers->get('X-User-Id');
-
         $playerLeft = $entityManager->getRepository(User::class)->find($currentUserId);
-
-        if (null === $playerLeft) {
+        $playerRight = $entityManager->getRepository(User::class)->find($playerRightId);
+        $game = $entityManager->getRepository(Game::class)->find($id);
+    
+        if(null === $playerLeft){
             return new JsonResponse(
-                'You need to have a player left',
+                'You\'re not a user',
                 Response::HTTP_UNAUTHORIZED,
             );
         }
-
-        $game = $entityManager->getRepository(Game::class)->find($id);
-
-        if (null === $game) {
-            return new JsonResponse(
-                'Game not found',
-                Response::HTTP_NOT_FOUND
-            );
-        }
-
-        if ($game->getState() === 'ongoing' || $game->getState() === 'finished') {
-            return new JsonResponse(
-                'Conflict, it\'s impossible to start and finish a game in a same time !',
-                Response::HTTP_CONFLICT
-            );
-        }
-
-        $playerRight = $entityManager->getRepository(User::class)->find($playerRightId);
-
         if (null === $playerRight) {
             return new JsonResponse(
                 'Player right not found',
                 Response::HTTP_NOT_FOUND
             );
         }
-
+        if(null === $currentUserId){
+            return new JsonResponse(
+                'You\'re not a user',
+                Response::HTTP_UNAUTHORIZED,
+            );
+        }
+        if (null === $game) {
+            return new JsonResponse(
+                'Game not found',
+                Response::HTTP_NOT_FOUND
+            );
+        }
+        if ($game->getState() === 'ongoing' || $game->getState() === 'finished') {
+            return new JsonResponse(
+                'Conflict, it\'s impossible to start and finish a game in a same time !',
+                Response::HTTP_CONFLICT
+            );
+        }
         if ($playerLeft->getId() === $playerRight->getId()) {
             return new JsonResponse(
                 'You can\'t play against yourself',
@@ -145,18 +142,17 @@ class GameController extends AbstractController
     public function play(Request $request, EntityManagerInterface $entityManager, $gameId): JsonResponse
     {
         $currentUserId = $request->headers->get('X-User-Id');
-
         $currentUser = $entityManager->getRepository(User::class)->find($currentUserId);
+        $game = $entityManager->getRepository(Game::class)->find($gameId);
+        $userIsPlayerLeft = false;
+        $userIsPlayerRight = false;
 
-        if (null === $currentUser) {
+        if (null === $currentUser || null === $currentUserId){
             return new JsonResponse(
-                'You need to be a player',
+                'You\'re not a user',
                 Response::HTTP_UNAUTHORIZED,
             );
         }
-
-        $game = $entityManager->getRepository(Game::class)->find($gameId);
-
         if (null === $game) {
             return new JsonResponse(
                 'Game not found',
@@ -164,23 +160,17 @@ class GameController extends AbstractController
             );
         }
 
-        $userIsPlayerLeft = false;
-        $userIsPlayerRight = false;
-
         if ($game->getPlayerLeft()->getId() === $currentUser->getId()) {
             $userIsPlayerLeft = true;
         } elseif ($game->getPlayerRight()->getId() === $currentUser->getId()) {
             $userIsPlayerRight = true;
         }
-
         if (!$userIsPlayerLeft && !$userIsPlayerRight) {
             return new JsonResponse(
                 'You are not a player of this game',
                 Response::HTTP_FORBIDDEN,
             );
         }
-
-        // we must check the game is ongoing and the user is a player of this game
         if ($game->getState() === 'finished' || $game->getState() === 'pending') {
             return new JsonResponse('Game not started', 409);
         }
@@ -213,55 +203,17 @@ class GameController extends AbstractController
                 Response::HTTP_BAD_REQUEST,
             );
         }
-
         if ($userIsPlayerLeft) {
             $game->setPlayLeft($data['choice']);
             $entityManager->flush();
 
             if (null !== $game->getPlayRight()) {
-
-                switch ($data['choice']) {
-                    case 'rock':
-                        if($game->getPlayRight() !== 'paper' && $game->getPlayRight() !== 'scissors'){
-                            $game->setResult('draw');
-                        }
-                        if ($game->getPlayRight() === 'paper') {
-                            $game->setResult('winRight');
-                        } elseif ($game->getPlayRight() === 'scissors') {
-                            $game->setResult('winLeft');
-                        }
-                        break;
-                    case 'paper':
-                        if($game->getPlayRight() !== 'scissors' && $game->getPlayRight() !== 'rock'){
-                            $game->setResult('draw');
-                        }
-                        if ($game->getPlayRight() === 'scissors') {
-                            $game->setResult('winRight');
-                        } elseif ($game->getPlayRight() === 'rock') {
-                            $game->setResult('winLeft');
-                        }
-                        break;
-                    case 'scissors':
-                        if($game->getPlayRight() !== 'rock' && $game->getPlayRight() !== 'paper'){
-                            $game->setResult('draw');
-                        }
-                        if ($game->getPlayRight() === 'rock') {
-                            $game->setResult('winRight');
-                        } elseif ($game->getPlayRight() === 'paper') {
-                            $game->setResult('winLeft');
-                        }
-                        break;
-                }
-
-                $game->setState('finished');
-                $entityManager->flush();
-            }
-
-            return $this->json(
-                $game,
-                Response::HTTP_OK,
-                headers: ['Content-Type' => 'application/json;charset=UTF-8']
+                return $this->json(
+                    $game,
+                    Response::HTTP_OK,
+                    headers: ['Content-Type' => 'application/json;charset=UTF-8']
             );
+
         } elseif ($userIsPlayerRight) {
             $game->setPlayRight($data['choice']);
 
