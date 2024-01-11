@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\HttpFoundation\Response;
 
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -18,9 +19,10 @@ class GameController extends AbstractController
     #[Route('/games', name: 'get_list_of_games', methods: ['GET'])]
     public function getGamesList(EntityManagerInterface $entityManager): JsonResponse
     {
-        $data = $entityManager->getRepository(Game::class)->findAll();
+        $gamesList = $entityManager->getRepository(Game::class)->findAll();
         return $this->json(
-            $data,
+            $gamesList,
+            Response::HTTP_OK,
             headers: ['Content-Type' => 'application/json;charset=UTF-8']
         );
     }
@@ -31,17 +33,25 @@ class GameController extends AbstractController
         $currentUserId = $request->headers->get('X-User-Id');
 
         if (null === $currentUserId) {
-            return new JsonResponse('User not found', 401);
+            return new JsonResponse(
+                'User not found',
+                Response::HTTP_UNAUTHORIZED,
+            );
         }
 
         if (false === ctype_digit($currentUserId)) {
-            return new JsonResponse('User not found', 401);
+            return new JsonResponse(
+                'User not found',
+                Response::HTTP_UNAUTHORIZED
+            );
         }
 
         $currentUser = $entityManager->getRepository(User::class)->find($currentUserId);
 
         if (null === $currentUser) {
-            return new JsonResponse('User not found', 401);
+            return new JsonResponse(
+                'User not found',
+                Response::HTTP_UNAUTHORIZED);
         }
 
         $newGame = new Game();
@@ -54,7 +64,7 @@ class GameController extends AbstractController
 
         return $this->json(
             $newGame,
-            201,
+            Response::HTTP_CREATED,
             headers: ['Content-Type' => 'application/json;charset=UTF-8']
         );
     }
@@ -64,7 +74,10 @@ class GameController extends AbstractController
     {
 
         if (false === ctype_digit($gameId)) {
-            return new JsonResponse('Game not found', 404);
+            return new JsonResponse(
+                'Game not found',
+                Response::HTTP_NOT_FOUND
+            );
         }
 
         $party = $entityManager->getRepository(Game::class)->findOneBy(['id' => $gameId]);
@@ -75,7 +88,7 @@ class GameController extends AbstractController
 
         return $this->json(
             $party,
-            200,
+            Response::HTTP_OK,
             headers: ['Content-Type' => 'application/json;charset=UTF-8']
         );
     }
@@ -86,7 +99,8 @@ class GameController extends AbstractController
         $currentUserId = $request->headers->get('X-User-Id');
 
         if (empty($currentUserId)) {
-            return new JsonResponse('User not found', 401);
+            return new JsonResponse(
+                'User not found', 401);
         }
 
         if (false === ctype_digit($currentUserId)) {
