@@ -30,13 +30,6 @@ class UserController extends AbstractController
     #[Route('/users', name: 'user_post', methods:['POST'])]
     public function createUser(Request $request,EntityManagerInterface $entityManager): JsonResponse
     {
-        if($request->getMethod() !== 'POST') {
-            return new JsonResponse(
-                'Wrong method',
-                Response::HTTP_METHOD_NOT_ALLOWED,
-            );
-        }
-
         $data = json_decode($request->getContent(), true);
         $form = $this->createFormBuilder()
             ->add('nom', TextType::class, [
@@ -63,7 +56,7 @@ class UserController extends AbstractController
 
         $user = $entityManager->getRepository(User::class)->findBy(['name'=>$data['nom']]);
         
-        if(count($user) !== 0){
+        if(0 !== count($user)){
             return new JsonResponse(
                 'You need to have a user',
                 Response::HTTP_BAD_REQUEST,
@@ -77,19 +70,17 @@ class UserController extends AbstractController
             );
         }
 
-        if($data['age'] > 21){
-                $player = new User();
-                $player->setName($data['nom']);
-                $player->setAge($data['age']);
-                $entityManager->persist($player);
-                $entityManager->flush();
+        $player = new User();
+        $player->setName($data['nom']);
+        $player->setAge($data['age']);
+        $entityManager->persist($player);
+        $entityManager->flush();
 
-                return $this->json(
-                            $player,
-                            Response::HTTP_CREATED,
-                            ['Content-Type' => 'application/json;charset=UTF-8']
-                        );                    
-        }
+        return $this->json(
+                    $player,
+                    Response::HTTP_CREATED,
+                    ['Content-Type' => 'application/json;charset=UTF-8']
+                );                    
     }
 
     #[Route('/user/{userId}', name: 'get_user_by_id', methods:['GET'])]
@@ -98,22 +89,20 @@ class UserController extends AbstractController
 
         $player = $entityManager->getRepository(User::class)->findBy(['id'=>$userId]);
 
-        if(count($player) !== 1) {
+        if(0 === count($player)) {
             return new JsonResponse(
                 'User not found',
                 Response::HTTP_NOT_FOUND
         );
         }
 
-        if(count($player) === 1){
-            return new JsonResponse(
-                array(
-                    'name'=>$player[0]->getName(),
-                    "age"=>$player[0]->getAge(),
-                    'id'=>$player[0]->getId()),
-                    Response::HTTP_OK,
-            );
-        }
+        return new JsonResponse(
+            array(
+                'name'=>$player[0]->getName(),
+                "age"=>$player[0]->getAge(),
+                'id'=>$player[0]->getId()),
+                Response::HTTP_OK,
+        );
     }
 
     #[Route('/user/{userId}', name: 'udpate_user', methods:['PATCH'])]
@@ -121,7 +110,7 @@ class UserController extends AbstractController
     {
         $player = $entityManager->getRepository(User::class)->findBy(['id'=>$userId]);
 
-        if(count($player) !== 1){
+        if(0 === count($player)){
             return new JsonResponse(
                 'User not found',
                 Response::HTTP_NOT_FOUND
@@ -157,10 +146,8 @@ class UserController extends AbstractController
                             Response::HTTP_BAD_REQUEST
                         );
                     }
-                    if(count($user) === 0){
-                        $player[0]->setName($data['nom']);
-                        $entityManager->flush();
-                    }
+                    $player[0]->setName($data['nom']);
+                    $entityManager->flush();
                     break;
                 case 'age':
                     if($data['age'] <= 21){
