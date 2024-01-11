@@ -207,13 +207,11 @@ class GameController extends AbstractController
             $game->setPlayLeft($data['choice']);
             $entityManager->flush();
 
-            if (null !== $game->getPlayRight()) {
-                return $this->json(
-                    $game,
-                    Response::HTTP_OK,
-                    headers: ['Content-Type' => 'application/json;charset=UTF-8']
+            return $this->json(
+                $game,
+                Response::HTTP_OK,
+                headers: ['Content-Type' => 'application/json;charset=UTF-8']
             );
-
         } elseif ($userIsPlayerRight) {
             $game->setPlayRight($data['choice']);
 
