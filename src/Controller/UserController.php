@@ -86,7 +86,7 @@ class UserController extends AbstractController
 
                 return $this->json(
                             $player,
-                            201,
+                            Response::HTTP_CREATED,
                             ['Content-Type' => 'application/json;charset=UTF-8']
                         );                    
         }
@@ -126,11 +126,6 @@ class UserController extends AbstractController
                 'User not found',
                 Response::HTTP_NOT_FOUND
             );
-        }
-
-        if($request->getMethod() !== 'PATCH'){
-            $data = json_decode($request->getContent(), true);
-            return new JsonResponse('Wrong method', 405);
         }
 
         $data = json_decode($request->getContent(), true);
@@ -210,14 +205,20 @@ class UserController extends AbstractController
                 $alreadyExists = $entityManager->getRepository(User::class)->findBy(['id'=>$id]);
     
                 if(empty($alreadyExists)){
-                    return new JsonResponse('', 204);
+                    return new JsonResponse(
+                        "No content",
+                        Response::HTTP_NO_CONTENT,
+                    );
                 }
                 if(!empty($alreadyExists)){
                     throw new \Exception("User not deleted");
                     return null;
                 }
             }catch(\Exception $e){
-                return new JsonResponse($e->getMessage(), 500);
+                return new JsonResponse(
+                    $e->getMessage(),
+                    Response::HTTP_INTERNAL_SERVER_ERROR
+                );
             }
         } 
     }
