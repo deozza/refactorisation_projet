@@ -65,7 +65,6 @@ class GameController extends AbstractController
     #[Route('/game/{id}', name: 'fetch_game', methods:['GET'], requirements: ['id' => '\d+'])]
     public function getGameInfo($id): JsonResponse
     {
-        
         $game = $this->entityManager->getRepository(Game::class)->findOneBy(['id' => $id]);
 
         if(!$game){

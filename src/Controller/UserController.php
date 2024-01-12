@@ -69,12 +69,8 @@ class UserController extends AbstractController
     }
 
     #[Route('/user/{id}', name: 'get_user', methods:['GET'], requirements: ['id' => '\d+'])]
-    public function getUserById($id, EntityManagerInterface $entityManager): JsonResponse
+    public function getUserById(int $id, EntityManagerInterface $entityManager): JsonResponse
     {
-        if (!$id) {
-            return new JsonResponse('Invalid Id', 404);
-        }
-
         $player = $entityManager->getRepository(User::class)->find($id);
 
         if (!$player) {
@@ -88,8 +84,8 @@ class UserController extends AbstractController
         ], 200);
     }
 
-    #[Route('/user/{id}', name: 'update_user', methods:['PATCH'])]
-    public function updateUser(EntityManagerInterface $entityManager, $id, Request $request): JsonResponse
+    #[Route('/user/{id}', name: 'update_user', methods:['PATCH'], requirements: ['id' => '\d+'])]
+    public function updateUser(EntityManagerInterface $entityManager, int $id, Request $request): JsonResponse
     {
         if ($request->getMethod() !== 'PATCH') {
             return new JsonResponse('Wrong method', 405);
@@ -135,8 +131,8 @@ class UserController extends AbstractController
         ], 200);
     }
 
-    #[Route('/user/{id}', name: 'delete_user', methods:['DELETE'])]
-    public function deleteUser($id, EntityManagerInterface $entityManager): JsonResponse | null
+    #[Route('/user/{id}', name: 'delete_user', methods:['DELETE'], requirements: ['id' => '\d+'])]
+    public function deleteUser(int $id, EntityManagerInterface $entityManager): JsonResponse | null
     {
         $player = $entityManager->getRepository(User::class)->findBy(['id'=>$id]);
         if(!$player){
