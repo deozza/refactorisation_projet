@@ -37,7 +37,6 @@ class GameController extends AbstractController
 
             $currentUser = $entityManager->getRepository(User::class)->find($currentUserId);
 
-            // Si l'utilisateur n'existe pas -> stop creation de partie
             if($currentUser === null){
                 return new JsonResponse('User not found', 401);
             }
@@ -60,11 +59,11 @@ class GameController extends AbstractController
         }
     }
 
-    #[Route('/game/{identifiant}', name: 'fetch_game', methods:['GET'])]
-    public function getGameInfo(EntityManagerInterface $entityManager, $identifiant): JsonResponse
+    #[Route('/game/{identifier}', name: 'fetch_game', methods:['GET'])]
+    public function getGameInfo(EntityManagerInterface $entityManager, $identifier): JsonResponse
     {
-        if(ctype_digit($identifiant)){
-            $party = $entityManager->getRepository(Game::class)->findOneBy(['id' => $identifiant]);
+        if(ctype_digit($identifier)){
+            $party = $entityManager->getRepository(Game::class)->findOneBy(['id' => $identifier]);
 
             if($party !== null){
                 return $this->json(
@@ -136,8 +135,8 @@ class GameController extends AbstractController
         }
     }
 
-    #[Route('/game/{identifiant}', name: 'send_choice', methods:['PATCH'])]
-    public function play(Request $request, EntityManagerInterface $entityManager, $identifiant): JsonResponse
+    #[Route('/game/{identifier}', name: 'send_choice', methods:['PATCH'])]
+    public function play(Request $request, EntityManagerInterface $entityManager, $identifier): JsonResponse
     {
         $currentUserId = $request->headers->get('X-User-Id');
 
@@ -151,11 +150,11 @@ class GameController extends AbstractController
             return new JsonResponse('User not found', 401);
         }
     
-        if(ctype_digit($identifiant) === false){
+        if(ctype_digit($identifier) === false){
             return new JsonResponse('Game not found', 404);
         }
 
-        $game = $entityManager->getRepository(Game::class)->find($identifiant);
+        $game = $entityManager->getRepository(Game::class)->find($identifier);
 
         if($game === null){
             return new JsonResponse('Game not found', 404);
@@ -174,7 +173,6 @@ class GameController extends AbstractController
             return new JsonResponse('You are not a player of this game', 403);
         }
 
-        // we must check the game is ongoing and the user is a player of this game
         if($game->getState() === 'finished' || $game->getState() === 'pending'){
             return new JsonResponse('Game not started', 409);
         }
@@ -195,7 +193,6 @@ class GameController extends AbstractController
 
             $data = $form->getData();
 
-            // on joue avec les règles de base de pierre feuille ciseaux
             if($data['choice'] !== 'rock' && $data['choice'] !== 'paper' && $data['choice'] !== 'scissors'){
                 return new JsonResponse('Invalid choice', 400);
             }
@@ -255,18 +252,6 @@ class GameController extends AbstractController
 
                 $entityManager->flush();
 
-
-
-
-
-
-
-
-
-
-
-
-
                 if($game->getPlayLeft() !== null){
 
                     switch($data['choice']){
@@ -322,7 +307,7 @@ class GameController extends AbstractController
         return new JsonResponse('coucou');
     }
 
-    #[Route('/game/{id}', name: 'annuler_game', methods:['DELETE'])]
+    #[Route('/game/{id}', name: 'cancel_game', methods:['DELETE'])]
     public function deleteGame(EntityManagerInterface $entityManager, Request $request, $id): JsonResponse
     {
    
