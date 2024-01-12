@@ -92,11 +92,11 @@ class GameController extends AbstractController
         $game = $this->entityManager->getRepository(Game::class)->find($id);
         $playerRight = $this->entityManager->getRepository(User::class)->find($playerRightId);
 
-    if (!$currentUserId || !ctype_digit($currentUserId) || $playerLeft === null) {
+    if (!$currentUserId || !ctype_digit($currentUserId) || !$playerLeft) {
         return new JsonResponse('User not found', 401);
     }
 
-    if (!ctype_digit($id) || !ctype_digit($playerRightId) || $game === null) {
+    if (!ctype_digit($id) || !ctype_digit($playerRightId) || !$game) {
         return new JsonResponse('Game not found', 404);
     }
 
@@ -104,7 +104,7 @@ class GameController extends AbstractController
         return new JsonResponse('Game already started', 409);
     }
 
-    if ($playerRight === null) {
+    if (!$playerRight) {
         return new JsonResponse('User not found', 404);
     }
 
