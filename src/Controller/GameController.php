@@ -11,6 +11,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\Response;
+use App\Form\CreateChoiceType;
 
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -177,17 +178,8 @@ class GameController extends AbstractController
                 Response::HTTP_CONFLICT,
             );
         }
-
-        $form = $this->createFormBuilder()
-            ->add('choice', TextType::class, [
-                'constraints' => [
-                    new Assert\NotBlank()
-                ]
-            ])
-            ->getForm();
-
+        $form = $this->createForm(CreateChoiceType::class);
         $choice = json_decode($request->getContent(), true);
-
         $form->submit($choice);
 
         if(!$form->isValid()){
