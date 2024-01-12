@@ -180,118 +180,40 @@ class GameController extends AbstractController
             ->getForm();
 
             $choice = json_decode($request->getContent(), true);
-
             $form->submit($choice);
-
             $data = $form->getData();
 
             if($data['choice'] !== 'rock' && $data['choice'] !== 'paper' && $data['choice'] !== 'scissors'){
                 return new JsonResponse('Invalid choice', 400);
             }
 
-            if($userIsPlayerLeft){
+            if ($userIsPlayerLeft) {
                 $game->setPlayLeft($data['choice']);
                 $entityManager->flush();
-
-                if($game->getPlayRight() !== null){
-                        
-                    switch($data['choice']){
-                        case 'rock':
-                            if($game->getPlayRight() === 'paper'){
-                                $game->setResult('winRight');
-                            }elseif($game->getPlayRight() === 'scissors'){
-                                $game->setResult('winLeft');
-                            }else{
-                                $game->setResult('draw');
-                            }
-                            break;
-                        case 'paper':
-                            if($game->getPlayRight() === 'scissors'){
-                                $game->setResult('winRight');
-                            }elseif($game->getPlayRight() === 'rock'){
-                                $game->setResult('winLeft');
-                            }else{
-                                $game->setResult('draw');
-                            }
-                            break;
-                        case 'scissors':
-                            if($game->getPlayRight() === 'rock'){
-                                $game->setResult('winRight');
-                            }elseif($game->getPlayRight() === 'paper'){
-                                $game->setResult('winLeft');
-                            }else{
-                                $game->setResult('draw');
-                            }
-                            break;
-                    }
-
+            
+                if ($game->getPlayRight() !== null) {
+                    $result = $this->calculateGameResult($game->getPlayLeft(), $game->getPlayRight());
+            
+                    $game->setResult($result);
                     $game->setState('finished');
                     $entityManager->flush();
-
-                    return $this->json(
-                        $game,
-                        headers: ['Content-Type' => 'application/json;charset=UTF-8']
-                    );
                 }
-
-                return $this->json(
-                    $game,
-                    headers: ['Content-Type' => 'application/json;charset=UTF-8']
-                );
-
-            }elseif($userIsPlayerRight){            
+            
+                return $this->json($game, headers: ['Content-Type' => 'application/json;charset=UTF-8']);
+            }elseif ($userIsPlayerRight) {
                 $game->setPlayRight($data['choice']);
-
                 $entityManager->flush();
-                if($game->getPlayLeft() !== null){
-
-                    switch($data['choice']){
-                        case 'rock':
-                            if($game->getPlayLeft() === 'paper'){
-                                $game->setResult('winLeft');
-                            }elseif($game->getPlayLeft() === 'scissors'){
-                                $game->setResult('winRight');
-                            }else{
-                                $game->setResult('draw');
-                            }
-                            break;
-                        case 'paper':
-                            if($game->getPlayLeft() === 'scissors'){
-                                $game->setResult('winLeft');
-                            }elseif($game->getPlayLeft() === 'rock'){
-                                $game->setResult('winRight');
-                            }else{
-                                $game->setResult('draw');
-                            }
-                            break;
-                        case 'scissors':
-                            if($game->getPlayLeft() === 'rock'){
-                                $game->setResult('winLeft');
-                            }elseif($game->getPlayLeft() === 'paper'){
-                                $game->setResult('winRight');
-                            }else{
-                                $game->setResult('draw');
-                            }
-                            break;
-                    }
-
+            
+                if ($game->getPlayLeft() !== null) {
+                    $result = $this->calculateGameResult($game->getPlayLeft(), $game->getPlayRight());
+            
+                    $game->setResult($result);
                     $game->setState('finished');
                     $entityManager->flush();
-
-                    return $this->json(
-                        $game,
-                        headers: ['Content-Type' => 'application/json;charset=UTF-8']
-                    );
-    
                 }
-                return $this->json(
-                    $game,
-                    headers: ['Content-Type' => 'application/json;charset=UTF-8']
-                );
-
+            
+                return $this->json($game, headers: ['Content-Type' => 'application/json;charset=UTF-8']);
             }
-
-
             return $this->json($game, 200, ['Content-Type' => 'application/json;charset=UTF-8']);
         } catch (HttpException $exception) {
             return $this->json(
@@ -323,19 +245,17 @@ class GameController extends AbstractController
             }
 
             $player = $entityManager->getRepository(User::class)->find($currentUserId);
-
             $game = $entityManager->getRepository(Game::class)->findOneBy(['id' => $gameId, 'playerLeft' => $player]);
 
-                if(empty($game)){
-                    $game = $entityManager->getRepository(Game::class)->findOneBy(['id' => $gameId, 'playerRight' => $player]);
-                }
+            if(empty($game)){
+                $game = $entityManager->getRepository(Game::class)->findOneBy(['id' => $gameId, 'playerRight' => $player]);
+            }
+            if(empty($game)){
+                return new JsonResponse('Game not found', 403);
+            }
 
-                if(empty($game)){
-                    return new JsonResponse('Game not found', 403);
-                }
-
-                $entityManager->remove($game);
-                $entityManager->flush();
+            $entityManager->remove($game);
+            $entityManager->flush();
 
             return $this->json(
                 null,
@@ -350,6 +270,25 @@ class GameController extends AbstractController
                 ['Content-Type' => 'application/json;charset=UTF-8']
             );
         }
+    }
+
+    private function calculateGameResult(string $playLeft, string $playRight): string
+    {
+        if ($playLeft === $playRight) {
+            return 'draw';
+        }
+
+        $winningMoves = [
+            'rock' => 'scissors',
+            'paper' => 'rock',
+            'scissors' => 'paper',
+        ];
+
+        if ($winningMoves[$playLeft] === $playRight) {
+            return 'winLeft';
+        }
+
+        return 'winRight';
     }
 
     private function checkUserIdIsNumber($currentUserId): bool {
