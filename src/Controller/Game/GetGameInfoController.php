@@ -10,23 +10,23 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class GetGameInfoController extends AbstractController
 {
-    #[Route('/game/{identifiant}', name: 'fetch_game', methods:['GET'])]
+    #[Route('/game/{identifier}', name: 'fetch_game', methods:['GET'])]
     /**
      * Fetches game information by identifier.
      *
      * @param EntityManagerInterface $entityManager
-     * @param mixed $identifiant
+     * @param mixed $identifier
      *
      * @return JsonResponse
      */
-    public function getGameInfo(EntityManagerInterface $entityManager, $identifiant): JsonResponse
+    public function getGameInfo(EntityManagerInterface $entityManager, $identifier): JsonResponse
     {
-        $party = $this->findGameById($entityManager, $identifiant);
+        $party = $this->findGameById($entityManager, $identifier);
 
         if ($party !== null) {
             return $this->json($party);
         }
-
+        
         return new JsonResponse('Game not found', 404);
     }
 
@@ -34,28 +34,28 @@ class GetGameInfoController extends AbstractController
      * Finds a game by its identifier.
      *
      * @param EntityManagerInterface $entityManager
-     * @param mixed $identifiant
+     * @param mixed $identifier
      *
      * @return Game|null
      */
-    private function findGameById(EntityManagerInterface $entityManager, $identifiant): ?Game
+    private function findGameById(EntityManagerInterface $entityManager, $identifier): ?Game
     {
-        if (!$this->isValidIdentifier($identifiant)) {
+        if (!$this->isValidIdentifier($identifier)) {
             return null;
         }
 
-        return $entityManager->getRepository(Game::class)->find($identifiant);
+        return $entityManager->getRepository(Game::class)->find($identifier);
     }
 
     /**
      * Checks if the given identifier is valid (numeric).
      *
-     * @param mixed $identifiant
+     * @param mixed $identifier
      *
      * @return bool
      */
-    private function isValidIdentifier($identifiant): bool
+    private function isValidIdentifier($identifier): bool
     {
-        return ctype_digit($identifiant);
+        return ctype_digit($identifier);
     }
 }

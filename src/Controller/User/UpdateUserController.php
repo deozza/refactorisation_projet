@@ -12,19 +12,19 @@ use Symfony\Component\HttpFoundation\Request;
 
 class UpdateUserController extends AbstractController
 {
-    #[Route('/user/{identifiant}', name: 'udpate_user', methods:['PATCH'])]
+    #[Route('/user/{identifier}', name: 'udpate_user', methods:['PATCH'])]
     /**
      * Update a user's information based on a PATCH request.
      *
      * @param EntityManagerInterface $entityManager The entity manager for database interaction.
-     * @param int|string $identifiant The identifier of the user to be updated.
+     * @param int|string $identifier The identifier of the user to be updated.
      * @param Request $request The incoming HTTP request.
      *
      * @return JsonResponse A JSON response containing the updated user details or an error message.
      */
-    public function updateUser(EntityManagerInterface $entityManager, $identifiant, Request $request): JsonResponse
+    public function updateUser(EntityManagerInterface $entityManager, $identifier, Request $request): JsonResponse
     {
-        $joueur = $entityManager->getRepository(User::class)->findBy(['id'=>$identifiant]);
+        $joueur = $entityManager->getRepository(User::class)->findBy(['id'=>$identifier]);
 
 
         if(count($joueur) == 1){

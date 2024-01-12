@@ -10,24 +10,24 @@ use App\Entity\User;
 
 class GetUserByIdController extends AbstractController
 {
-    #[Route('/user/{identifiant}', name: 'get_user_by_id', methods:['GET'])]
+    #[Route('/user/{identifier}', name: 'get_user_by_id', methods:['GET'])]
     /**
      * Retrieves a user based on their identifier and returns a JsonResponse.
      *
-     * @param string $identifiant The user identifier to search for.
+     * @param string $identifier The user identifier to search for.
      * @param EntityManagerInterface $entityManager The entity manager to interact with the database.
      *
      * @return JsonResponse A JSON response containing the user data if found, or a 404 Not Found response.
      */
-    public function getUserWithIdentifiant($identifiant, EntityManagerInterface $entityManager): JsonResponse
+    public function getUserWithidentifier($identifier, EntityManagerInterface $entityManager): JsonResponse
     {
-        // Validate if $identifiant is a digit
-        if (!ctype_digit($identifiant)) {
+        // Validate if $identifier is a digit
+        if (!ctype_digit($identifier)) {
             return $this->createNotFoundResponse();
         }
 
         // Find the user by id
-        $user = $entityManager->getRepository(User::class)->find($identifiant);
+        $user = $entityManager->getRepository(User::class)->find($identifier);
 
         // Check if the user exists
         if (!$user) {

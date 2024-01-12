@@ -10,7 +10,7 @@ use App\Entity\User;
 
 class DeleteUserController extends AbstractController
 {
-    #[Route('/user/{id}', name: 'delete_user_by_identifiant', methods: ['DELETE'])]
+    #[Route('/user/{id}', name: 'delete_user_by_identifier', methods: ['DELETE'])]
     /**
      * Deletes a user by the given ID.
      *

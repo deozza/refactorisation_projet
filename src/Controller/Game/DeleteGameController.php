@@ -47,11 +47,10 @@ class DeleteGameController extends AbstractController
                 // If the left player association is empty, try finding the game where the current user is the right player.
                 if (empty($game)) {
                     $game = $entityManager->getRepository(Game::class)->findOneBy(['id' => $id, 'playerRight' => $player]);
-                }
-
-                // If no game is found, return a 403 Forbidden response.
-                if (empty($game)) {
-                    return new JsonResponse('Game not found', 403);
+                    // If no game is found, return a 403 Forbidden response.
+                    if (empty($game)) {
+                        return new JsonResponse('Game not found', 403);
+                    }
                 }
 
                 // Remove the game entity from the database.
