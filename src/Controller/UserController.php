@@ -28,7 +28,7 @@ class UserController extends AbstractController
     public function createUser(Request $request,EntityManagerInterface $entityManager): JsonResponse
     {
         if($request->getMethod() !== 'POST'){
-            return new JsonResponse('Wrong method', 405);
+            return new JsonResponse('Wrong method', JsonResponse::HTTP_METHOD_NOT_ALLOWED);
         }
         $data = json_decode($request->getContent(), true);
         $form = $this->createFormBuilder()
@@ -50,11 +50,11 @@ class UserController extends AbstractController
         if($form->isValid())
         {
             if($data['age'] < 21){
-                return new JsonResponse('Wrong age', 400);
+                return new JsonResponse('Wrong age', JsonResponse::HTTP_BAD_REQUEST);
             }
             $user = $entityManager->getRepository(User::class)->findBy(['name'=>$data['nom']]);
             if(count($user) !== 0){
-                return new JsonResponse('Name already exists', 400);
+                return new JsonResponse('Name already exists', JsonResponse::HTTP_BAD_REQUEST);
             }
             $player = new User();
             $player->setName($data['nom']);
@@ -64,11 +64,11 @@ class UserController extends AbstractController
 
             return $this->json(
                         $player,
-                        201,
+                        JsonResponse::HTTP_CREATED,
                         ['Content-Type' => 'application/json;charset=UTF-8']
                     );                    
         }else{
-            return new JsonResponse('Invalid form', 400);
+            return new JsonResponse('Invalid form', JsonResponse::HTTP_BAD_REQUEST);
         }
     }
 
@@ -78,11 +78,11 @@ class UserController extends AbstractController
         if(ctype_digit($identifiant)){
             $player = $entityManager->getRepository(User::class)->findBy(['id'=>$identifiant]);
             if(count($player) !== 1){
-                return new JsonResponse('Wrong id', 404);
+                return new JsonResponse('Wrong id', JsonResponse::HTTP_NOT_FOUND);
             }
-            return new JsonResponse(array('name'=>$player[0]->getName(), "age"=>$player[0]->getAge(), 'id'=>$player[0]->getId()), 200); 
+            return new JsonResponse(array('name'=>$player[0]->getName(), "age"=>$player[0]->getAge(), 'id'=>$player[0]->getId()), JsonResponse::HTTP_OK); 
         }
-        return new JsonResponse('Wrong id', 404);
+        return new JsonResponse('Wrong id', JsonResponse::HTTP_NOT_FOUND);
     }
 
     #[Route('/user/{identifiant}', name: 'udpate_user', methods:['PATCH'])]
@@ -92,11 +92,11 @@ class UserController extends AbstractController
 
 
         if(count($player) !== 1){
-            return new JsonResponse('Wrong id', 404);
+            return new JsonResponse('Wrong id', JsonResponse::HTTP_NOT_FOUND);
         }
         if($request->getMethod() !== 'PATCH'){
             $data = json_decode($request->getContent(), true);
-            return new JsonResponse('Wrong method', 405);
+            return new JsonResponse('Wrong method', JsonResponse::HTTP_METHOD_NOT_ALLOWED);
         }
         $data = json_decode($request->getContent(), true);
         $form = $this->createFormBuilder()
@@ -116,14 +116,14 @@ class UserController extends AbstractController
                     case 'nom':
                         $user = $entityManager->getRepository(User::class)->findBy(['name'=>$data['nom']]);
                         if(count($user) !== 0){
-                            return new JsonResponse('Name already exists', 400);
+                            return new JsonResponse('Name already exists', JsonResponse::HTTP_BAD_REQUEST);
                         }
                         $player[0]->setName($data['nom']);
                         $entityManager->flush();
                         break;
                     case 'age':
                         if($data['age'] < 21){
-                            return new JsonResponse('Wrong age', 400);
+                            return new JsonResponse('Wrong age', JsonResponse::HTTP_BAD_REQUEST);
                         }
                         $player[0]->setAge($data['age']);
                         $entityManager->flush();
@@ -131,10 +131,10 @@ class UserController extends AbstractController
                 }
             }
             }else{
-                return new JsonResponse('Invalid form', 400);
+                return new JsonResponse('Invalid form', JsonResponse::HTTP_BAD_REQUEST);
         }
 
-        return new JsonResponse(array('name'=>$player[0]->getName(), "age"=>$player[0]->getAge(), 'id'=>$player[0]->getId()), 200);  
+        return new JsonResponse(array('name'=>$player[0]->getName(), "age"=>$player[0]->getAge(), 'id'=>$player[0]->getId()), JsonResponse::HTTP_OK);  
     }
 
     #[Route('/user/{id}', name: 'delete_user_by_identifiant', methods:['DELETE'])]
@@ -142,7 +142,7 @@ class UserController extends AbstractController
     {
         $player = $entityManager->getRepository(User::class)->findBy(['id'=>$id]);
         if(count($player) !== 1){
-            return new JsonResponse('Wrong id', 404);
+            return new JsonResponse('Wrong id', JsonResponse::HTTP_NOT_FOUND);
         }
         try{
             $entityManager->remove($player[0]);
@@ -151,13 +151,13 @@ class UserController extends AbstractController
             $existeEncore = $entityManager->getRepository(User::class)->findBy(['id'=>$id]);
     
             if(empty($existeEncore)){
-                return new JsonResponse('', 204);
+                return new JsonResponse('', JsonResponse::HTTP_NO_CONTENT);
             }
             throw new \Exception("Le user n'a pas éte délété");
             return null;
                 
         }catch(\Exception $e){
-            return new JsonResponse($e->getMessage(), 500);
+            return new JsonResponse($e->getMessage(), JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
         } 
     }
 }
