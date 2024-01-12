@@ -87,7 +87,7 @@ class UserController extends AbstractController
             return new JsonResponse('Wrong id', 404);
         }
 
-        return new JsonResponse(array('nom' => $player[0]->getName(), "age" => $player[0]->getAge(), 'id' => $player[0]->getId()), 200);
+        return new JsonResponse(array('name' => $player[0]->getName(), "age" => $player[0]->getAge(), 'id' => $player[0]->getId()), 200);
     }
 
     #[Route('/user/{id}', name: 'udpate_user', methods: ['PATCH'])]
@@ -125,7 +125,7 @@ class UserController extends AbstractController
         foreach ($data as $key => $_) {
             switch ($key) {
                 case 'nom':
-                    $user = $entityManager->getRepository(User::class)->findBy(['nom' => $data['nom']]);
+                    $user = $entityManager->getRepository(User::class)->findBy(['name' => $data['nom']]);
                     if (count($user) != 0) {
                         return new JsonResponse('Name already exists', 400);
                     }
@@ -143,7 +143,7 @@ class UserController extends AbstractController
             }
         }
 
-        return new JsonResponse(array('nom' => $player[0]->getName(), "age" => $player[0]->getAge(), 'id' => $player[0]->getId()), 200);
+        return new JsonResponse(array('name' => $player[0]->getName(), "age" => $player[0]->getAge(), 'id' => $player[0]->getId()), 200);
     }
 
     #[Route('/user/{id}', name: 'delete_user_by_id', methods: ['DELETE'])]
