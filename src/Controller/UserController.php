@@ -7,7 +7,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\User;
-use PDO;
+use App\Form\CreateUserType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\Request;
@@ -31,20 +31,7 @@ class UserController extends AbstractController
     public function createUser(Request $request,EntityManagerInterface $entityManager): JsonResponse
     {
         $data = json_decode($request->getContent(), true);
-        $form = $this->createFormBuilder()
-            ->add('nom', TextType::class, [
-                'constraints'=>[
-                    new Assert\NotBlank(),
-                    new Assert\Length(['min'=>1, 'max'=>255])
-                ]
-            ])
-            ->add('age', NumberType::class, [
-                'constraints'=>[
-                    new Assert\NotBlank()
-                ]
-            ])
-            ->getForm();
-
+        $form = $this->createForm(CreateUserType::class);
         $form->submit($data);
 
         if(!$form->isValid()){
@@ -62,7 +49,6 @@ class UserController extends AbstractController
                 Response::HTTP_BAD_REQUEST,
             );
         }
-
         if($data['age'] <= 21){
             return new JsonResponse(
                 'Wrong age',
@@ -109,6 +95,7 @@ class UserController extends AbstractController
     public function updateUser(EntityManagerInterface $entityManager, $userId, Request $request): JsonResponse
     {
         $player = $entityManager->getRepository(User::class)->findBy(['id'=>$userId]);
+        $data = json_decode($request->getContent(), true);
 
         if(0 === count($player)){
             return new JsonResponse(
@@ -117,7 +104,6 @@ class UserController extends AbstractController
             );
         }
 
-        $data = json_decode($request->getContent(), true);
         $form = $this->createFormBuilder()
             ->add('nom', TextType::class, array(
                 'required'=>false
