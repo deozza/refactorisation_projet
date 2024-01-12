@@ -8,6 +8,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\User;
 use App\Form\CreateUserType;
+use App\Form\UpdateUserType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\Request;
@@ -104,15 +105,7 @@ class UserController extends AbstractController
             );
         }
 
-        $form = $this->createFormBuilder()
-            ->add('nom', TextType::class, array(
-                'required'=>false
-            ))
-            ->add('age', NumberType::class, [
-                'required' => false
-            ])
-            ->getForm();
-
+        $form = $this->createForm(UpdateUserType::class);
         $form->submit($data);
 
         if(!$form->isValid()){

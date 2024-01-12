@@ -27,5 +27,4 @@ class CreateUserType extends AbstractType
                 ])
                ;
        }
-
    }
