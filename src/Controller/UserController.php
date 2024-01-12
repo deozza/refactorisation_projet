@@ -56,7 +56,7 @@ class UserController extends AbstractController
             return new JsonResponse('Wrong age', 400);
         }
 
-        $user = $entityManager->getRepository(User::class)->findBy(['nom' => $data['nom']]);
+        $user = $entityManager->getRepository(User::class)->findBy(['name' => $data['nom']]);
 
         if (count($user) != 0) {
             return new JsonResponse('Name already exists', 400);
