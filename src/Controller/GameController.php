@@ -41,16 +41,16 @@ class GameController extends AbstractController
                 return new JsonResponse('User not found', 401);
             }
 
-            $nouvelle_partie = new Game();
-            $nouvelle_partie->setState('pending');
-            $nouvelle_partie->setPlayerLeft($currentUser);
+            $newGame = new Game();
+            $newGame->setState('pending');
+            $newGame->setPlayerLeft($currentUser);
 
-            $entityManager->persist($nouvelle_partie);
+            $entityManager->persist($newGame);
 
             $entityManager->flush();
 
             return $this->json(
-                $nouvelle_partie,
+                $newGame,
                 201,
                 headers: ['Content-Type' => 'application/json;charset=UTF-8']
             );
@@ -130,7 +130,6 @@ class GameController extends AbstractController
             if(ctype_digit($currentUserId) === false){
                 return new JsonResponse('User not found', 401);
             }
-    
             return new JsonResponse('Game not found', 404);
         }
     }
@@ -303,8 +302,6 @@ class GameController extends AbstractController
         }else{
             return new JsonResponse('Invalid choice', 400);
         }
-
-        return new JsonResponse('coucou');
     }
 
     #[Route('/game/{id}', name: 'cancel_game', methods:['DELETE'])]
