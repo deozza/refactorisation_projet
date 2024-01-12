@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\FormUser;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
@@ -12,6 +13,9 @@ use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Constraints as Assert;
+use App\Form\CreateUserType;
+use App\Form\VerifUserType;
+use App\Repository\UserRepository;
 
 class UserController extends AbstractController
 {
@@ -29,18 +33,18 @@ class UserController extends AbstractController
     #[Route('/users', name: 'user_post', methods:['POST'])]
 public function createUser(Request $request, EntityManagerInterface $entityManager): JsonResponse
 {
+    
     if (!$request->isMethod('POST')) {
         return $this->json('Wrong method', 405);
     }
-
+    $dataAsArray = json_decode($request->getContent(), true);
     $form = $this->createForm(CreateUserType::class);
-    $form->handleRequest($request);
-
+    $form->submit($dataAsArray);
+  
     if (!$form->isSubmitted() || !$form->isValid()) {
         return $this->json('Invalid form', 400);
     }
-
-
+   
     $userData = $form->getData();
 
     if ($userData->getAge() > 21) {
@@ -64,7 +68,7 @@ public function createUser(Request $request, EntityManagerInterface $entityManag
 }
    
 
-    #[Route('/user/{identifiant}', name: 'get_user_with_id', methods:['GET'])]
+    #[Route('/user/{identifiant}', name: 'get_user_with_id', methods:['GET'], requirements:['identifiant' => '\d+'])]
    public function getUserWithIdentifiant($identifiant, EntityManagerInterface $entityManager): JsonResponse
 
     {
@@ -89,8 +93,8 @@ public function createUser(Request $request, EntityManagerInterface $entityManag
 
     
 
-    #[Route('/user/{identifiant}', name: 'verif_user', methods:['PATCH'])]
-public function verifUser(EntityManagerInterface $entityManager, int $identifiant, Request $request): JsonResponse
+    #[Route('/user/{identifiant}', name: 'verif_user', methods:['PATCH'], requirements:['identifiant' => '\d+'])]
+public function verifUser(EntityManagerInterface $entityManager, $identifiant, Request $request): JsonResponse
 {
     $user = $entityManager->getRepository(User::class)->find($identifiant);
 
@@ -102,12 +106,30 @@ public function verifUser(EntityManagerInterface $entityManager, int $identifian
         return $this->json('Wrong method', 405);
     }
 
-    $form = $this->createForm(VerifUserType::class, $user, ['method' => 'PATCH']);
-    $form->handleRequest($request);
+    $dataAsArray = json_decode($request->getContent(), true);
+    $userform= new FormUser();
+    $userform->setNom($user->getName());
+    $userform->setAge($user->getAge());
+    $form = $this->createForm(VerifUserType::class, $userform, ['method' => 'PATCH']);
+    $form->submit( $dataAsArray, false);
 
+
+    
     if (!$form->isSubmitted() || !$form->isValid()) {
         return $this->json('Invalid form', 400);
     }
+    
+    $useralreadyexist= $entityManager->getRepository(User::class)->findBy([
+        "name"=>$userform->getNom()
+        
+    ]);
+
+    if (empty($useralreadyexist)===false){
+        return new JsonResponse("Name already exists", 400);
+    }
+
+    $user->setName($userform->getNom());
+    $user->setAge($userform->getAge());
 
     $entityManager->flush();
 
