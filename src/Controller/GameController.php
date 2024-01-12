@@ -65,10 +65,7 @@ class GameController extends AbstractController
     #[Route('/game/{id}', name: 'fetch_game', methods:['GET'], requirements: ['id' => '\d+'])]
     public function getGameInfo($id): JsonResponse
     {
-        if(!$id){
-            return new JsonResponse('Game not found', 404);
-        }
-
+        
         $game = $this->entityManager->getRepository(Game::class)->findOneBy(['id' => $id]);
 
         if(!$game){
@@ -92,11 +89,11 @@ class GameController extends AbstractController
         $game = $this->entityManager->getRepository(Game::class)->find($id);
         $playerRight = $this->entityManager->getRepository(User::class)->find($playerRightId);
 
-    if (!$currentUserId || !ctype_digit($currentUserId) || $playerLeft === null) {
+    if (!$currentUserId || !ctype_digit($currentUserId) || !$playerLeft) {
         return new JsonResponse('User not found', 401);
     }
 
-    if (!ctype_digit($playerRightId) || $game === null) {
+    if (!ctype_digit($playerRightId) || !$game ) {
         return new JsonResponse('Game not found', 404);
     }
 
@@ -104,7 +101,7 @@ class GameController extends AbstractController
         return new JsonResponse('Game already started', 409);
     }
 
-    if ($playerRight === null) {
+    if (!$playerRight) {
         return new JsonResponse('User not found', 404);
     }
 
@@ -127,8 +124,8 @@ class GameController extends AbstractController
     public function play(Request $request, $id): JsonResponse
     {
         $UserId = $request->headers->get('X-User-Id');
-		$User = $this->entityManager->getRepository(User::class)->find($UserId);
-		$game = $this->entityManager->getRepository(Game::class)->find($id);
+        $User = $this->entityManager->getRepository(User::class)->find($UserId);
+        $game = $this->entityManager->getRepository(Game::class)->find($id);
 
         if(!ctype_digit($UserId) || !$User){
             return new JsonResponse('User not found', 401);
@@ -155,9 +152,9 @@ class GameController extends AbstractController
             return new JsonResponse('Game not started', 409);
         }
 
-		$form = $this->createForm(PlayerChoiceType::class);
-		$choice = json_decode($request->getContent(), true);
-		$form->submit($choice);
+        $form = $this->createForm(PlayerChoiceType::class);
+        $choice = json_decode($request->getContent(), true);
+        $form->submit($choice);
 
         if($form->isValid()){
             $data = $form->getData();
