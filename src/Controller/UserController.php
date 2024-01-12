@@ -166,7 +166,7 @@ class UserController extends AbstractController
 
             if(empty($alreadyExists)){
                 return new JsonResponse(
-                    "No content",
+                    "",
                     Response::HTTP_NO_CONTENT,
                 );
             }
