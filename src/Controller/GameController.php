@@ -91,7 +91,7 @@ class GameController extends AbstractController
         if(empty($currentUserId)){
             return new JsonResponse(
                 'User not found',
-                401);
+                Response::HTTP_UNAUTHORIZED);
         }
         if(null === $playerLeft){
             return new JsonResponse(
@@ -108,7 +108,8 @@ class GameController extends AbstractController
         if(empty($currentUserId)){
             return new JsonResponse(
                 'User not found',
-                401);
+                Response::HTTP_UNAUTHORIZED
+            );
         }
         if (null === $game) {
             return new JsonResponse(
@@ -153,7 +154,8 @@ class GameController extends AbstractController
         if(ctype_digit($currentUserId) === false){
             return new JsonResponse(
                 'User not found',
-                401);
+                Response::HTTP_UNAUTHORIZED
+            );
         }
 
         if (null === $currentUser){
