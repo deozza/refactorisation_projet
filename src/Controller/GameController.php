@@ -54,7 +54,7 @@ class GameController extends AbstractController
     {
         try {
             $game = $entityManager->getRepository(Game::class)->find($identifiant);
-            return new JsonResponse($game, 200);
+            return $this->json($game, 200, ['Content-Type' => 'application/json;charset=UTF-8']);
         } catch (NotFoundHttpException $exception) {
             return $this->json(
                 $exception->getMessage(),
@@ -80,7 +80,7 @@ class GameController extends AbstractController
                 throw new NotFoundHttpException('Game not found');
             }
 
-            return new JsonResponse('Player Found', 200);
+            return $this->json($game, 200, ['Content-Type' => 'application/json;charset=UTF-8']);
         } catch (HttpException $exception) {
             return $this->json(
                 $exception->getMessage(),
@@ -109,7 +109,7 @@ class GameController extends AbstractController
             if ($game === null) {
                 throw new NotFoundHttpException('Game not found');
             }
-            return new JsonResponse('Game found', 200);
+            return $this->json($game, 200, ['Content-Type' => 'application/json;charset=UTF-8']);
         } catch (HttpException $exception) {
             return $this->json(
                 $exception->getMessage(),
