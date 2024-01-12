@@ -62,10 +62,10 @@ class GameController extends AbstractController
     }
 
 
-    #[Route('/game/{id}', name: 'fetch_game', methods:['GET'])]
+    #[Route('/game/{id}', name: 'fetch_game', methods:['GET'], requirements: ['id' => '\d+'])]
     public function getGameInfo($id): JsonResponse
     {
-        if(!ctype_digit($id)){
+        if(!$id){
             return new JsonResponse('Game not found', 404);
         }
 
@@ -81,7 +81,7 @@ class GameController extends AbstractController
         );     
     }
 
-    #[Route('/game/{id}/add/{playerRightId}', name: 'add_user_right', methods:['PATCH'])]
+    #[Route('/game/{id}/add/{playerRightId}', name: 'add_user_right', methods:['PATCH'], requirements: ['id' => '\d+'])]
     public function inviteToGame(
         Request $request, 
         $id, 
@@ -96,7 +96,7 @@ class GameController extends AbstractController
         return new JsonResponse('User not found', 401);
     }
 
-    if (!ctype_digit($id) || !ctype_digit($playerRightId) || $game === null) {
+    if (!ctype_digit($playerRightId) || $game === null) {
         return new JsonResponse('Game not found', 404);
     }
 
@@ -123,7 +123,7 @@ class GameController extends AbstractController
 }
 
     
-    #[Route('/game/{id}', name: 'send_choice', methods:['PATCH'])]
+    #[Route('/game/{id}', name: 'send_choice', methods:['PATCH'], requirements: ['id' => '\d+'])]
     public function play(Request $request, $id): JsonResponse
     {
         $UserId = $request->headers->get('X-User-Id');
@@ -134,7 +134,7 @@ class GameController extends AbstractController
             return new JsonResponse('User not found', 401);
         }
     
-        if(!ctype_digit($id) || !$game){
+        if(!$game){
             return new JsonResponse('Game not found', 404);
         }
 
@@ -193,7 +193,7 @@ class GameController extends AbstractController
         return new JsonResponse('Invalid choice', 400);
     }
 
-    #[Route('/game/{id}', name: 'cancel_game', methods:['DELETE'])]
+    #[Route('/game/{id}', name: 'cancel_game', methods:['DELETE'], requirements: ['id' => '\d+'])]
     public function deleteGame(Request $request, $id): JsonResponse
     {
         $currentUserId = $request->headers->get('X-User-Id');
@@ -203,9 +203,6 @@ class GameController extends AbstractController
 
             if($player){
 
-                if(!ctype_digit($id)){
-                    return new JsonResponse('Game not found', 404);
-                }
         
                 $game = $this->entityManager->getRepository(Game::class)->findOneBy(['id' => $id, 'playerLeft' => $player]);
 
