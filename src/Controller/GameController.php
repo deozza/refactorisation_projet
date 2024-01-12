@@ -221,7 +221,7 @@ class GameController extends AbstractController
             headers: ['Content-Type' => 'application/json;charset=UTF-8']
         );
 
-        return new JsonResponse(null, 204);
+        return new JsonResponse('coucou');
     }
 
     #[Route('/game/{id}', name: 'cancel_game', methods: ['DELETE'])]

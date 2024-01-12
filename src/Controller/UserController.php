@@ -33,7 +33,7 @@ class UserController extends AbstractController
         }
         $data = json_decode($request->getContent(), true);
         $form = $this->createFormBuilder()
-            ->add('name', TextType::class, [
+            ->add('nom', TextType::class, [
                 'constraints' => [
                     new Assert\NotBlank(),
                     new Assert\Length(['min' => 1, 'max' => 255])
@@ -56,14 +56,14 @@ class UserController extends AbstractController
             return new JsonResponse('Wrong age', 400);
         }
 
-        $user = $entityManager->getRepository(User::class)->findBy(['name' => $data['name']]);
+        $user = $entityManager->getRepository(User::class)->findBy(['name' => $data['nom']]);
 
         if (count($user) != 0) {
             return new JsonResponse('Name already exists', 400);
         }
 
         $player = new User();
-        $player->setName($data['name']);
+        $player->setName($data['nom']);
         $player->setAge($data['age']);
         $userRepository->save($player, true);
 
@@ -107,7 +107,7 @@ class UserController extends AbstractController
 
         $data = json_decode($request->getContent(), true);
         $form = $this->createFormBuilder()
-            ->add('name', TextType::class, array(
+            ->add('nom', TextType::class, array(
                 'required' => false
             ))
             ->add('age', NumberType::class, [
@@ -124,12 +124,12 @@ class UserController extends AbstractController
 
         foreach ($data as $key => $_) {
             switch ($key) {
-                case 'name':
-                    $user = $entityManager->getRepository(User::class)->findBy(['name' => $data['name']]);
+                case 'nom':
+                    $user = $entityManager->getRepository(User::class)->findBy(['name' => $data['nom']]);
                     if (count($user) != 0) {
                         return new JsonResponse('Name already exists', 400);
                     }
-                    $player[0]->setName($data['name']);
+                    $player[0]->setName($data['nom']);
                     $entityManager->flush();
                     break;
 
