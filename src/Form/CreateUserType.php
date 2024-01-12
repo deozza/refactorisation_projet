@@ -12,8 +12,17 @@ class CreateUserType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('name')
-            ->add('age')
+            ->add('nom', TextType::class, [
+                'constraints' => [
+                    new NotBlank(),
+                    new Length(['min'=> 1, 'max' => 255]),
+                ]
+            ])
+            ->add('age', NumberType::class, [
+                'constraints' => [
+                    new NotBlank(),
+                ]
+            ])
         ;
     }
 
