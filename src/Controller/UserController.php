@@ -88,56 +88,34 @@ public function createUser(Request $request, EntityManagerInterface $entityManag
     }
 
 
-    #[Route('/user/{identifiant}', name: 'udpate_user', methods:['PATCH'])]
-    public function updateUser(EntityManagerInterface $entityManager, $identifiant, Request $request): JsonResponse
-    {
-        $joueur = $entityManager->getRepository(User::class)->findBy(['id' => $identifiant]);
+    #[Route('/user/{identifiant}', name: 'verif_user', methods:['PATCH'])]
+public function verifUser(EntityManagerInterface $entityManager, int $identifiant, Request $request): JsonResponse
+{
+    $user = $entityManager->getRepository(User::class)->find($identifiant);
 
-        if (count($joueur) !== 1) {
-            return new JsonResponse('Wrong id', 404);
-        }
-
-        if ($request->getMethod() !== 'PATCH') {
-            return new JsonResponse('Wrong method', 405);
-        }
-
-        $data = json_decode($request->getContent(), true);
-        $form = $this->createFormBuilder()
-            ->add('nom', TextType::class, ['required' => false])
-            ->add('age', NumberType::class, ['required' => false])
-            ->getForm();
-
-        $form->submit($data);
-
-        if (!$form->isValid()) {
-            return new JsonResponse('Invalid form', 400);
-        }
-
-        foreach ($data as $key => $value) {
-            switch ($key) {
-                case 'nom':
-                    $user = $entityManager->getRepository(User::class)->findBy(['name' => $data['nom']]);
-                    if (count($user) === 0) {
-                        $joueur[0]->setName($data['nom']);
-                        $entityManager->flush();
-                    } else {
-                        return new JsonResponse('Name already exists', 400);
-                    }
-                    break;
-                case 'age':
-                    if ($data['age'] > 21) {
-                        $joueur[0]->setAge($data['age']);
-                        $entityManager->flush();
-                    } else {
-                        return new JsonResponse('Wrong age', 400);
-                    }
-                    break;
-            }
-        }
-
-        return new JsonResponse(['name' => $joueur[0]->getName(), 'age' => $joueur[0]->getAge(), 'id' => $joueur[0]->getId()], 200);
+    if (!$user) {
+        return $this->json('Wrong id', 404);
     }
 
+    if (!$request->isMethod('PATCH')) {
+        return $this->json('Wrong method', 405);
+    }
+
+    $form = $this->createForm(VerifUserType::class, $user, ['method' => 'PATCH']);
+    $form->handleRequest($request);
+
+    if (!$form->isSubmitted() || !$form->isValid()) {
+        return $this->json('Invalid form', 400);
+    }
+
+    $entityManager->flush();
+
+    return $this->json([
+        'name' => $user->getName(),
+        'age' => $user->getAge(),
+        'id' => $user->getId()
+    ], 200);
+}
 
     #[Route('/user/{userId}', name: 'delete_user_by_id', methods:['DELETE'], requirements:['userId' => '\d+'])]
     public function deleteUserById(int $userId, EntityManagerInterface $entityManager): JsonResponse
