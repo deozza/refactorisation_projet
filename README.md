@@ -1,11 +1,17 @@
+# Informations sur l'organisation des branches
+
+## Branches attempt/
+
+Ces branches sont des essais qui ne sont soit pas fonctionnels soit non adaptés à être merge dans main
+
 # Projet de refactorisation - Symfony 6
 
 ## Sommaire
 
- * [A propos](#a-propos)
- * [Installation](#installation)
- * [Objectif](#objectif)
- * [Tests](#tests)
+- [A propos](#a-propos)
+- [Installation](#installation)
+- [Objectif](#objectif)
+- [Tests](#tests)
 
 ## A propos
 
@@ -13,10 +19,10 @@ Ceci est un repository pour s'exercer à la refactorisation d'une API simple, é
 
 ## Installation
 
-__Pré-requis :__
+**Pré-requis :**
 
- * docker engine
- * docker-compose
+- docker engine
+- docker-compose
 
 Pour initialiser le projet, veuillez faire un fork du repository sur votre compte. Puis, lancer les commandes suivantes :
 
