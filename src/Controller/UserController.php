@@ -27,33 +27,46 @@ class UserController extends AbstractController
     }
 
     #[Route('/users', name: 'user_post', methods:['POST'])]
-    public function createUser(Request $request,EntityManagerInterface $entityManager): JsonResponse
-    {
-        $dataUserAsArray = json_decode(json: $request->getContent(), associative: true);
-
-        if($dataUserAsArray === null){
-            $dataUserAsArray = [];
-        }
-        try{
-            $createdUser = $this->userUseCase->createUser($dataUserAsArray);
-
-            return $this->json(
-                $createdUser,
-                Response::HTTP_CREATED,
-                ['Content-Type' => 'application/json;charset=UTF-8']
-            );
-
-        }catch(BadRequestHttpException $error){
-            return $this->json(
-                $error->getMessage(),
-                $error->getStatusCode(),
-                ['Content-Type' => 'application/json;charset=UTF-8']
-            );
-        }
+public function createUser(Request $request, EntityManagerInterface $entityManager): JsonResponse
+{
+    if (!$request->isMethod('POST')) {
+        return $this->json('Wrong method', 405);
     }
+
+    $form = $this->createForm(CreateUserType::class);
+    $form->handleRequest($request);
+
+    if (!$form->isSubmitted() || !$form->isValid()) {
+        return $this->json('Invalid form', 400);
+    }
+
+
+    $userData = $form->getData();
+
+    if ($userData->getAge() > 21) {
+        $existingUser = $entityManager->getRepository(User::class)->findOneBy(['name' => $userData->getNom()]);
+
+        if (!$existingUser) {
+            $user = new User();
+            $user->setName($userData->getNom());
+            $user->setAge($userData->getAge());
+
+            $entityManager->persist($user);
+            $entityManager->flush();
+
+            return $this->json($user, 201, ['Content-Type' => 'application/json;charset=UTF-8']);
+        } else {
+            return $this->json('Name already exists', 400);
+        }
+    } else {
+        return $this->json('Wrong age', 400);
+    }
+}
+   
 
     #[Route('/user/{identifiant}', name: 'get_user_with_id', methods:['GET'])]
    public function getUserWithIdentifiant($identifiant, EntityManagerInterface $entityManager): JsonResponse
+
     {
         if (!ctype_digit($identifiant)) {
             return new JsonResponse('Wrong id', 404);
