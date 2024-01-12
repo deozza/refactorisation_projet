@@ -172,7 +172,10 @@ class GameController extends AbstractController
             );
         }
         if ($game->getState() === 'finished' || $game->getState() === 'pending') {
-            return new JsonResponse('Game not started', 409);
+            return new JsonResponse(
+                'Game not started', 
+                Response::HTTP_CONFLICT,
+            );
         }
 
         $form = $this->createFormBuilder()
