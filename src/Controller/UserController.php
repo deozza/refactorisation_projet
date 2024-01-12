@@ -87,6 +87,7 @@ public function createUser(Request $request, EntityManagerInterface $entityManag
         return new JsonResponse('Wrong id', 404);
     }
 
+    
 
     #[Route('/user/{identifiant}', name: 'verif_user', methods:['PATCH'])]
 public function verifUser(EntityManagerInterface $entityManager, int $identifiant, Request $request): JsonResponse
