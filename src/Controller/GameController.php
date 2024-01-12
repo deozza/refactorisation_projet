@@ -15,7 +15,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 class GameController extends AbstractController
 {
     #[Route('/games', name: 'get_list_of_games', methods:['GET'])]
-    public function getPartyList(EntityManagerInterface $entityManager): JsonResponse
+    public function getPartieList(EntityManagerInterface $entityManager): JsonResponse
     {
         $data = $entityManager->getRepository(Game::class)->findAll();
         return $this->json(
@@ -41,16 +41,16 @@ class GameController extends AbstractController
                 return new JsonResponse('User not found', 401);
             }
 
-            $new_game = new Game();
-            $new_game->setState('pending');
-            $new_game->setPlayerLeft($currentUser);
+            $nouvelle_partie = new Game();
+            $nouvelle_partie->setState('pending');
+            $nouvelle_partie->setPlayerLeft($currentUser);
 
-            $entityManager->persist($new_game);
+            $entityManager->persist($nouvelle_partie);
 
             $entityManager->flush();
 
             return $this->json(
-                $new_game,
+                $nouvelle_partie,
                 201,
                 headers: ['Content-Type' => 'application/json;charset=UTF-8']
             );
@@ -307,7 +307,7 @@ class GameController extends AbstractController
         return new JsonResponse('coucou');
     }
 
-    #[Route('/game/{id}', name: 'cancel_game', methods:['DELETE'])]
+    #[Route('/game/{id}', name: 'annuler_game', methods:['DELETE'])]
     public function deleteGame(EntityManagerInterface $entityManager, Request $request, $id): JsonResponse
     {
    
