@@ -10,16 +10,16 @@ class UserControllerTest extends WebTestCase
     use RecreateDatabaseTrait;
 
     /**
-     * @dataProvider dataprovider_getListeDesUsers_checkAuthorizedMethods
+     * @dataProvider dataprovider_getUsersList_checkAuthorizedMethods
      */
-    public function test_getListeDesUsers_checkAuthorizedMethods(string $method)
+    public function test_getUsersList_checkAuthorizedMethods(string $method)
     {
         $client = static::createClient();
         $client->request($method, '/users');
         $this->assertEquals(405, $client->getResponse()->getStatusCode());
     }
 
-    private static function dataprovider_getListeDesUsers_checkAuthorizedMethods(): array
+    private static function dataprovider_getUsersList_checkAuthorizedMethods(): array
     {
         return [
             ['PUT'],
@@ -28,13 +28,13 @@ class UserControllerTest extends WebTestCase
         ];
     }
 
-    public function test_getListeDesUsers_checkReturnStatus(){
+    public function test_getUsersList_checkReturnStatus(){
         $client = static::createClient();
         $client->request('GET', '/users');
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
     }
 
-    public function test_getListeDesUsers_checkValues(){
+    public function test_getUsersList_checkValues(){
         $client = static::createClient();
         $client->request('GET', '/users');
 
@@ -84,22 +84,22 @@ class UserControllerTest extends WebTestCase
         $this->assertEquals(201, $client->getResponse()->getStatusCode());
     }
 
-    public function test_getUserWithIdentifiant_checkWithInvalidMethod(){
+    public function test_getUserById_checkWithInvalidMethod(){
         $client = static::createClient();
         $client->request('POST', '/user/1');
         $this->assertEquals(405, $client->getResponse()->getStatusCode());
     }
 
     /**
-     * @dataProvider dataprovider_getUserWithIdentifiant_checkWithInvalidId
+     * @dataProvider dataprovider_getUserById_checkWithInvalidId
      */
-    public function test_getUserWithIdentifiant_checkWithInvalidId($id){
+    public function test_getUserById_checkWithInvalidId($id){
         $client = static::createClient();
         $client->request('GET', '/user/'.$id);
         $this->assertEquals(404, $client->getResponse()->getStatusCode());
     }
 
-    private static function dataprovider_getUserWithIdentifiant_checkWithInvalidId(): array
+    private static function dataprovider_getUserById_checkWithInvalidId(): array
     {
         return [
             [0],
@@ -109,13 +109,13 @@ class UserControllerTest extends WebTestCase
         ];
     }
 
-    public function test_getUserWithIdentifiant_checkStatusWithValidId(){
+    public function test_getUserById_checkStatusWithValidId(){
         $client = static::createClient();
         $client->request('GET', '/user/1');
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
     }
 
-    public function test_getUserWithIdentifiant_checkValuesWithValidId(){
+    public function test_getUserById_checkValuesWithValidId(){
         $client = static::createClient();
         $client->request('GET', '/user/1');
 
@@ -175,15 +175,15 @@ class UserControllerTest extends WebTestCase
     }
 
     /**
-     * @dataProvider dataprovider_suprUser_withInvalidId
+     * @dataProvider dataprovider_deleteUserById_withInvalidId
      */
-    public function test_suprUser_withInvalidId($id){
+    public function test_deleteUserById_withInvalidId($id){
         $client = static::createClient();
         $client->request('DELETE', '/user/'.$id);
         $this->assertEquals(404, $client->getResponse()->getStatusCode());
     }
 
-    private static function dataprovider_suprUser_withInvalidId(): array
+    private static function dataprovider_deleteUserById_withInvalidId(): array
     {
         return [
             [0],
@@ -193,13 +193,13 @@ class UserControllerTest extends WebTestCase
         ];
     }
 
-    public function test_suprUser_checkValidStatus(){
+    public function test_deleteUserById_checkValidStatus(){
         $client = static::createClient();
         $client->request('DELETE', '/user/1');
         $this->assertEquals(204, $client->getResponse()->getStatusCode());
     }
 
-    public function test_suprUser_checkUserIsDeleted(){
+    public function test_deleteUserById_checkUserIsDeleted(){
         $client = static::createClient();
         $client->request('DELETE', '/user/1');
         $client->request('GET', '/user/1');
