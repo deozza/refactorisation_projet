@@ -3,7 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\User;
-use App\Form\Type\UserType;
+use App\Form\UserType;
 
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -20,8 +20,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class UserController extends AbstractController
 {
-    #[Route('/users', name: 'liste_des_users', methods:['GET'])]
-    public function getListeDesUsers(EntityManagerInterface $entityManager): JsonResponse
+    #[Route('/users', name: 'list_users', methods:['GET'])]
+    public function getListOfUsers(EntityManagerInterface $entityManager): JsonResponse
     {
         $data = $entityManager->getRepository(User::class)->findAll();
         return $this->json(
@@ -30,7 +30,7 @@ class UserController extends AbstractController
         );
     }
 
-    #[Route('/users', name: 'user_post', methods:['POST'])]
+    #[Route('/users', name: 'create_user', methods:['POST'])]
     public function createUser(Request $request, EntityManagerInterface $entityManager): JsonResponse
     {
         if ($request->getMethod() !== 'POST') {
@@ -68,11 +68,11 @@ class UserController extends AbstractController
         );                    
     }
 
-    #[Route('/user/{id}', name: 'get_user_by_id', methods:['GET'])]
-    public function getUserWithIdentifiant($id, EntityManagerInterface $entityManager): JsonResponse
+    #[Route('/user/{id}', name: 'get_user', methods:['GET'])]
+    public function getUserById($id, EntityManagerInterface $entityManager): JsonResponse
     {
         if (!ctype_digit($id)) {
-            return new JsonResponse('Invalid ID', 404);
+            return new JsonResponse('Invalid Id', 404);
         }
 
         $player = $entityManager->getRepository(User::class)->find($id);
@@ -88,7 +88,7 @@ class UserController extends AbstractController
         ], 200);
     }
 
-    #[Route('/user/{id}', name: 'udpate_user', methods:['PATCH'])]
+    #[Route('/user/{id}', name: 'update_user', methods:['PATCH'])]
     public function updateUser(EntityManagerInterface $entityManager, $id, Request $request): JsonResponse
     {
         if ($request->getMethod() !== 'PATCH') {
@@ -135,28 +135,23 @@ class UserController extends AbstractController
         ], 200);
     }
 
-    #[Route('/user/{id}', name: 'delete_user_by_identifiant', methods:['DELETE'])]
-    public function suprUser($id, EntityManagerInterface $entityManager): JsonResponse | null
+    #[Route('/user/{id}', name: 'delete_user', methods:['DELETE'])]
+    public function deleteUser($id, EntityManagerInterface $entityManager): JsonResponse | null
     {
         $player = $entityManager->getRepository(User::class)->findBy(['id'=>$id]);
-        if($player){
-            try{
-                $entityManager->remove($player[0]);
-                $entityManager->flush();
-
-                $userStillExists = $entityManager->getRepository(User::class)->findBy(['id'=>$id]);
-    
-                if($userStillExists){
-                    throw new \Exception('The user was not deleted');
-                    return null;
-                }else{
-                    return new JsonResponse('', 204);
-                }
-            }catch(\Exception $e){
-                return new JsonResponse($e->getMessage(), 500);
-            }
-        }else{
+        if(!$player){
             return new JsonResponse('Wrong id', 404);
-        }    
+        }
+
+        $entityManager->remove($player[0]);
+        $entityManager->flush();
+
+        $userStillExists = $entityManager->getRepository(User::class)->findBy(['id'=>$id]);
+
+        if(!$userStillExists){
+            return new JsonResponse('', 204);
+        }
+        throw new \Exception('The user was not deleted');
+        return null;
     }
 }
