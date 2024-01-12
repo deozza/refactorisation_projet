@@ -68,10 +68,10 @@ class UserController extends AbstractController
         );                    
     }
 
-    #[Route('/user/{id}', name: 'get_user', methods:['GET'])]
+    #[Route('/user/{id}', name: 'get_user', methods:['GET'], requirements: ['id' => '\d+'])]
     public function getUserById($id, EntityManagerInterface $entityManager): JsonResponse
     {
-        if (!ctype_digit($id)) {
+        if (!$id) {
             return new JsonResponse('Invalid Id', 404);
         }
 
