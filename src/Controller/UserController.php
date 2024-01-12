@@ -9,10 +9,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\User;
 use App\Form\CreateUserType;
 use App\Form\UpdateUserType;
-use Symfony\Component\Form\Extension\Core\Type\NumberType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\HttpFoundation\Response;
 
 class UserController extends AbstractController
@@ -46,7 +43,7 @@ class UserController extends AbstractController
         
         if(0 !== count($user)){
             return new JsonResponse(
-                'You need to have a user',
+                'Name already exists',
                 Response::HTTP_BAD_REQUEST,
             );
         }
@@ -78,7 +75,7 @@ class UserController extends AbstractController
 
         if(0 === count($player)) {
             return new JsonResponse(
-                'User not found',
+                'Wrong id',
                 Response::HTTP_NOT_FOUND
         );
         }
@@ -100,7 +97,7 @@ class UserController extends AbstractController
 
         if(0 === count($player)){
             return new JsonResponse(
-                'User not found',
+                'Wrong id',
                 Response::HTTP_NOT_FOUND
             );
         }
@@ -156,7 +153,7 @@ class UserController extends AbstractController
 
         if(count($player) !== 1) {
             return new JsonResponse(
-                'User not found',
+                'Wrong id',
                 Response::HTTP_NOT_FOUND
             );
         }
