@@ -16,18 +16,14 @@ class GameRepository extends ServiceEntityRepository
     public function save(Game $entity, bool $flush = false): void
     {
         $this->getEntityManager()->persist($entity);
-
-        if ($flush) {
-            $this->getEntityManager()->flush();
-        }
+        $this->getEntityManager()->flush();
+        
     }
 
     public function remove(Game $entity, bool $flush = false): void
     {
         $this->getEntityManager()->remove($entity);
-
-        if ($flush) {
-            $this->getEntityManager()->flush();
-        }
+        $this->getEntityManager()->flush();
+        
     }
 }
