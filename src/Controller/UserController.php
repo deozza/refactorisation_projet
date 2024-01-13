@@ -27,7 +27,6 @@ class UserController extends AbstractController
     #[Route('/users', name: 'user_post', methods:['POST'])]
     public function createUser(Request $request,EntityManagerInterface $entityManager): JsonResponse
     {
-        
         if('POST' !== $request->getMethod()){ 
             return new JsonResponse(
                 'Wrong method',
@@ -75,7 +74,6 @@ class UserController extends AbstractController
     #[Route('/user/{userId}', name: 'get_user_by_id', methods:['GET'])]
     public function getUserWithUserId($userId, EntityManagerInterface $entityManager): JsonResponse
     {
-
         if(!ctype_digit($userId)){ 
             return new JsonResponse(
                 'Wrong id',
@@ -103,7 +101,6 @@ class UserController extends AbstractController
     #[Route('/user/{userId}', name: 'udpate_user', methods:['PATCH'])]
     public function updateUser(EntityManagerInterface $entityManager, $userId, Request $request): JsonResponse
     {
-
         $data = json_decode($request->getContent(), true);
         if('PATCH' !== $request->getMethod()){
             return new JsonResponse(

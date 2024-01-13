@@ -63,7 +63,6 @@ class GameController extends AbstractController
     #[Route('/game/{gameId}', name: 'fetch_game', methods: ['GET'])]
     public function getGameInfo(EntityManagerInterface $entityManager, $gameId): JsonResponse
     {
-        
         if(!ctype_digit($gameId)){ 
             return new JsonResponse(
                 'Game not found',
@@ -85,14 +84,20 @@ class GameController extends AbstractController
         );
     }
 
-    #[Route('/game/{id}/add/{playerRightId}', name: 'add_user_right', methods: ['PATCH'])]
-    public function inviteToGame(Request $request, EntityManagerInterface $entityManager, $id, $playerRightId): JsonResponse
+    #[Route('/game/{gameId}/add/{playerRightId}', name: 'add_user_right', methods: ['PATCH'])]
+    public function inviteToGame(Request $request, EntityManagerInterface $entityManager, $gameId, $playerRightId): JsonResponse
     {
         $currentUserId = $request->headers->get('X-User-Id');
         if(empty($currentUserId)){ 
             return new JsonResponse(
                 'User not found',
                 Response::HTTP_UNAUTHORIZED);
+        }
+        if(!ctype_digit($gameId) && !ctype_digit($playerRightId) && !ctype_digit($currentUserId)){
+            return new JsonResponse(
+                'Game not found',
+                Response::HTTP_NOT_FOUND,
+            );
         }
 
         $playerLeft = $entityManager->getRepository(User::class)->find($currentUserId);
@@ -110,21 +115,13 @@ class GameController extends AbstractController
                 Response::HTTP_NOT_FOUND
             );
         }
-        $game = $entityManager->getRepository(Game::class)->find($id);
+        $game = $entityManager->getRepository(Game::class)->find($gameId);
         if (!$game) { 
             return new JsonResponse(
                 'Game not found',
                 Response::HTTP_NOT_FOUND
             );
         }
-
-        if(!ctype_digit($id) && !ctype_digit($playerRightId) && !ctype_digit($currentUserId)){
-            return new JsonResponse(
-                'Game not found',
-                Response::HTTP_NOT_FOUND,
-            );
-        }
-
         if ($game->getState() === 'ongoing' || $game->getState() === 'finished') { //OK
             return new JsonResponse(
                 'Game already started',
@@ -160,6 +157,12 @@ class GameController extends AbstractController
                 Response::HTTP_UNAUTHORIZED
             );
         }
+        if(!ctype_digit($gameId)){ 
+            return new JsonResponse(
+                'Game not found',
+                Response::HTTP_NOT_FOUND
+            );
+        }
 
         $currentUser = $entityManager->getRepository(User::class)->find($currentUserId);
         if (!$currentUser){ 
@@ -169,12 +172,6 @@ class GameController extends AbstractController
             );
         }
 
-        if(!ctype_digit($gameId)){ 
-            return new JsonResponse(
-                'Game not found',
-                Response::HTTP_NOT_FOUND
-            );
-        }
         $game = $entityManager->getRepository(Game::class)->find($gameId);
         if (!$game) { 
             return new JsonResponse(
@@ -291,7 +288,6 @@ class GameController extends AbstractController
                 Response::HTTP_UNAUTHORIZED
             );
         }
-
         if(!ctype_digit($gameId)){
             return new JsonResponse(
                 'Game not found',
@@ -299,7 +295,7 @@ class GameController extends AbstractController
         }
         
         $player = $entityManager->getRepository(User::class)->find($currentUserId);
-        if(null === $player){ 
+        if(!$player){ 
             return new JsonResponse(
                 'User not found',
                 Response::HTTP_UNAUTHORIZED,
