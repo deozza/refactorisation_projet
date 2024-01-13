@@ -199,7 +199,5 @@ class playController extends AbstractController
         }else{
             return new JsonResponse('Invalid choice', 400);
         }
-
-        return new JsonResponse('coucou');
     }
 }
