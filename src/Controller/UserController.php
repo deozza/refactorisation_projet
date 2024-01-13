@@ -20,7 +20,6 @@ class UserController extends AbstractController
         $data = $entityManager->getRepository(User::class)->findAll();
         return $this->json(
             $data,
-            Response::HTTP_OK,
             headers: ['Content-Type' => 'application/json;charset=UTF-8']
         );
     }
@@ -28,29 +27,35 @@ class UserController extends AbstractController
     #[Route('/users', name: 'user_post', methods:['POST'])]
     public function createUser(Request $request,EntityManagerInterface $entityManager): JsonResponse
     {
+        
+        if('POST' !== $request->getMethod()){ //OK
+            return new JsonResponse(
+                'Wrong method',
+                Response::HTTP_METHOD_NOT_ALLOWED
+            );
+        }
+
         $data = json_decode($request->getContent(), true);
         $form = $this->createForm(CreateUserType::class);
         $form->submit($data);
-
-        if(!$form->isValid()){
+        if(!$form->isValid()){ //OK
             return new JsonResponse(
                 'Invalid form',
                 Response::HTTP_BAD_REQUEST
             );
         }
-
-        $user = $entityManager->getRepository(User::class)->findBy(['name'=>$data['nom']]);
-        
-        if(0 !== count($user)){
-            return new JsonResponse(
-                'Name already exists',
-                Response::HTTP_BAD_REQUEST,
-            );
-        }
-        if($data['age'] <= 21){
+        if($data['age'] <= 21){ //OK
             return new JsonResponse(
                 'Wrong age',
                 Response::HTTP_BAD_REQUEST
+            );
+        }
+
+        $user = $entityManager->getRepository(User::class)->findBy(['name'=>$data['nom']]);
+        if($user){ //OK
+            return new JsonResponse(
+                'Name already exists',
+                Response::HTTP_BAD_REQUEST,
             );
         }
 
@@ -71,13 +76,19 @@ class UserController extends AbstractController
     public function getUserWithUserId($userId, EntityManagerInterface $entityManager): JsonResponse
     {
 
-        $player = $entityManager->getRepository(User::class)->findBy(['id'=>$userId]);
-
-        if(0 === count($player)) {
+        if(!ctype_digit($userId)){ //OK
             return new JsonResponse(
                 'Wrong id',
                 Response::HTTP_NOT_FOUND
-        );
+            );
+        }
+
+        $player = $entityManager->getRepository(User::class)->findBy(['id'=>$userId]);
+        if(!$player) { //OK
+            return new JsonResponse(
+                'Wrong id',
+                Response::HTTP_NOT_FOUND
+            );
         }
 
         return new JsonResponse(
@@ -92,10 +103,17 @@ class UserController extends AbstractController
     #[Route('/user/{userId}', name: 'udpate_user', methods:['PATCH'])]
     public function updateUser(EntityManagerInterface $entityManager, $userId, Request $request): JsonResponse
     {
-        $player = $entityManager->getRepository(User::class)->findBy(['id'=>$userId]);
-        $data = json_decode($request->getContent(), true);
 
-        if(0 === count($player)){
+        $data = json_decode($request->getContent(), true);
+        if('PATCH' !== $request->getMethod()){ //OK
+            return new JsonResponse(
+                'Wrong method',
+                Response::HTTP_METHOD_NOT_ALLOWED
+            );
+        }
+
+        $player = $entityManager->getRepository(User::class)->findBy(['id'=>$userId]);
+        if(!$player){ //OK
             return new JsonResponse(
                 'Wrong id',
                 Response::HTTP_NOT_FOUND
@@ -104,8 +122,7 @@ class UserController extends AbstractController
 
         $form = $this->createForm(UpdateUserType::class);
         $form->submit($data);
-
-        if(!$form->isValid()){
+        if(!$form->isValid()){ //OK
             return new JsonResponse(
                 'Invalid form',
                 Response::HTTP_BAD_REQUEST
@@ -116,7 +133,7 @@ class UserController extends AbstractController
             switch($key){
                 case 'nom':
                     $user = $entityManager->getRepository(User::class)->findBy(['name'=>$data['nom']]);
-                    if(count($user) !== 0){
+                    if($user){ //OK
                         return new JsonResponse(
                             'Name already exists',
                             Response::HTTP_BAD_REQUEST
@@ -126,7 +143,7 @@ class UserController extends AbstractController
                     $entityManager->flush();
                     break;
                 case 'age':
-                    if($data['age'] <= 21){
+                    if($data['age'] <= 21){ //OK
                         return new JsonResponse(
                             'Wrong age',
                             Response::HTTP_BAD_REQUEST
@@ -150,8 +167,7 @@ class UserController extends AbstractController
     public function deleteUser($id, EntityManagerInterface $entityManager): JsonResponse | null
     {
         $player = $entityManager->getRepository(User::class)->findBy(['id'=>$id]);
-
-        if(count($player) !== 1) {
+        if(count($player) !== 1) { //OK
             return new JsonResponse(
                 'Wrong id',
                 Response::HTTP_NOT_FOUND
@@ -164,16 +180,20 @@ class UserController extends AbstractController
 
             $alreadyExists = $entityManager->getRepository(User::class)->findBy(['id'=>$id]);
 
-            if(empty($alreadyExists)){
+            if(empty($alreadyExists)){ //OK
                 return new JsonResponse(
                     "",
                     Response::HTTP_NO_CONTENT,
                 );
             }
+            if(!empty($alreadyExists)){ //OK
+                throw new \Exception("Le user n'a pas éte délété");
+                return null;
+            }
                 throw new \Exception("User not deleted");
                 return null;
         }catch(\Exception $e){
-            return new JsonResponse(
+            return new JsonResponse( //OK
                 $e->getMessage(),
                 Response::HTTP_INTERNAL_SERVER_ERROR
             );
