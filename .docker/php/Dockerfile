@@ -1,12 +1,12 @@
 FROM php:8.2-fpm
 
-RUN apt update \
-    && apt install -y zlib1g-dev g++ git libicu-dev zip libzip-dev zip \
-    && docker-php-ext-install intl opcache pdo pdo_mysql \
-    && pecl install apcu \
-    && docker-php-ext-enable apcu \
-    && docker-php-ext-configure zip \
-    && docker-php-ext-install zip
+RUN apt update
+RUN apt install -y zlib1g-dev g++ git libicu-dev zip libzip-dev zip
+RUN docker-php-ext-install intl opcache pdo pdo_mysql
+RUN pecl install apcu
+RUN docker-php-ext-enable apcu
+RUN docker-php-ext-configure zip
+RUN docker-php-ext-install zip
 
 RUN chmod -R 777 /home
 
