@@ -63,7 +63,7 @@ class GameController extends AbstractController
 
 
     #[Route('/game/{id}', name: 'fetch_game', methods:['GET'], requirements: ['id' => '\d+'])]
-    public function getGameInfo($id): JsonResponse
+    public function getGameInfo(int $id): JsonResponse
     {
         $game = $this->entityManager->getRepository(Game::class)->findOneBy(['id' => $id]);
 
@@ -80,7 +80,7 @@ class GameController extends AbstractController
     #[Route('/game/{id}/add/{playerRightId}', name: 'add_user_right', methods:['PATCH'], requirements: ['id' => '\d+'])]
     public function inviteToGame(
         Request $request, 
-        $id, 
+        int $id, 
         $playerRightId
     ): JsonResponse {
         $currentUserId = $request->headers->get('X-User-Id');
@@ -120,7 +120,7 @@ class GameController extends AbstractController
 
     
     #[Route('/game/{id}', name: 'send_choice', methods:['PATCH'], requirements: ['id' => '\d+'])]
-    public function play(Request $request, $id): JsonResponse
+    public function play(Request $request, int $id): JsonResponse
     {
         $UserId = $request->headers->get('X-User-Id');
         $User = $this->entityManager->getRepository(User::class)->find($UserId);
@@ -190,7 +190,7 @@ class GameController extends AbstractController
     }
 
     #[Route('/game/{id}', name: 'cancel_game', methods:['DELETE'], requirements: ['id' => '\d+'])]
-    public function deleteGame(Request $request, $id): JsonResponse
+    public function deleteGame(Request $request, int $id): JsonResponse
     {
         $currentUserId = $request->headers->get('X-User-Id');
 
