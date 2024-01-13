@@ -1,62 +1,44 @@
 <?php
 
-namespace App\Repository;
+namespace App\Service;
 
 use App\Entity\User;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\Persistence\ManagerRegistry;
+use App\DTO\UserDTO;
+use App\Form\AddUserType;
+use App\Form\UpdateUserType;
+use App\Repository\UserRepository;
+use Symfony\Component\Form\FormError;
+use Symfony\Component\Form\FormErrorIterator;
+use Symfony\Component\Form\FormFactoryInterface;
 
-/**
- * @extends ServiceEntityRepository<User>
- *
- * @method User|null find($id, $lockMode = null, $lockVersion = null)
- * @method User|null findOneBy(array $criteria, array $orderBy = null)
- * @method User[]    findAll()
- * @method User[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
- */
-class UserRepository extends ServiceEntityRepository
+class UserService
 {
-    public function __construct(ManagerRegistry $registry)
+    private UserRepository $userRepository;
+    private FormFactoryInterface $formFactory;
+
+    public function __construct(FormFactoryInterface $formFactory, UserRepository $userRepository)
     {
-        parent::__construct($registry, User::class);
+        $this->formFactory = $formFactory;
+        $this->userRepository = $userRepository;
     }
 
-        public function save(User $entity): User
+    public function getAllUsers(): array
     {
-        $this->getEntityManager()->persist($entity);
-        $this->getEntityManager()->flush();
-
-        return $entity;
+        return $this->userRepository->findAll();
     }
 
-    public function remove(User $entity): void
+    public function getUser(int $id):  User | null
     {
-        $this->getEntityManager()->remove($entity);
-        $this->getEntityManager()->flush();
+        return $this->userRepository->find($id);
     }
 
-//    /**
-//     * @return User[] Returns an array of User objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('u')
-//            ->andWhere('u.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('u.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+    public function save(?User $user = null): void
+    {
+        $this->userRepository->save($user);
+    }
 
-//    public function findOneBySomeField($value): ?User
-//    {
-//        return $this->createQueryBuilder('u')
-//            ->andWhere('u.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+    public function deleteUser(User $user): void
+    {
+        $this->userRepository->delete($user);
+    }
 }
