@@ -15,7 +15,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 class UserController extends AbstractController
 {
     #[Route('/users', name: 'liste_des_users', methods: ['GET'])]
-    public function ‚(EntityManagerInterface $entityManager): JsonResponse
+    public function listUser‚(EntityManagerInterface $entityManager): JsonResponse
     {
         $data = $entityManager->getRepository(User::class)->findAll();
         return $this->json(
@@ -64,7 +64,7 @@ class UserController extends AbstractController
 
 
     #[Route('/user/{identifiant}', name: 'get_user_by_id', methods: ['GET'])]
-    public function getUserWithIdentifiant($identifiant, EntityManagerInterface $entityManager): JsonResponse
+    public function getUserById($identifiant, EntityManagerInterface $entityManager): JsonResponse
     {
         if (ctype_digit($identifiant)) {
             $joueur = $entityManager->getRepository(User::class)->findBy(['id' => $identifiant]);
@@ -125,7 +125,7 @@ class UserController extends AbstractController
     }
 
     #[Route('/user/{id}', name: 'delete_user_by_identifiant', methods: ['DELETE'])]
-    public function suprUser($id, EntityManagerInterface $entityManager): JsonResponse | null
+    public function deleteUserById($id, EntityManagerInterface $entityManager): JsonResponse | null
     {
         $joueur = $entityManager->getRepository(User::class)->findBy(['id' => $id]);
         if (count($joueur) == 1) {
@@ -133,6 +133,7 @@ class UserController extends AbstractController
                 $entityManager->remove($joueur[0]);
                 $entityManager->flush();
                 $existeEncore = $entityManager->getRepository(User::class)->findBy(['id' => $id]);
+     
                 if (!empty($existeEncore)) {
                     throw new \Exception("Le user n'a pas éte délété");
                     return null;
