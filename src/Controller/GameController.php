@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Game;
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
+use PhpParser\Node\Expr\Cast\Object_;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -28,19 +29,21 @@ class GameController extends AbstractController
     public function launchGame(Request $request, EntityManagerInterface $entityManager): JsonResponse
     {
         $currentUserId = $request->headers->get('X-User-Id');
+        
+        $errorMessage = new JsonResponse('User not found', 401);
 
         if($currentUserId === null){
-            return new JsonResponse('User not found', 401);
+
         }
         if(ctype_digit($currentUserId) === false){
-            return new JsonResponse('User not found', 401);
+            return $errorMessage;        
         }
+
         $currentUser = $entityManager->getRepository(User::class)->find($currentUserId);
 
         // Si l'utilisateur n'existe pas -> stop creation de partie
         if($currentUser === null){
-            return new JsonResponse('User not found', 401);
-        }
+            return $errorMessage;        }
 
         $new_party = new Game();
         $new_party->setState('pending');
@@ -60,12 +63,14 @@ class GameController extends AbstractController
     #[Route('/game/{id}', name: 'fetch_game', methods:['GET'])]
     public function getGameInfo(EntityManagerInterface $entityManager, $id): JsonResponse
     {
+        $errorMessage = new JsonResponse('Game not found', 404);
+
         if(!ctype_digit($id)){
-            return new JsonResponse('Game not found', 404);
+            return $errorMessage;
         }
         $party = $entityManager->getRepository(Game::class)->findOneBy(['id' => $id]);
         if($party === null){
-            return new JsonResponse('Game not found', 404);
+            return $errorMessage;
         }
         return $this->json(
             $party,
@@ -77,6 +82,9 @@ class GameController extends AbstractController
     public function inviteToGame(Request $request, EntityManagerInterface $entityManager, $id, $playerRightId): JsonResponse
     {
         $currentUserId = $request->headers->get('X-User-Id');
+        $errorMessageGameNotFound = new JsonResponse('Game not found', 404);
+        $errorMessageUserNotFound = new JsonResponse('User not found', 401);
+
 
         if(empty($currentUserId)){
             return new JsonResponse('User not found', 401);
@@ -127,6 +135,46 @@ class GameController extends AbstractController
             headers: ['Content-Type' => 'application/json;charset=UTF-8']
         );
     }
+
+    public function gameResults(Game $game, string $choice, bool $userIsPlayerLeft) : Game{
+        if($userIsPlayerLeft){
+            $game->setPlayLeft($choice);
+        }
+        else{
+            $game->setPlayRight($choice);
+        }
+        if(empty($game->getPlayLeft()) || empty($game->getPlayRight())){
+            return $game;
+        }
+
+        if($game->getPlayLeft() === $game->getPlayRight()){
+            $game->setResult("draw");
+            $game->setState("finished");
+            return $game;
+        }
+
+        if($game->getPlayLeft() === "rock" && $game->getPlayRight() === "scissors"){
+            $game->setResult("winLeft");
+            $game->setState("finished");
+            return $game;
+        }
+        
+        if($game->getPlayLeft() === "scissors" && $game->getPlayRight() === "paper"){
+            $game->setResult("winLeft");
+            $game->setState("finished");
+            return $game;
+        }
+
+        if($game->getPlayLeft() === "paper" && $game->getPlayRight() === "rock"){
+            $game->setResult("winLeft");
+            $game->setState("finished");
+            return $game;
+        }
+        $game->setResult("winRight");
+        $game->setState("finished");
+        return $game;
+    }
+
 
     #[Route('/game/{id}', name: 'send_choice', methods:['PATCH'])]
     public function play(Request $request, EntityManagerInterface $entityManager, $id): JsonResponse
@@ -191,109 +239,14 @@ class GameController extends AbstractController
         if($data['choice'] !== 'rock' && $data['choice'] !== 'paper' && $data['choice'] !== 'scissors'){
             return new JsonResponse('Invalid choice', 400);
         }
-
-        if($userIsPlayerLeft){
-            $game->setPlayLeft($data['choice']);
-            $entityManager->flush();
-            if($game->getPlayRight() !== null){
-                        
-                switch($data['choice']){
-                    case 'rock':
-                        if($game->getPlayRight() === 'paper'){
-                            $game->setResult('winRight');
-                        }elseif($game->getPlayRight() === 'scissors'){
-                            $game->setResult('winLeft');
-                        }else{
-                            $game->setResult('draw');
-                        }
-                        break;
-                    case 'paper':
-                        if($game->getPlayRight() === 'scissors'){
-                            $game->setResult('winRight');
-                        }elseif($game->getPlayRight() === 'rock'){
-                            $game->setResult('winLeft');
-                        }else{
-                            $game->setResult('draw');
-                        }
-                        break;
-                    case 'scissors':
-                        if($game->getPlayRight() === 'rock'){
-                            $game->setResult('winRight');
-                        }elseif($game->getPlayRight() === 'paper'){
-                            $game->setResult('winLeft');
-                        }else{
-                            $game->setResult('draw');
-                        }
-                        break;
-                }
-
-                $game->setState('finished');
-                $entityManager->flush();
-
-                return $this->json(
-                    $game,
-                    headers: ['Content-Type' => 'application/json;charset=UTF-8']
-                );
-            }
-
-            return $this->json(
-                $game,
-                headers: ['Content-Type' => 'application/json;charset=UTF-8']
-            );
-
-        }elseif($userIsPlayerRight){            
-            $game->setPlayRight($data['choice']);
         
-            $entityManager->flush();
+        $game = $this->gameResults($game, $data['choice'], $userIsPlayerLeft);
+        $entityManager->flush();
+        return $this->json(
+            $game,
+            headers: ['Content-Type' => 'application/json;charset=UTF-8']
+        );
 
-            if($game->getPlayLeft() !== null){
-
-                switch($data['choice']){
-                    case 'rock':
-                        if($game->getPlayLeft() === 'paper'){
-                            $game->setResult('winLeft');
-                        }elseif($game->getPlayLeft() === 'scissors'){
-                            $game->setResult('winRight');
-                        }else{
-                            $game->setResult('draw');
-                        }
-                        break;
-                    case 'paper':
-                        if($game->getPlayLeft() === 'scissors'){
-                            $game->setResult('winLeft');
-                        }elseif($game->getPlayLeft() === 'rock'){
-                            $game->setResult('winRight');
-                        }else{
-                            $game->setResult('draw');
-                        }
-                        break;
-                    case 'scissors':
-                        if($game->getPlayLeft() === 'rock'){
-                            $game->setResult('winLeft');
-                        }elseif($game->getPlayLeft() === 'paper'){
-                            $game->setResult('winRight');
-                        }else{
-                            $game->setResult('draw');
-                        }
-                        break;
-                }
-
-                $game->setState('finished');
-                $entityManager->flush();
-
-                return $this->json(
-                    $game,
-                    headers: ['Content-Type' => 'application/json;charset=UTF-8']
-                );
-    
-            }
-            return $this->json(
-                $game,
-                headers: ['Content-Type' => 'application/json;charset=UTF-8']
-            );
-
-        }        
-        return new JsonResponse('coucou');
     }
 
     #[Route('/game/{id}', name: 'cancel_game', methods:['DELETE'])]
