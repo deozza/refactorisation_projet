@@ -1,0 +1,626 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Method App\\\\Controller\\\\GameController\\:\\:deleteGame\\(\\) has parameter \\$id with no type specified\\.$#"
+			count: 1
+			path: src/Controller/GameController.php
+
+		-
+			message: "#^Method App\\\\Controller\\\\GameController\\:\\:getGameInfo\\(\\) has parameter \\$identifiant with no type specified\\.$#"
+			count: 1
+			path: src/Controller/GameController.php
+
+		-
+			message: "#^Method App\\\\Controller\\\\GameController\\:\\:inviteToGame\\(\\) has parameter \\$id with no type specified\\.$#"
+			count: 1
+			path: src/Controller/GameController.php
+
+		-
+			message: "#^Method App\\\\Controller\\\\GameController\\:\\:inviteToGame\\(\\) has parameter \\$playerRightId with no type specified\\.$#"
+			count: 1
+			path: src/Controller/GameController.php
+
+		-
+			message: "#^Method App\\\\Controller\\\\GameController\\:\\:play\\(\\) has parameter \\$identifiant with no type specified\\.$#"
+			count: 1
+			path: src/Controller/GameController.php
+
+		-
+			message: "#^Unreachable statement \\- code above always terminates\\.$#"
+			count: 1
+			path: src/Controller/GameController.php
+
+		-
+			message: "#^Method App\\\\Controller\\\\UserController\\:\\:getUserWithIdentifiant\\(\\) has parameter \\$identifiant with no type specified\\.$#"
+			count: 1
+			path: src/Controller/UserController.php
+
+		-
+			message: "#^Method App\\\\Controller\\\\UserController\\:\\:suprUser\\(\\) has parameter \\$id with no type specified\\.$#"
+			count: 1
+			path: src/Controller/UserController.php
+
+		-
+			message: "#^Method App\\\\Controller\\\\UserController\\:\\:updateUser\\(\\) has parameter \\$identifiant with no type specified\\.$#"
+			count: 1
+			path: src/Controller/UserController.php
+
+		-
+			message: "#^Unreachable statement \\- code above always terminates\\.$#"
+			count: 1
+			path: src/Controller/UserController.php
+
+		-
+			message: "#^Method App\\\\Tests\\\\GameControllerTest\\:\\:dataprovider_deleteGame_checkValid\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: tests/Controller/GameControllerTest.php
+
+		-
+			message: "#^Method App\\\\Tests\\\\GameControllerTest\\:\\:dataprovider_deleteGame_checkWithGameNotFound\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: tests/Controller/GameControllerTest.php
+
+		-
+			message: "#^Method App\\\\Tests\\\\GameControllerTest\\:\\:dataprovider_deleteGame_checkWithInvalidAuth\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: tests/Controller/GameControllerTest.php
+
+		-
+			message: "#^Method App\\\\Tests\\\\GameControllerTest\\:\\:dataprovider_getGameInfo_checkAuthorizedMethods\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: tests/Controller/GameControllerTest.php
+
+		-
+			message: "#^Method App\\\\Tests\\\\GameControllerTest\\:\\:dataprovider_getGameInfo_checkWithInvalidId\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: tests/Controller/GameControllerTest.php
+
+		-
+			message: "#^Method App\\\\Tests\\\\GameControllerTest\\:\\:dataprovider_getPartieList_checkAuthorizedMethods\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: tests/Controller/GameControllerTest.php
+
+		-
+			message: "#^Method App\\\\Tests\\\\GameControllerTest\\:\\:dataprovider_inviteToGame_checkWithInvalidAuth\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: tests/Controller/GameControllerTest.php
+
+		-
+			message: "#^Method App\\\\Tests\\\\GameControllerTest\\:\\:dataprovider_inviteToGame_checkWithInvalidGameId\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: tests/Controller/GameControllerTest.php
+
+		-
+			message: "#^Method App\\\\Tests\\\\GameControllerTest\\:\\:dataprovider_inviteToGame_checkWithInvalidGameStatus\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: tests/Controller/GameControllerTest.php
+
+		-
+			message: "#^Method App\\\\Tests\\\\GameControllerTest\\:\\:dataprovider_inviteToGame_checkWithInvalidPlayerRight\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: tests/Controller/GameControllerTest.php
+
+		-
+			message: "#^Method App\\\\Tests\\\\GameControllerTest\\:\\:dataprovider_inviteToGane_checkAuthorizedMethods\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: tests/Controller/GameControllerTest.php
+
+		-
+			message: "#^Method App\\\\Tests\\\\GameControllerTest\\:\\:dataprovider_launchGame_checkStatusWithInvalidUserParam\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: tests/Controller/GameControllerTest.php
+
+		-
+			message: "#^Method App\\\\Tests\\\\GameControllerTest\\:\\:dataprovider_play_checkValidValuesWithGameResult\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: tests/Controller/GameControllerTest.php
+
+		-
+			message: "#^Method App\\\\Tests\\\\GameControllerTest\\:\\:dataprovider_play_checkWithForbiddenGame\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: tests/Controller/GameControllerTest.php
+
+		-
+			message: "#^Method App\\\\Tests\\\\GameControllerTest\\:\\:dataprovider_play_checkWithGameNotFound\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: tests/Controller/GameControllerTest.php
+
+		-
+			message: "#^Method App\\\\Tests\\\\GameControllerTest\\:\\:dataprovider_play_checkWithInvalidAuth\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: tests/Controller/GameControllerTest.php
+
+		-
+			message: "#^Method App\\\\Tests\\\\GameControllerTest\\:\\:test_deleteGame_checkGameIsDeleted\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/Controller/GameControllerTest.php
+
+		-
+			message: "#^Method App\\\\Tests\\\\GameControllerTest\\:\\:test_deleteGame_checkGameIsDeleted\\(\\) has parameter \\$id with no type specified\\.$#"
+			count: 1
+			path: tests/Controller/GameControllerTest.php
+
+		-
+			message: "#^Method App\\\\Tests\\\\GameControllerTest\\:\\:test_deleteGame_checkValidStatusCode\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/Controller/GameControllerTest.php
+
+		-
+			message: "#^Method App\\\\Tests\\\\GameControllerTest\\:\\:test_deleteGame_checkValidStatusCode\\(\\) has parameter \\$id with no type specified\\.$#"
+			count: 1
+			path: tests/Controller/GameControllerTest.php
+
+		-
+			message: "#^Method App\\\\Tests\\\\GameControllerTest\\:\\:test_deleteGame_checkWithForbiddenGame\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/Controller/GameControllerTest.php
+
+		-
+			message: "#^Method App\\\\Tests\\\\GameControllerTest\\:\\:test_deleteGame_checkWithGameNotFound\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/Controller/GameControllerTest.php
+
+		-
+			message: "#^Method App\\\\Tests\\\\GameControllerTest\\:\\:test_deleteGame_checkWithGameNotFound\\(\\) has parameter \\$id with no type specified\\.$#"
+			count: 1
+			path: tests/Controller/GameControllerTest.php
+
+		-
+			message: "#^Method App\\\\Tests\\\\GameControllerTest\\:\\:test_deleteGame_checkWithInvalidAuth\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/Controller/GameControllerTest.php
+
+		-
+			message: "#^Method App\\\\Tests\\\\GameControllerTest\\:\\:test_deleteGame_checkWithInvalidAuth\\(\\) has parameter \\$id with no type specified\\.$#"
+			count: 1
+			path: tests/Controller/GameControllerTest.php
+
+		-
+			message: "#^Method App\\\\Tests\\\\GameControllerTest\\:\\:test_getGameInfo_checkAuthorizedMethods\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/Controller/GameControllerTest.php
+
+		-
+			message: "#^Method App\\\\Tests\\\\GameControllerTest\\:\\:test_getGameInfo_checkReturnStatus\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/Controller/GameControllerTest.php
+
+		-
+			message: "#^Method App\\\\Tests\\\\GameControllerTest\\:\\:test_getGameInfo_checkValues\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/Controller/GameControllerTest.php
+
+		-
+			message: "#^Method App\\\\Tests\\\\GameControllerTest\\:\\:test_getGameInfo_checkWithInvalidId\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/Controller/GameControllerTest.php
+
+		-
+			message: "#^Method App\\\\Tests\\\\GameControllerTest\\:\\:test_getGameInfo_checkWithInvalidId\\(\\) has parameter \\$id with no type specified\\.$#"
+			count: 1
+			path: tests/Controller/GameControllerTest.php
+
+		-
+			message: "#^Method App\\\\Tests\\\\GameControllerTest\\:\\:test_getPartieList_checkAuthorizedMethods\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/Controller/GameControllerTest.php
+
+		-
+			message: "#^Method App\\\\Tests\\\\GameControllerTest\\:\\:test_getPartieList_checkAuthorizedMethods\\(\\) has parameter \\$method with no type specified\\.$#"
+			count: 1
+			path: tests/Controller/GameControllerTest.php
+
+		-
+			message: "#^Method App\\\\Tests\\\\GameControllerTest\\:\\:test_getPartieList_checkReturnStatus\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/Controller/GameControllerTest.php
+
+		-
+			message: "#^Method App\\\\Tests\\\\GameControllerTest\\:\\:test_getPartieList_checkValues\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/Controller/GameControllerTest.php
+
+		-
+			message: "#^Method App\\\\Tests\\\\GameControllerTest\\:\\:test_inviteToGame_checkAuthorizedMethods\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/Controller/GameControllerTest.php
+
+		-
+			message: "#^Method App\\\\Tests\\\\GameControllerTest\\:\\:test_inviteToGame_checkAuthorizedMethods\\(\\) has parameter \\$method with no type specified\\.$#"
+			count: 1
+			path: tests/Controller/GameControllerTest.php
+
+		-
+			message: "#^Method App\\\\Tests\\\\GameControllerTest\\:\\:test_inviteToGame_checkValidStatusCode\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/Controller/GameControllerTest.php
+
+		-
+			message: "#^Method App\\\\Tests\\\\GameControllerTest\\:\\:test_inviteToGame_checkValidValues\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/Controller/GameControllerTest.php
+
+		-
+			message: "#^Method App\\\\Tests\\\\GameControllerTest\\:\\:test_inviteToGame_checkWithDuplicatePlayer\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/Controller/GameControllerTest.php
+
+		-
+			message: "#^Method App\\\\Tests\\\\GameControllerTest\\:\\:test_inviteToGame_checkWithInvalidAuth\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/Controller/GameControllerTest.php
+
+		-
+			message: "#^Method App\\\\Tests\\\\GameControllerTest\\:\\:test_inviteToGame_checkWithInvalidAuth\\(\\) has parameter \\$id with no type specified\\.$#"
+			count: 1
+			path: tests/Controller/GameControllerTest.php
+
+		-
+			message: "#^Method App\\\\Tests\\\\GameControllerTest\\:\\:test_inviteToGame_checkWithInvalidGameId\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/Controller/GameControllerTest.php
+
+		-
+			message: "#^Method App\\\\Tests\\\\GameControllerTest\\:\\:test_inviteToGame_checkWithInvalidGameId\\(\\) has parameter \\$id with no type specified\\.$#"
+			count: 1
+			path: tests/Controller/GameControllerTest.php
+
+		-
+			message: "#^Method App\\\\Tests\\\\GameControllerTest\\:\\:test_inviteToGame_checkWithInvalidGameStatus\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/Controller/GameControllerTest.php
+
+		-
+			message: "#^Method App\\\\Tests\\\\GameControllerTest\\:\\:test_inviteToGame_checkWithInvalidGameStatus\\(\\) has parameter \\$id with no type specified\\.$#"
+			count: 1
+			path: tests/Controller/GameControllerTest.php
+
+		-
+			message: "#^Method App\\\\Tests\\\\GameControllerTest\\:\\:test_inviteToGame_checkWithInvalidPlayerRight\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/Controller/GameControllerTest.php
+
+		-
+			message: "#^Method App\\\\Tests\\\\GameControllerTest\\:\\:test_inviteToGame_checkWithInvalidPlayerRight\\(\\) has parameter \\$id with no type specified\\.$#"
+			count: 1
+			path: tests/Controller/GameControllerTest.php
+
+		-
+			message: "#^Method App\\\\Tests\\\\GameControllerTest\\:\\:test_launchGame_checkStatusWhenValid\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/Controller/GameControllerTest.php
+
+		-
+			message: "#^Method App\\\\Tests\\\\GameControllerTest\\:\\:test_launchGame_checkStatusWithInvalidUserParam\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/Controller/GameControllerTest.php
+
+		-
+			message: "#^Method App\\\\Tests\\\\GameControllerTest\\:\\:test_launchGame_checkStatusWithInvalidUserParam\\(\\) has parameter \\$userParam with no type specified\\.$#"
+			count: 1
+			path: tests/Controller/GameControllerTest.php
+
+		-
+			message: "#^Method App\\\\Tests\\\\GameControllerTest\\:\\:test_launchGame_checkStatusWithoutUserParam\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/Controller/GameControllerTest.php
+
+		-
+			message: "#^Method App\\\\Tests\\\\GameControllerTest\\:\\:test_launchGame_checkValuesWhenValid\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/Controller/GameControllerTest.php
+
+		-
+			message: "#^Method App\\\\Tests\\\\GameControllerTest\\:\\:test_play_checkValidStatusCode\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/Controller/GameControllerTest.php
+
+		-
+			message: "#^Method App\\\\Tests\\\\GameControllerTest\\:\\:test_play_checkValidValuesForFirstTurn\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/Controller/GameControllerTest.php
+
+		-
+			message: "#^Method App\\\\Tests\\\\GameControllerTest\\:\\:test_play_checkValidValuesWithGameResult\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/Controller/GameControllerTest.php
+
+		-
+			message: "#^Method App\\\\Tests\\\\GameControllerTest\\:\\:test_play_checkValidValuesWithGameResult\\(\\) has parameter \\$choice with no type specified\\.$#"
+			count: 1
+			path: tests/Controller/GameControllerTest.php
+
+		-
+			message: "#^Method App\\\\Tests\\\\GameControllerTest\\:\\:test_play_checkValidValuesWithGameResult\\(\\) has parameter \\$expectedResult with no type specified\\.$#"
+			count: 1
+			path: tests/Controller/GameControllerTest.php
+
+		-
+			message: "#^Method App\\\\Tests\\\\GameControllerTest\\:\\:test_play_checkWithForbiddenGame\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/Controller/GameControllerTest.php
+
+		-
+			message: "#^Method App\\\\Tests\\\\GameControllerTest\\:\\:test_play_checkWithForbiddenGame\\(\\) has parameter \\$id with no type specified\\.$#"
+			count: 1
+			path: tests/Controller/GameControllerTest.php
+
+		-
+			message: "#^Method App\\\\Tests\\\\GameControllerTest\\:\\:test_play_checkWithGameNotFound\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/Controller/GameControllerTest.php
+
+		-
+			message: "#^Method App\\\\Tests\\\\GameControllerTest\\:\\:test_play_checkWithGameNotFound\\(\\) has parameter \\$id with no type specified\\.$#"
+			count: 1
+			path: tests/Controller/GameControllerTest.php
+
+		-
+			message: "#^Method App\\\\Tests\\\\GameControllerTest\\:\\:test_play_checkWithGameNotStarted\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/Controller/GameControllerTest.php
+
+		-
+			message: "#^Method App\\\\Tests\\\\GameControllerTest\\:\\:test_play_checkWithInvalidAuth\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/Controller/GameControllerTest.php
+
+		-
+			message: "#^Method App\\\\Tests\\\\GameControllerTest\\:\\:test_play_checkWithInvalidAuth\\(\\) has parameter \\$id with no type specified\\.$#"
+			count: 1
+			path: tests/Controller/GameControllerTest.php
+
+		-
+			message: "#^Method App\\\\Tests\\\\GameControllerTest\\:\\:test_play_checkWithInvalidChoice\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/Controller/GameControllerTest.php
+
+		-
+			message: "#^Static method App\\\\Tests\\\\GameControllerTest\\:\\:dataprovider_deleteGame_checkValid\\(\\) is unused\\.$#"
+			count: 1
+			path: tests/Controller/GameControllerTest.php
+
+		-
+			message: "#^Static method App\\\\Tests\\\\GameControllerTest\\:\\:dataprovider_deleteGame_checkWithGameNotFound\\(\\) is unused\\.$#"
+			count: 1
+			path: tests/Controller/GameControllerTest.php
+
+		-
+			message: "#^Static method App\\\\Tests\\\\GameControllerTest\\:\\:dataprovider_deleteGame_checkWithInvalidAuth\\(\\) is unused\\.$#"
+			count: 1
+			path: tests/Controller/GameControllerTest.php
+
+		-
+			message: "#^Static method App\\\\Tests\\\\GameControllerTest\\:\\:dataprovider_getGameInfo_checkAuthorizedMethods\\(\\) is unused\\.$#"
+			count: 1
+			path: tests/Controller/GameControllerTest.php
+
+		-
+			message: "#^Static method App\\\\Tests\\\\GameControllerTest\\:\\:dataprovider_getGameInfo_checkWithInvalidId\\(\\) is unused\\.$#"
+			count: 1
+			path: tests/Controller/GameControllerTest.php
+
+		-
+			message: "#^Static method App\\\\Tests\\\\GameControllerTest\\:\\:dataprovider_getPartieList_checkAuthorizedMethods\\(\\) is unused\\.$#"
+			count: 1
+			path: tests/Controller/GameControllerTest.php
+
+		-
+			message: "#^Static method App\\\\Tests\\\\GameControllerTest\\:\\:dataprovider_inviteToGame_checkWithInvalidAuth\\(\\) is unused\\.$#"
+			count: 1
+			path: tests/Controller/GameControllerTest.php
+
+		-
+			message: "#^Static method App\\\\Tests\\\\GameControllerTest\\:\\:dataprovider_inviteToGame_checkWithInvalidGameId\\(\\) is unused\\.$#"
+			count: 1
+			path: tests/Controller/GameControllerTest.php
+
+		-
+			message: "#^Static method App\\\\Tests\\\\GameControllerTest\\:\\:dataprovider_inviteToGame_checkWithInvalidGameStatus\\(\\) is unused\\.$#"
+			count: 1
+			path: tests/Controller/GameControllerTest.php
+
+		-
+			message: "#^Static method App\\\\Tests\\\\GameControllerTest\\:\\:dataprovider_inviteToGame_checkWithInvalidPlayerRight\\(\\) is unused\\.$#"
+			count: 1
+			path: tests/Controller/GameControllerTest.php
+
+		-
+			message: "#^Static method App\\\\Tests\\\\GameControllerTest\\:\\:dataprovider_inviteToGane_checkAuthorizedMethods\\(\\) is unused\\.$#"
+			count: 1
+			path: tests/Controller/GameControllerTest.php
+
+		-
+			message: "#^Static method App\\\\Tests\\\\GameControllerTest\\:\\:dataprovider_launchGame_checkStatusWithInvalidUserParam\\(\\) is unused\\.$#"
+			count: 1
+			path: tests/Controller/GameControllerTest.php
+
+		-
+			message: "#^Static method App\\\\Tests\\\\GameControllerTest\\:\\:dataprovider_play_checkValidValuesWithGameResult\\(\\) is unused\\.$#"
+			count: 1
+			path: tests/Controller/GameControllerTest.php
+
+		-
+			message: "#^Static method App\\\\Tests\\\\GameControllerTest\\:\\:dataprovider_play_checkWithForbiddenGame\\(\\) is unused\\.$#"
+			count: 1
+			path: tests/Controller/GameControllerTest.php
+
+		-
+			message: "#^Static method App\\\\Tests\\\\GameControllerTest\\:\\:dataprovider_play_checkWithGameNotFound\\(\\) is unused\\.$#"
+			count: 1
+			path: tests/Controller/GameControllerTest.php
+
+		-
+			message: "#^Static method App\\\\Tests\\\\GameControllerTest\\:\\:dataprovider_play_checkWithInvalidAuth\\(\\) is unused\\.$#"
+			count: 1
+			path: tests/Controller/GameControllerTest.php
+
+		-
+			message: "#^Method App\\\\Tests\\\\UserControllerTest\\:\\:dataprovider_createUser_checkWhenMissingData\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: tests/Controller/UserControllerTest.php
+
+		-
+			message: "#^Method App\\\\Tests\\\\UserControllerTest\\:\\:dataprovider_getListeDesUsers_checkAuthorizedMethods\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: tests/Controller/UserControllerTest.php
+
+		-
+			message: "#^Method App\\\\Tests\\\\UserControllerTest\\:\\:dataprovider_getUserWithIdentifiant_checkWithInvalidId\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: tests/Controller/UserControllerTest.php
+
+		-
+			message: "#^Method App\\\\Tests\\\\UserControllerTest\\:\\:dataprovider_suprUser_withInvalidId\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: tests/Controller/UserControllerTest.php
+
+		-
+			message: "#^Method App\\\\Tests\\\\UserControllerTest\\:\\:dataprovider_updateUser_withInvalidId\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: tests/Controller/UserControllerTest.php
+
+		-
+			message: "#^Method App\\\\Tests\\\\UserControllerTest\\:\\:test_createUser_checkWhenMissingData\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/Controller/UserControllerTest.php
+
+		-
+			message: "#^Method App\\\\Tests\\\\UserControllerTest\\:\\:test_createUser_checkWhenUserAlreadyExists\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/Controller/UserControllerTest.php
+
+		-
+			message: "#^Method App\\\\Tests\\\\UserControllerTest\\:\\:test_createUser_checkWhenWrongAge\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/Controller/UserControllerTest.php
+
+		-
+			message: "#^Method App\\\\Tests\\\\UserControllerTest\\:\\:test_createUser_checkWithTooManyData\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/Controller/UserControllerTest.php
+
+		-
+			message: "#^Method App\\\\Tests\\\\UserControllerTest\\:\\:test_createUser_checkWithValidData\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/Controller/UserControllerTest.php
+
+		-
+			message: "#^Method App\\\\Tests\\\\UserControllerTest\\:\\:test_getListeDesUsers_checkAuthorizedMethods\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/Controller/UserControllerTest.php
+
+		-
+			message: "#^Method App\\\\Tests\\\\UserControllerTest\\:\\:test_getListeDesUsers_checkReturnStatus\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/Controller/UserControllerTest.php
+
+		-
+			message: "#^Method App\\\\Tests\\\\UserControllerTest\\:\\:test_getListeDesUsers_checkValues\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/Controller/UserControllerTest.php
+
+		-
+			message: "#^Method App\\\\Tests\\\\UserControllerTest\\:\\:test_getUserWithIdentifiant_checkStatusWithValidId\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/Controller/UserControllerTest.php
+
+		-
+			message: "#^Method App\\\\Tests\\\\UserControllerTest\\:\\:test_getUserWithIdentifiant_checkValuesWithValidId\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/Controller/UserControllerTest.php
+
+		-
+			message: "#^Method App\\\\Tests\\\\UserControllerTest\\:\\:test_getUserWithIdentifiant_checkWithInvalidId\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/Controller/UserControllerTest.php
+
+		-
+			message: "#^Method App\\\\Tests\\\\UserControllerTest\\:\\:test_getUserWithIdentifiant_checkWithInvalidId\\(\\) has parameter \\$id with no type specified\\.$#"
+			count: 1
+			path: tests/Controller/UserControllerTest.php
+
+		-
+			message: "#^Method App\\\\Tests\\\\UserControllerTest\\:\\:test_getUserWithIdentifiant_checkWithInvalidMethod\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/Controller/UserControllerTest.php
+
+		-
+			message: "#^Method App\\\\Tests\\\\UserControllerTest\\:\\:test_suprUser_checkUserIsDeleted\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/Controller/UserControllerTest.php
+
+		-
+			message: "#^Method App\\\\Tests\\\\UserControllerTest\\:\\:test_suprUser_checkValidStatus\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/Controller/UserControllerTest.php
+
+		-
+			message: "#^Method App\\\\Tests\\\\UserControllerTest\\:\\:test_suprUser_withInvalidId\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/Controller/UserControllerTest.php
+
+		-
+			message: "#^Method App\\\\Tests\\\\UserControllerTest\\:\\:test_suprUser_withInvalidId\\(\\) has parameter \\$id with no type specified\\.$#"
+			count: 1
+			path: tests/Controller/UserControllerTest.php
+
+		-
+			message: "#^Method App\\\\Tests\\\\UserControllerTest\\:\\:test_updateUser_checkValidStatus\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/Controller/UserControllerTest.php
+
+		-
+			message: "#^Method App\\\\Tests\\\\UserControllerTest\\:\\:test_updateUser_checkValidValues\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/Controller/UserControllerTest.php
+
+		-
+			message: "#^Method App\\\\Tests\\\\UserControllerTest\\:\\:test_updateUser_whenUserAlreadyExists\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/Controller/UserControllerTest.php
+
+		-
+			message: "#^Method App\\\\Tests\\\\UserControllerTest\\:\\:test_updateUser_withInvalidId\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/Controller/UserControllerTest.php
+
+		-
+			message: "#^Method App\\\\Tests\\\\UserControllerTest\\:\\:test_updateUser_withInvalidId\\(\\) has parameter \\$id with no type specified\\.$#"
+			count: 1
+			path: tests/Controller/UserControllerTest.php
+
+		-
+			message: "#^Method App\\\\Tests\\\\UserControllerTest\\:\\:test_updateUser_withTooManyData\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/Controller/UserControllerTest.php
+
+		-
+			message: "#^Method App\\\\Tests\\\\UserControllerTest\\:\\:test_updateUser_withWrongAge\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/Controller/UserControllerTest.php
+
+		-
+			message: "#^Static method App\\\\Tests\\\\UserControllerTest\\:\\:dataprovider_createUser_checkWhenMissingData\\(\\) is unused\\.$#"
+			count: 1
+			path: tests/Controller/UserControllerTest.php
+
+		-
+			message: "#^Static method App\\\\Tests\\\\UserControllerTest\\:\\:dataprovider_getListeDesUsers_checkAuthorizedMethods\\(\\) is unused\\.$#"
+			count: 1
+			path: tests/Controller/UserControllerTest.php
+
+		-
+			message: "#^Static method App\\\\Tests\\\\UserControllerTest\\:\\:dataprovider_getUserWithIdentifiant_checkWithInvalidId\\(\\) is unused\\.$#"
+			count: 1
+			path: tests/Controller/UserControllerTest.php
+
+		-
+			message: "#^Static method App\\\\Tests\\\\UserControllerTest\\:\\:dataprovider_suprUser_withInvalidId\\(\\) is unused\\.$#"
+			count: 1
+			path: tests/Controller/UserControllerTest.php
+
+		-
+			message: "#^Static method App\\\\Tests\\\\UserControllerTest\\:\\:dataprovider_updateUser_withInvalidId\\(\\) is unused\\.$#"
+			count: 1
+			path: tests/Controller/UserControllerTest.php
